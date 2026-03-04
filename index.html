@@ -1,0 +1,3780 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NIARA | Nursing Item Analysis & Reporting Assistant — GrangeRN</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Source+Sans+3:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<style>
+  :root {
+    --navy:       #1e3a6e;
+    --navy-deep:  #152d57;
+    --steel:      #4a7ab5;
+    --powder:     #8aafd4;
+    --powder-lt:  #d4e4f4;
+    --white:      #ffffff;
+    --offwhite:   #f4f7fb;
+    --text:       #1a1a2e;
+    --text-light: #4a5568;
+    --border:     #c8d8ec;
+    --flag-keep:       #1e3a6e;
+    --flag-review:     #4a7ab5;
+    --flag-revise:     #8aafd4;
+    --flag-rewrite-bg: #fef2f2;
+    --flag-rewrite-tx: #c0392b;
+    /* ── NEW FLAG COLORS ── */
+    --flag-keep-bg:    #1b7a3e;
+    --flag-keep-tx:    #ffffff;
+    --flag-review-bg:  #d4a017;
+    --flag-review-tx:  #3d2800;
+    --flag-revise-bg:  #d4620a;
+    --flag-revise-tx:  #ffffff;
+    --flag-rewrite-new-bg: #c0392b;
+    --flag-rewrite-new-tx: #ffffff;
+    --correct-bg:   #e8f5e9;
+    --correct-tx:   #2e7d32;
+    --partial-bg:   #fff8e1;
+    --partial-tx:   #e65100;
+    --incorrect-bg: #fce4ec;
+    --incorrect-tx: #b71c1c;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Source Sans 3', sans-serif;
+    background: var(--offwhite);
+    color: var(--text);
+    min-height: 100vh;
+  }
+
+  /* ── HEADER ── */
+  .site-header {
+    background: linear-gradient(135deg, var(--navy-deep) 0%, var(--navy) 60%, var(--steel) 100%);
+    padding: 0;
+    position: relative;
+    overflow: hidden;
+  }
+  .site-header::before {
+    content: '';
+    position: absolute;
+    top: -60px; right: -60px;
+    width: 300px; height: 300px;
+    border-radius: 50%;
+    background: rgba(138,175,212,0.12);
+  }
+  .site-header::after {
+    content: '';
+    position: absolute;
+    bottom: -40px; left: 20%;
+    width: 200px; height: 200px;
+    border-radius: 50%;
+    background: rgba(74,122,181,0.15);
+  }
+  .header-inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 28px 40px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: relative;
+    z-index: 1;
+  }
+  .header-left {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+  }
+  .logo-wrap img {
+    height: 56px;
+    filter: brightness(0) invert(1);
+    opacity: 0.92;
+  }
+  .header-divider {
+    width: 1px;
+    height: 48px;
+    background: rgba(255,255,255,0.3);
+  }
+  .tool-identity {}
+  .tool-name {
+    font-family: 'Playfair Display', serif;
+    font-size: 2rem;
+    font-weight: 900;
+    color: var(--white);
+    letter-spacing: 0.04em;
+    line-height: 1;
+  }
+  .tool-name span {
+    color: var(--powder);
+  }
+  .tool-tagline {
+    font-size: 0.72rem;
+    font-weight: 500;
+    color: rgba(255,255,255,0.65);
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    margin-top: 4px;
+  }
+  .version-badge {
+    font-size: 0.68rem;
+    background: rgba(255,255,255,0.12);
+    border: 1px solid rgba(255,255,255,0.2);
+    color: rgba(255,255,255,0.7);
+    padding: 3px 10px;
+    border-radius: 20px;
+    letter-spacing: 0.08em;
+  }
+
+  /* ── MAIN CONTAINER ── */
+  .main {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 40px 24px 80px;
+  }
+
+  /* ── STEP CARD ── */
+  .card {
+    background: var(--white);
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    box-shadow: 0 2px 12px rgba(30,58,110,0.06);
+    margin-bottom: 24px;
+    overflow: hidden;
+  }
+  .card-header {
+    background: var(--navy);
+    padding: 16px 28px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+  .step-number {
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    background: var(--powder);
+    color: var(--navy);
+    font-weight: 700;
+    font-size: 0.85rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+  .card-header h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--white);
+    letter-spacing: 0.02em;
+  }
+  .card-body {
+    padding: 28px;
+  }
+
+  /* ── FORM ELEMENTS ── */
+  .form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+  }
+  .form-grid.three-col {
+    grid-template-columns: 2fr 1fr 1fr;
+  }
+  .field {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .field.full { grid-column: 1 / -1; }
+  label {
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--navy);
+  }
+  select, input[type="text"] {
+    width: 100%;
+    padding: 10px 14px;
+    border: 1.5px solid var(--border);
+    border-radius: 7px;
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 0.95rem;
+    color: var(--text);
+    background: var(--white);
+    transition: border-color 0.2s, box-shadow 0.2s;
+    appearance: none;
+  }
+  select {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%234a7ab5' stroke-width='2' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 14px center;
+    padding-right: 36px;
+  }
+  select:focus, input[type="text"]:focus {
+    outline: none;
+    border-color: var(--steel);
+    box-shadow: 0 0 0 3px rgba(74,122,181,0.12);
+  }
+
+  /* ── FILE UPLOAD ── */
+  .upload-zone {
+    border: 2px dashed var(--border);
+    border-radius: 10px;
+    padding: 32px 24px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    background: var(--offwhite);
+    position: relative;
+  }
+  .upload-zone:hover, .upload-zone.drag-over {
+    border-color: var(--steel);
+    background: var(--powder-lt);
+  }
+  .upload-zone input[type="file"] {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    cursor: pointer;
+    width: 100%;
+    height: 100%;
+  }
+  .upload-icon {
+    font-size: 2.4rem;
+    margin-bottom: 10px;
+    display: block;
+  }
+  .upload-zone h3 {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--navy);
+    margin-bottom: 4px;
+  }
+  .upload-zone p {
+    font-size: 0.85rem;
+    color: var(--text-light);
+  }
+  .upload-zone.has-file {
+    border-color: var(--steel);
+    background: var(--powder-lt);
+  }
+  .upload-zone.has-file h3 { color: var(--navy); }
+  .file-name-display {
+    font-size: 0.82rem;
+    color: var(--steel);
+    font-weight: 600;
+    margin-top: 6px;
+  }
+
+  /* ── TOGGLE ── */
+  .toggle-row {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 16px 20px;
+    background: var(--offwhite);
+    border-radius: 8px;
+    border: 1.5px solid var(--border);
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .toggle-row:hover { border-color: var(--steel); background: var(--powder-lt); }
+  .toggle-switch {
+    width: 44px; height: 24px;
+    background: var(--border);
+    border-radius: 12px;
+    position: relative;
+    transition: background 0.2s;
+    flex-shrink: 0;
+  }
+  .toggle-switch::after {
+    content: '';
+    position: absolute;
+    top: 3px; left: 3px;
+    width: 18px; height: 18px;
+    border-radius: 50%;
+    background: white;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.2);
+    transition: transform 0.2s;
+  }
+  .toggle-switch.on { background: var(--steel); }
+  .toggle-switch.on::after { transform: translateX(20px); }
+  .toggle-label { font-size: 0.95rem; font-weight: 600; color: var(--navy); }
+  .toggle-sub { font-size: 0.82rem; color: var(--text-light); }
+
+  /* ── LONGITUDINAL SECTION ── */
+  #longitudinalSection { display: none; }
+  #longitudinalSection.visible { display: block; }
+
+  .prev-file-block {
+    background: var(--offwhite);
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    padding: 20px;
+    margin-bottom: 16px;
+  }
+  .prev-file-block .form-grid { margin-bottom: 14px; }
+
+  .add-prev-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: none;
+    border: 1.5px dashed var(--steel);
+    color: var(--steel);
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 0.88rem;
+    font-weight: 600;
+    padding: 10px 18px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .add-prev-btn:hover { background: var(--powder-lt); border-style: solid; }
+
+  /* ── GENERATE BUTTON ── */
+  .generate-btn {
+    width: 100%;
+    padding: 16px;
+    background: linear-gradient(135deg, var(--navy) 0%, var(--steel) 100%);
+    color: var(--white);
+    border: none;
+    border-radius: 10px;
+    font-family: 'Playfair Display', serif;
+    font-size: 1.15rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    cursor: pointer;
+    transition: all 0.2s;
+    box-shadow: 0 4px 16px rgba(30,58,110,0.25);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+  }
+  .generate-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 20px rgba(30,58,110,0.35);
+  }
+  .generate-btn:active { transform: translateY(0); }
+  .generate-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+  /* ── PROGRESS ── */
+  .progress-wrap {
+    display: none;
+    margin-top: 20px;
+  }
+  .progress-wrap.visible { display: block; }
+  .progress-bar-outer {
+    height: 8px;
+    background: var(--powder-lt);
+    border-radius: 4px;
+    overflow: hidden;
+    margin-bottom: 10px;
+  }
+  .progress-bar-inner {
+    height: 100%;
+    background: linear-gradient(90deg, var(--navy), var(--steel));
+    border-radius: 4px;
+    transition: width 0.4s ease;
+    width: 0%;
+  }
+  .progress-text {
+    font-size: 0.82rem;
+    color: var(--text-light);
+    text-align: center;
+  }
+
+  /* ── ERROR / WARNING ── */
+  .alert {
+    padding: 14px 18px;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    margin-bottom: 16px;
+    display: none;
+  }
+  .alert.visible { display: block; }
+  .alert-error { background: #fce4ec; border-left: 4px solid #c0392b; color: #7b1a2a; }
+  .alert-warn  { background: #fff8e1; border-left: 4px solid #e65100; color: #7c3a00; }
+  .alert-info  { background: var(--powder-lt); border-left: 4px solid var(--steel); color: var(--navy); }
+
+  /* ── RESULTS SECTION ── */
+  #resultsSection { display: none; }
+  #resultsSection.visible { display: block; }
+
+  .results-header {
+    background: linear-gradient(135deg, var(--navy-deep) 0%, var(--navy) 100%);
+    border-radius: 12px;
+    padding: 28px 36px;
+    margin-bottom: 24px;
+    color: var(--white);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .results-title { font-family: 'Playfair Display', serif; font-size: 1.6rem; font-weight: 700; }
+  .results-meta { font-size: 0.88rem; opacity: 0.75; margin-top: 4px; letter-spacing: 0.04em; }
+
+  .download-btn {
+    padding: 12px 28px;
+    border-radius: 8px;
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 0.92rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    border: none;
+  }
+  .download-primary {
+    background: var(--white);
+    color: var(--navy);
+    box-shadow: 0 2px 10px rgba(0,0,0,0.15);
+  }
+  .download-primary:hover { transform: translateY(-1px); box-shadow: 0 4px 16px rgba(0,0,0,0.2); }
+  .download-secondary {
+    background: transparent;
+    color: var(--white);
+    border: 1.5px solid rgba(255,255,255,0.4) !important;
+    margin-top: 10px;
+  }
+  .download-secondary:hover { background: rgba(255,255,255,0.1); }
+
+  /* ── STATS CARDS ── */
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    margin-bottom: 24px;
+  }
+  .stat-card {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 20px 18px;
+    text-align: center;
+    box-shadow: 0 1px 6px rgba(30,58,110,0.05);
+  }
+  .stat-value {
+    font-family: 'Playfair Display', serif;
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--navy);
+    line-height: 1;
+  }
+  .stat-label {
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text-light);
+    margin-top: 6px;
+  }
+
+  /* ── FLAG SUMMARY ── */
+  .flag-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+    margin-bottom: 24px;
+  }
+  .flag-card {
+    border-radius: 10px;
+    padding: 18px 16px;
+    text-align: center;
+    border: 1px solid transparent;
+  }
+  .flag-keep    { background: var(--flag-keep-bg);        color: var(--flag-keep-tx); }
+  .flag-review  { background: var(--flag-review-bg);      color: var(--flag-review-tx); }
+  .flag-revise  { background: var(--flag-revise-bg);      color: var(--flag-revise-tx); }
+  .flag-rewrite { background: var(--flag-rewrite-new-bg); color: var(--flag-rewrite-new-tx); border-color: #a93226; }
+  .flag-count   { font-family: 'Playfair Display', serif; font-size: 2.2rem; font-weight: 700; line-height: 1; }
+  .flag-label   { font-size: 0.72rem; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; margin-top: 5px; opacity: 0.85; }
+
+  /* ── ITEM TABLE ── */
+  .section-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--navy);
+    padding: 14px 20px;
+    background: var(--navy);
+    color: var(--white);
+    border-radius: 8px 8px 0 0;
+    letter-spacing: 0.02em;
+  }
+  .section-sub {
+    font-size: 0.75rem;
+    opacity: 0.7;
+    font-family: 'Source Sans 3', sans-serif;
+    font-weight: 400;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-left: 10px;
+  }
+
+  /* table-wrap defined below with sticky header support */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.87rem;
+  }
+  thead th {
+    background: var(--navy-deep);
+    color: white;
+    padding: 10px 14px;
+    text-align: left;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+  tbody tr:nth-child(even) { background: var(--offwhite); }
+  tbody tr:hover { background: var(--powder-lt); }
+  tbody td {
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--border);
+    vertical-align: middle;
+  }
+  tbody tr:last-child td { border-bottom: none; }
+
+  /* ── FLAG PILLS ── */
+  .flag-pill {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+  .pill-keep    { background: var(--flag-keep-bg);        color: var(--flag-keep-tx); }
+  .pill-review  { background: var(--flag-review-bg);      color: var(--flag-review-tx); }
+  .pill-revise  { background: var(--flag-revise-bg);      color: var(--flag-revise-tx); }
+  .pill-rewrite { background: var(--flag-rewrite-new-bg); color: var(--flag-rewrite-new-tx); }
+
+  /* ── MODULE TABS ── */
+  .module-tabs {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    margin-bottom: 16px;
+  }
+  .mod-tab {
+    padding: 6px 14px;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+    border: 1.5px solid var(--border);
+    background: var(--white);
+    color: var(--text-light);
+    transition: all 0.15s;
+  }
+  .mod-tab.active { background: var(--navy); color: white; border-color: var(--navy); }
+  .mod-tab:hover:not(.active) { border-color: var(--steel); color: var(--steel); }
+
+  /* ── STUDENT DIAGNOSTIC ── */
+  .student-select-wrap {
+    display: flex;
+    gap: 14px;
+    align-items: center;
+    margin-bottom: 20px;
+  }
+  .student-select-wrap select { max-width: 360px; }
+
+  .student-report { display: none; }
+  .student-report.visible { display: block; }
+
+  .student-header-block {
+    background: linear-gradient(135deg, var(--navy-deep), var(--navy));
+    color: white;
+    border-radius: 10px 10px 0 0;
+    padding: 20px 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .student-name { font-family: 'Playfair Display', serif; font-size: 1.3rem; font-weight: 700; }
+  .student-score-badge {
+    background: rgba(255,255,255,0.15);
+    border: 1px solid rgba(255,255,255,0.25);
+    padding: 6px 18px;
+    border-radius: 20px;
+    font-size: 1.1rem;
+    font-weight: 700;
+  }
+
+  .module-section-block {
+    border: 1px solid var(--border);
+    border-top: none;
+    padding: 16px 20px;
+  }
+  .module-section-block:last-child { border-radius: 0 0 10px 10px; }
+  .module-label {
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--steel);
+    margin-bottom: 10px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .item-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 7px 0;
+    border-bottom: 1px solid var(--offwhite);
+    font-size: 0.88rem;
+  }
+  .item-row:last-child { border-bottom: none; }
+  .result-badge {
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 2px 8px;
+    border-radius: 4px;
+    white-space: nowrap;
+    flex-shrink: 0;
+    min-width: 68px;
+    text-align: center;
+  }
+  .rb-correct   { background: var(--correct-bg);   color: var(--correct-tx); }
+  .rb-partial   { background: var(--partial-bg);   color: var(--partial-tx); }
+  .rb-incorrect { background: var(--incorrect-bg); color: var(--incorrect-tx); }
+
+  .item-title { flex: 1; color: var(--text); }
+  .item-score { font-size: 0.8rem; color: var(--text-light); white-space: nowrap; }
+
+  /* ── STUDENT REPORT REDESIGN ── */
+  .student-top-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0;
+    border: 1px solid var(--border);
+    border-top: none;
+  }
+  .student-top-row > div {
+    padding: 16px 20px;
+  }
+  .student-top-row > div:first-child {
+    border-right: 1px solid var(--border);
+  }
+  .student-view-toggle {
+    display: flex;
+    gap: 8px;
+    margin: 16px 20px 0;
+  }
+  .student-view-btn {
+    padding: 7px 18px;
+    border-radius: 6px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    cursor: pointer;
+    border: 1.5px solid var(--border);
+    background: var(--white);
+    color: var(--text-light);
+    transition: all 0.15s;
+    font-family: 'Source Sans 3', sans-serif;
+  }
+  .student-view-btn.active { background: var(--navy); color: white; border-color: var(--navy); }
+  .student-view-btn:hover:not(.active) { border-color: var(--steel); color: var(--steel); }
+  .student-question-list {
+    border: 1px solid var(--border);
+    border-top: none;
+    border-radius: 0 0 10px 10px;
+    overflow: hidden;
+  }
+  .student-group-header {
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--steel);
+    padding: 10px 20px 6px;
+    border-bottom: 1px solid var(--border);
+    background: var(--offwhite);
+  }
+  .student-q-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 9px 20px;
+    border-bottom: 1px solid var(--offwhite);
+    font-size: 0.88rem;
+    cursor: pointer;
+    user-select: none;
+  }
+  .student-q-row:last-child { border-bottom: none; }
+  .student-q-row:hover { background: var(--powder-lt); }
+  .student-q-row.expanded { background: var(--powder-lt); }
+  .student-q-expand {
+    display: none;
+    padding: 14px 20px 18px 20px;
+    background: #f8faff;
+    border-bottom: 1px solid var(--border);
+    border-left: 3px solid var(--steel);
+  }
+  .student-q-expand.open { display: block; }
+  .sq-stem {
+    font-size: 0.88rem;
+    color: var(--text);
+    margin-bottom: 12px;
+    line-height: 1.6;
+    font-style: italic;
+  }
+  .sq-choice {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 7px 12px;
+    border-radius: 6px;
+    border: 1.5px solid var(--border);
+    font-size: 0.84rem;
+    margin-bottom: 6px;
+  }
+  .sq-choice.sq-correct { background: #e8f5e9; border-color: #2e7d32; }
+  .sq-choice.sq-wrong   { background: #fce4ec; border-color: #c0392b; }
+  .sq-choice.sq-correct-selected { background: #e8f5e9; border-color: #2e7d32; }
+  .sq-choice-letter {
+    width: 24px; height: 24px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.72rem; font-weight: 700;
+    background: var(--border); color: var(--navy);
+    flex-shrink: 0;
+  }
+  .sq-choice.sq-correct .sq-choice-letter { background: #2e7d32; color: white; }
+  .sq-choice.sq-wrong   .sq-choice-letter { background: #c0392b; color: white; }
+  .sq-choice-tag {
+    font-size: 0.7rem; font-weight: 700; letter-spacing: 0.07em;
+    text-transform: uppercase; white-space: nowrap; padding: 2px 7px;
+    border-radius: 4px; flex-shrink: 0;
+  }
+  .sq-tag-correct  { background: #c8e6c9; color: #1b5e20; }
+  .sq-tag-selected { background: #fce4ec; color: #7f0000; }
+  .sq-tag-both     { background: #c8e6c9; color: #1b5e20; }
+  .sq-chevron { margin-left: auto; font-size: 0.7rem; color: var(--text-light); flex-shrink: 0; }
+
+  @media (max-width: 768px) {
+    .student-top-row { grid-template-columns: 1fr; }
+    .student-top-row > div:first-child { border-right: none; border-bottom: 1px solid var(--border); }
+  }
+    background: var(--powder-lt);
+    border-left: 4px solid var(--steel);
+    border-radius: 0 8px 8px 0;
+    padding: 14px 18px;
+    margin-top: 16px;
+    font-size: 0.88rem;
+    color: var(--navy);
+    line-height: 1.6;
+  }
+  .remediation-box strong { display: block; font-size: 0.72rem; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 6px; color: var(--steel); }
+
+  /* ── QUESTION POPUP MODAL ── */
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(15,25,50,0.72);
+    z-index: 1000;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+  .modal-overlay.open { display: flex; }
+  .modal-box {
+    background: var(--white);
+    border-radius: 14px;
+    max-width: 700px;
+    width: 100%;
+    max-height: 85vh;
+    overflow-y: auto;
+    box-shadow: 0 20px 60px rgba(15,25,50,0.5);
+    animation: modalIn 0.18s ease;
+  }
+  @keyframes modalIn { from { transform: scale(0.94); opacity:0; } to { transform: scale(1); opacity:1; } }
+  .modal-header {
+    background: linear-gradient(135deg, var(--navy-deep), var(--navy));
+    padding: 20px 24px;
+    border-radius: 14px 14px 0 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 16px;
+  }
+  .modal-header h3 { font-family: 'Playfair Display', serif; color: white; font-size: 1.05rem; line-height: 1.3; }
+  .modal-header .modal-flag { font-size: 0.7rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(255,255,255,0.6); margin-top: 4px; }
+  .modal-close {
+    background: rgba(255,255,255,0.12);
+    border: none;
+    color: white;
+    font-size: 1.1rem;
+    width: 30px; height: 30px;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    transition: background 0.2s;
+  }
+  .modal-close:hover { background: rgba(255,255,255,0.25); }
+  .modal-body { padding: 24px; }
+  .modal-stem {
+    font-size: 0.95rem;
+    line-height: 1.65;
+    color: var(--text);
+    margin-bottom: 20px;
+    padding: 14px 18px;
+    background: var(--offwhite);
+    border-left: 4px solid var(--steel);
+    border-radius: 0 8px 8px 0;
+  }
+  .modal-choices { display: flex; flex-direction: column; gap: 8px; }
+  .modal-choice {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 14px;
+    border-radius: 8px;
+    border: 1.5px solid var(--border);
+    font-size: 0.9rem;
+    transition: border-color 0.15s;
+  }
+  .modal-choice.correct { border-color: #2e7d32; background: var(--correct-bg); }
+  .modal-choice.top-wrong { border-color: #e65100; background: var(--partial-bg); }
+  .modal-choice-letter {
+    width: 26px; height: 26px;
+    border-radius: 50%;
+    background: var(--navy);
+    color: white;
+    font-size: 0.75rem;
+    font-weight: 700;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .modal-choice.correct .modal-choice-letter { background: #2e7d32; }
+  .modal-choice.top-wrong .modal-choice-letter { background: #e65100; }
+  .modal-choice-text { flex: 1; }
+  .modal-choice-stats { font-size: 0.78rem; color: var(--text-light); white-space: nowrap; font-weight: 600; }
+  .modal-choice.correct .modal-choice-stats { color: #2e7d32; }
+  .modal-choice.top-wrong .modal-choice-stats { color: #e65100; }
+  .qtitle-link {
+    cursor: pointer;
+    color: var(--navy);
+    text-decoration: underline;
+    text-decoration-style: dotted;
+    text-underline-offset: 3px;
+  }
+  .qtitle-link:hover { color: var(--steel); }
+
+  /* ── COLLAPSIBLE ITEM ANALYSIS ── */
+  .collapse-toggle {
+    background: none;
+    border: 1.5px solid rgba(255,255,255,0.3);
+    color: rgba(255,255,255,0.85);
+    font-size: 0.78rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 5px 14px;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .collapse-toggle:hover { background: rgba(255,255,255,0.15); }
+  .collapsible-body { overflow: hidden; transition: max-height 0.35s ease; }
+  .collapsible-body.collapsed { max-height: 0 !important; }
+
+  /* ── SORTABLE TABLE HEADERS ── */
+  thead th.sortable { cursor: pointer; user-select: none; position: relative; }
+  thead th.sortable:hover { background: #0e2040; }
+  .sort-icon { margin-left: 5px; opacity: 0.5; font-style: normal; }
+  thead th.sort-asc .sort-icon, thead th.sort-desc .sort-icon { opacity: 1; color: var(--powder); }
+
+  /* ── DUAL SCROLL ── */
+  .scroll-top-bar {
+    overflow-x: auto;
+    overflow-y: hidden;
+    height: 12px;
+    margin-bottom: 2px;
+  }
+  .scroll-top-bar-inner { height: 1px; }
+
+  /* ── CLEAR BUTTON ── */
+  .clear-btn {
+    padding: 8px 18px;
+    border-radius: 8px;
+    border: 1.5px solid rgba(255,255,255,0.3);
+    background: transparent;
+    color: rgba(255,255,255,0.8);
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 0.82rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .clear-btn:hover { background: rgba(255,255,255,0.1); border-color: rgba(255,255,255,0.5); }
+
+  /* ── FLAG CARD FILTER ── */
+  .flag-card { cursor: pointer; transition: all 0.2s; position: relative; }
+  .flag-card:hover { transform: translateY(-2px); box-shadow: 0 4px 16px rgba(30,58,110,0.2); }
+  .flag-card.active-filter { box-shadow: 0 0 0 3px white, 0 0 0 5px var(--navy); transform: translateY(-2px); }
+  .flag-card.flag-active-keep.active-filter   { box-shadow: 0 0 0 3px white, 0 0 0 5px var(--flag-keep-bg); }
+  .flag-card.flag-active-review.active-filter { box-shadow: 0 0 0 3px white, 0 0 0 5px var(--flag-review-bg); }
+  .flag-card.flag-active-revise.active-filter { box-shadow: 0 0 0 3px white, 0 0 0 5px var(--flag-revise-bg); }
+  .flag-card.flag-active-rewrite.active-filter { box-shadow: 0 0 0 3px white, 0 0 0 5px var(--flag-rewrite-new-bg); }
+  .flag-filter-hint { font-size: 0.7rem; text-align: center; color: var(--text-light); margin-top: -16px; margin-bottom: 16px; opacity: 0.7; }
+
+  /* ── STUDENT DOWNLOAD BTN ── */
+  .student-dl-btn {
+    padding: 9px 16px;
+    border-radius: 8px;
+    background: var(--navy);
+    color: white;
+    border: none;
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    white-space: nowrap;
+  }
+  .student-dl-btn:hover { background: var(--steel); }
+
+  /* ── PSYCHOMETRIC LEGEND ── */
+  .legend-section {
+    background: var(--white);
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    box-shadow: 0 2px 12px rgba(30,58,110,0.06);
+    margin-bottom: 24px;
+    overflow: hidden;
+  }
+  .legend-header {
+    background: var(--navy);
+    padding: 14px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+  }
+  .legend-header h3 { font-family: 'Playfair Display', serif; font-size: 0.98rem; color: white; font-weight: 700; letter-spacing: 0.02em; }
+  .legend-body { padding: 24px; }
+  .legend-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+    margin-bottom: 20px;
+  }
+  .legend-card {
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    padding: 16px;
+    font-size: 0.85rem;
+  }
+  .legend-card-title {
+    font-weight: 700;
+    font-size: 0.78rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .legend-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 5px 0;
+    border-bottom: 1px solid var(--offwhite);
+    gap: 12px;
+    font-size: 0.82rem;
+  }
+  .legend-row:last-child { border-bottom: none; }
+  .legend-val { font-weight: 700; color: var(--navy); white-space: nowrap; }
+  .legend-desc { color: var(--text-light); text-align: right; }
+  .legend-flag-strip {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+  }
+  .legend-flag-item {
+    flex: 1;
+    min-width: 140px;
+    border-radius: 8px;
+    padding: 12px 14px;
+    font-size: 0.82rem;
+  }
+  .legend-flag-item strong { display: block; font-size: 0.75rem; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 5px; }
+  .lfi-keep    { background: var(--flag-keep-bg);        color: var(--flag-keep-tx); }
+  .lfi-review  { background: var(--flag-review-bg);      color: var(--flag-review-tx); }
+  .lfi-revise  { background: var(--flag-revise-bg);      color: var(--flag-revise-tx); }
+  .lfi-rewrite { background: var(--flag-rewrite-new-bg); color: var(--flag-rewrite-new-tx); }
+  .legend-citation {
+    font-size: 0.78rem;
+    color: var(--text-light);
+    background: var(--offwhite);
+    border-radius: 8px;
+    padding: 12px 16px;
+    border-left: 3px solid var(--steel);
+    line-height: 1.6;
+  }
+
+  /* ── BRANDING STRIP (below header) ── */
+  .brand-strip {
+    background: var(--offwhite);
+    border-bottom: 1px solid var(--border);
+    padding: 6px 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 12px;
+    font-size: 0.72rem;
+    color: var(--text-light);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+  .brand-strip a { color: var(--steel); font-weight: 600; text-decoration: none; }
+  .brand-strip a:hover { color: var(--navy); }
+
+  /* ── STICKY TABLE HEADER ── */
+  .table-wrap {
+    overflow-x: auto;
+    overflow-y: auto;
+    max-height: 600px;
+    border-radius: 0 0 10px 10px;
+    border: 1px solid var(--border);
+    border-top: none;
+    margin-bottom: 0;
+  }
+  #itemTable thead th {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+  }
+  .scroll-top-bar {
+    position: sticky;
+    top: 0;
+    z-index: 11;
+    background: var(--offwhite);
+    border: 1px solid var(--border);
+    border-bottom: none;
+    overflow-x: auto;
+    overflow-y: hidden;
+    height: 14px;
+  }
+
+  /* ── DOUBLE-KEY PANEL ── */
+  .dk-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 18px;
+    border-radius: 8px;
+    background: #fff3cd;
+    border: 1.5px solid #e6a817;
+    color: #7c4a00;
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 0.88rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+    margin-bottom: 16px;
+  }
+  .dk-btn:hover { background: #ffe69c; border-color: #c87f00; }
+  .dk-panel {
+    display: none;
+    background: #fffbf0;
+    border: 1.5px solid #e6a817;
+    border-radius: 10px;
+    margin-bottom: 20px;
+    overflow: hidden;
+  }
+  .dk-panel.open { display: block; }
+  .dk-panel-header {
+    background: linear-gradient(135deg, #7c4a00, #c87f00);
+    padding: 16px 24px;
+    color: white;
+  }
+  .dk-panel-header h3 { font-family: 'Playfair Display', serif; font-size: 1rem; font-weight: 700; }
+  .dk-panel-header p { font-size: 0.8rem; opacity: 0.85; margin-top: 4px; }
+  .dk-item {
+    border-bottom: 1.5px solid #e6d5a0;
+    padding: 20px 24px;
+  }
+  .dk-item:last-child { border-bottom: none; }
+  .dk-item-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1rem;
+    font-weight: 700;
+    color: #7c4a00;
+    margin-bottom: 6px;
+  }
+  .dk-stem {
+    font-size: 0.9rem;
+    color: var(--text);
+    background: white;
+    border-left: 3px solid #e6a817;
+    padding: 10px 14px;
+    border-radius: 0 6px 6px 0;
+    margin-bottom: 14px;
+    line-height: 1.6;
+  }
+  .dk-choices { display: flex; flex-direction: column; gap: 6px; margin-bottom: 14px; }
+  .dk-choice {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 12px;
+    border-radius: 6px;
+    border: 1.5px solid var(--border);
+    font-size: 0.85rem;
+  }
+  .dk-choice.dk-correct { border-color: #2e7d32; background: #e8f5e9; }
+  .dk-choice.dk-concern { border-color: #e65100; background: #fff3e0; }
+  .dk-choice.dk-minor { opacity: 0.7; }
+  .dk-choice-bar {
+    height: 8px;
+    border-radius: 4px;
+    background: var(--border);
+    flex: 1;
+    max-width: 120px;
+    overflow: hidden;
+  }
+  .dk-choice-bar-fill { height: 100%; border-radius: 4px; background: var(--steel); }
+  .dk-choice.dk-correct .dk-choice-bar-fill { background: #2e7d32; }
+  .dk-choice.dk-concern .dk-choice-bar-fill { background: #e65100; }
+  .dk-choice-label { flex: 1; }
+  .dk-choice-stat { font-weight: 700; font-size: 0.8rem; white-space: nowrap; color: var(--text-light); }
+  .dk-choice.dk-correct .dk-choice-stat { color: #2e7d32; }
+  .dk-choice.dk-concern .dk-choice-stat { color: #e65100; }
+  .dk-badge {
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 2px 8px;
+    border-radius: 4px;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+  .dk-badge-correct { background: #c8e6c9; color: #1b5e20; }
+  .dk-badge-concern { background: #ffe0b2; color: #bf360c; }
+  .dk-pattern {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: #7c4a00;
+    margin-bottom: 6px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .dk-rec {
+    font-size: 0.85rem;
+    color: var(--text);
+    line-height: 1.6;
+    margin-bottom: 8px;
+  }
+  .dk-sme {
+    font-size: 0.78rem;
+    color: var(--text-light);
+    font-style: italic;
+  }
+  .dk-methodology {
+    background: var(--offwhite);
+    border-top: 1.5px solid #e6d5a0;
+    padding: 16px 24px;
+    font-size: 0.78rem;
+    color: var(--text-light);
+    line-height: 1.7;
+  }
+  /* ── FOOTER ── */
+  footer {
+    text-align: center;
+    padding: 24px;
+    font-size: 0.78rem;
+    color: var(--text-light);
+    border-top: 1px solid var(--border);
+    margin-top: 40px;
+  }
+  footer strong { color: var(--navy); }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 768px) {
+    .form-grid, .form-grid.three-col { grid-template-columns: 1fr; }
+    .stats-grid, .flag-grid { grid-template-columns: repeat(2, 1fr); }
+    .header-inner { padding: 20px; flex-direction: column; gap: 16px; text-align: center; }
+    .header-left { flex-direction: column; }
+    .header-divider { width: 60px; height: 1px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ══ HEADER ══ -->
+<header class="site-header">
+  <div class="header-inner">
+    <div class="header-left">
+      <div class="logo-wrap">
+        <img src="data:image/jpeg;base64,LOGO_PLACEHOLDER" alt="GrangeRN" id="logoImg">
+      </div>
+      <div class="header-divider"></div>
+      <div class="tool-identity">
+        <div class="tool-name">NIAR<span>A</span></div>
+        <div class="tool-tagline">Nursing Item Analysis &amp; Reporting Assistant</div>
+      </div>
+    </div>
+    <div style="display:flex;align-items:center;gap:12px;">
+      <button class="clear-btn" onclick="clearAndRestart()" title="Clear all data and start over">
+        ↺ Clear &amp; Start Over
+      </button>
+      <div class="version-badge">v1.1.0 &nbsp;·&nbsp; GrangeRN</div>
+    </div>
+  </div>
+</header>
+<div class="brand-strip">
+  <span>A <strong>GrangeRN</strong> Tool</span>
+  <span style="opacity:0.4;">|</span>
+  <a href="https://www.grangeRN.com" target="_blank">GrangeRN.com</a>
+  <span style="opacity:0.4;">|</span>
+  <span>FERPA Compliant · All data processed locally</span>
+</div>
+
+<main class="main">
+
+  <!-- ══ ALERT AREA ══ -->
+  <div id="alertBox" class="alert"></div>
+
+  <!-- ══ STEP 1: METADATA ══ -->
+  <div class="card">
+    <div class="card-header">
+      <div class="step-number">1</div>
+      <h2>Exam Information</h2>
+    </div>
+    <div class="card-body">
+      <div class="form-grid three-col">
+        <div class="field">
+          <label for="courseSelect">Course</label>
+          <select id="courseSelect">
+            <option value="">— Select Course —</option>
+            <option value="333">333 - Biomedical Ethics</option>
+            <option value="311">311 - Accelerated Pharmacology</option>
+            <option value="372">372 - Accelerated Pathophysiology</option>
+            <option value="359">359 - Accelerated Health Assessment</option>
+            <option value="310">310 - Accelerated Fundamental Applications</option>
+            <option value="312">312 - Accelerated Dosage and Calculations: Mathematics for Nursing</option>
+            <option value="380">380 - Accelerated Community Health and Health Promotion</option>
+            <option value="382">382 - Accelerated Adults in Health and Illness 1</option>
+            <option value="392">392 - Accelerated Adults in Health and Illness 2</option>
+            <option value="424">424 - Accelerated Women's Health and Illness</option>
+            <option value="427">427 - Accelerated Children and Adolescents in Health and Illness</option>
+            <option value="475">475 - Accelerated Mental Health Nursing</option>
+            <option value="435">435 - Accelerated Adults in Health and Illness 3</option>
+            <option value="460">460 - Accelerated Nursing Leadership and Management</option>
+            <option value="400">400 - Accelerated Nursing Research/Informatics</option>
+            <option value="490">490 - Accelerated Transition to and Strategies for Professional Practice</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="semesterSelect">Semester</label>
+          <select id="semesterSelect">
+            <option value="">— Select —</option>
+            <option>Fall</option>
+            <option>Spring</option>
+            <option>Summer</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="yearSelect">Year</label>
+          <select id="yearSelect">
+            <option value="">— Select —</option>
+            <option>2025</option>
+            <option>2026</option>
+            <option>2027</option>
+            <option>2028</option>
+            <option>2029</option>
+          </select>
+        </div>
+        <div class="field full">
+          <label for="examName">Exam / Quiz Name</label>
+          <input type="text" id="examName" placeholder="e.g. Exam 1, Quiz 3, Final Exam">
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ STEP 2: UPLOAD ══ -->
+  <div class="card">
+    <div class="card-header">
+      <div class="step-number">2</div>
+      <h2>Upload Current Semester Attempt Details</h2>
+    </div>
+    <div class="card-body">
+      <p style="font-size:0.88rem;color:var(--text-light);margin-bottom:16px;">
+        Export the <strong>Attempt Details</strong> CSV from your Brightspace quiz. Navigate to your quiz &rarr; Grade &rarr; Attempts &rarr; click <strong>Export to CSV</strong>. Wait for the report to generate, then go to your <strong>Notifications (Bell icon)</strong> and click to download. This is the only file you need.
+      </p>
+      <div class="upload-zone" id="mainUploadZone">
+        <input type="file" id="mainFileInput" accept=".csv">
+        <span class="upload-icon">📋</span>
+        <h3>Drop your Attempt Details CSV here</h3>
+        <p>or click to browse</p>
+        <div class="file-name-display" id="mainFileName"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ STEP 3: LONGITUDINAL TOGGLE ══ -->
+  <div class="card">
+    <div class="card-header">
+      <div class="step-number">3</div>
+      <h2>Longitudinal Report <span style="font-family:'Source Sans 3';font-weight:400;font-size:0.85rem;opacity:0.7;">(Optional)</span></h2>
+    </div>
+    <div class="card-body">
+      <div class="toggle-row" id="longitudinalToggle" onclick="toggleLongitudinal()">
+        <div class="toggle-switch" id="toggleSwitch"></div>
+        <div>
+          <div class="toggle-label">Generate Longitudinal Item Bank Report</div>
+          <div class="toggle-sub">Compare this semester's items against previous administrations to track item performance over time</div>
+        </div>
+      </div>
+
+      <div id="longitudinalSection">
+        <div style="margin-top:20px;margin-bottom:16px;">
+          <div class="alert alert-info visible" style="display:block;">
+            Upload the Attempt Details CSV from each previous administration of <strong>this same exam</strong>. Label each file with its semester and year before uploading.
+          </div>
+        </div>
+        <div id="prevFilesContainer"></div>
+        <button class="add-prev-btn" onclick="addPrevFileBlock()">
+          <span>＋</span> Add Previous Semester File
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ GENERATE ══ -->
+  <button class="generate-btn" id="generateBtn" onclick="generateReport()">
+    <span>⚡</span> Generate NIARA Report
+  </button>
+
+  <div class="progress-wrap" id="progressWrap">
+    <div class="progress-bar-outer">
+      <div class="progress-bar-inner" id="progressBar"></div>
+    </div>
+    <div class="progress-text" id="progressText">Parsing data...</div>
+  </div>
+
+  <!-- ══ RESULTS ══ -->
+  <div id="resultsSection">
+
+    <div class="results-header">
+      <div>
+        <div class="results-title" id="resultsTitle">Report Ready</div>
+        <div class="results-meta" id="resultsMeta"></div>
+      </div>
+      <div style="display:flex;flex-direction:column;align-items:flex-end;gap:8px;">
+        <button class="download-btn download-primary" onclick="downloadExcel()">
+          ⬇ Download Excel Report
+        </button>
+        <button class="download-btn download-secondary" id="downloadLongBtn" onclick="downloadLongitudinal()" style="display:none;">
+          ⬇ Download Longitudinal Report
+        </button>
+      </div>
+    </div>
+
+    <!-- Class Stats -->
+    <div class="stats-grid" id="statsGrid"></div>
+
+    <!-- Flag Summary -->
+    <div class="flag-grid" id="flagGrid"></div>
+
+    <!-- Module Tabs + Item Table -->
+    <div class="card" style="overflow:visible;">
+      <div class="card-header" style="justify-content:space-between;">
+        <div style="display:flex;align-items:center;gap:14px;">
+          <div class="step-number" style="background:var(--powder);">📊</div>
+          <h2>Item Analysis</h2>
+        </div>
+        <button class="collapse-toggle" onclick="toggleItemAnalysis()" id="itemAnalysisToggle">▲ Collapse</button>
+      </div>
+      <div class="collapsible-body" id="itemAnalysisBody" style="max-height:9999px;">
+      <div class="card-body">
+        <div id="dkBtnWrap" style="display:none;">
+          <button class="dk-btn" onclick="toggleDKPanel()">⚠ Double-Key Recommendations <span id="dkCount"></span></button>
+          <div class="dk-panel" id="dkPanel"></div>
+        </div>
+        <div class="module-tabs" id="moduleTabs"></div>
+        <div class="section-title" id="itemTableTitle">All Items</div>
+        <div class="scroll-top-bar" id="scrollTopBar"><div class="scroll-top-bar-inner" id="scrollTopInner"></div></div>
+        <div class="table-wrap" id="tableWrap">
+          <table id="itemTable">
+            <thead>
+              <tr>
+                <th class="sortable" data-col="flag" onclick="sortTable('flag')">Flag <em class="sort-icon">⇅</em></th>
+                <th class="sortable" data-col="qtitle" onclick="sortTable('qtitle')">Q Title <em class="sort-icon">⇅</em></th>
+                <th>Type</th>
+                <th class="sortable" data-col="section" onclick="sortTable('section')">Module <em class="sort-icon">⇅</em></th>
+                <th class="sortable" data-col="difficulty" onclick="sortTable('difficulty')">% Correct <em class="sort-icon">⇅</em></th>
+                <th class="sortable" data-col="pointBiserial" onclick="sortTable('pointBiserial')">Pt-Biserial <em class="sort-icon">⇅</em></th>
+                <th class="sortable" data-col="discriminationIndex" onclick="sortTable('discriminationIndex')">Disc. Index <em class="sort-icon">⇅</em></th>
+                <th class="sortable" data-col="n" onclick="sortTable('n')">N <em class="sort-icon">⇅</em></th>
+                <th>Top Wrong Answer</th>
+                <th>Recommendation</th>
+              </tr>
+            </thead>
+            <tbody id="itemTableBody"></tbody>
+          </table>
+        </div>
+      </div>
+      </div><!-- /collapsible-body -->
+    </div><!-- /card -->
+
+    <!-- Student Diagnostics -->
+    <div class="card">
+      <div class="card-header">
+        <div class="step-number" style="background:var(--powder);">👤</div>
+        <h2>Student Diagnostic Reports</h2>
+      </div>
+      <div class="card-body">
+        <p style="font-size:0.85rem;color:var(--text-light);margin-bottom:16px;">
+          Select a student to view their item-level performance by module. Use this information at your discretion during remediation meetings or advising sessions.
+        </p>
+        <div class="student-select-wrap">
+          <select id="studentSelect" onchange="showStudentReport()" style="max-width:360px;">
+            <option value="">— Select Student —</option>
+          </select>
+          
+          </button>
+        </div>
+        <div id="studentReportArea"></div>
+      </div>
+    </div>
+
+  </div><!-- /resultsSection -->
+
+</main>
+
+<!-- ══ QUESTION DETAIL MODAL ══ -->
+<div class="modal-overlay" id="questionModal" onclick="closeModal(event)">
+  <div class="modal-box">
+    <div class="modal-header">
+      <div>
+        <h3 id="modalTitle"></h3>
+        <div class="modal-flag" id="modalFlag"></div>
+      </div>
+      <button class="modal-close" onclick="document.getElementById('questionModal').classList.remove('open')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="modal-stem" id="modalStem"></div>
+      <div class="modal-choices" id="modalChoices"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ PSYCHOMETRIC LEGEND ══ -->
+<div style="max-width:1100px;margin:0 auto;padding:0 24px 60px;" id="legendArea">
+  <div class="legend-section">
+    <div class="legend-header" onclick="toggleLegend()">
+      <h3>📐 Psychometric Threshold Reference — How NIARA Categorizes Items</h3>
+      <button class="collapse-toggle" id="legendToggleBtn">▼ Expand</button>
+    </div>
+    <div class="collapsible-body collapsed" id="legendBody" style="max-height:0;">
+      <div class="legend-body">
+        <p style="font-size:0.85rem;color:var(--text-light);margin-bottom:18px;line-height:1.6;">
+          NIARA applies established psychometric criteria from classical test theory to classify each exam item. These thresholds are derived from the educational measurement literature including McDonald (1999), Haladyna &amp; Rodriguez (2013), and NCSBN item development standards. All calculations are performed locally in your browser; no student data is transmitted.
+        </p>
+        <div class="legend-flag-strip">
+          <div class="legend-flag-item lfi-keep"><strong>✓ KEEP</strong>Item is performing within acceptable psychometric parameters. No action required. Statistics support retention without modification.</div>
+          <div class="legend-flag-item lfi-review"><strong>👁 REVIEW</strong>Item warrants closer inspection. One or more statistics approach borderline thresholds. Review in context of overall exam performance before deciding.</div>
+          <div class="legend-flag-item lfi-revise"><strong>✏ REVISE</strong>Item shows measurable psychometric weakness. Revision of the stem, answer choices, or key is recommended before next administration.</div>
+          <div class="legend-flag-item lfi-rewrite"><strong>🔴 REWRITE</strong>Item is functioning poorly. Negative discrimination or keying errors likely. Consider double-keying for the current exam and complete rewrite for the next.</div>
+        </div>
+        <div class="legend-grid">
+          <div class="legend-card">
+            <div class="legend-card-title" style="color:var(--navy);">📈 Point-Biserial Correlation (r<sub>pb</sub>)</div>
+            <div class="legend-row"><span>r &lt; 0.00</span><span class="legend-val" style="color:#c0392b;">REWRITE</span><span class="legend-desc">Negative discrimination — higher performers chose wrong answer</span></div>
+            <div class="legend-row"><span>0.00 ≤ r &lt; 0.15</span><span class="legend-val" style="color:var(--flag-rewrite-tx);">REVISE</span><span class="legend-desc">Very low discrimination — item not meaningfully differentiating students</span></div>
+            <div class="legend-row"><span>0.15 ≤ r &lt; 0.20</span><span class="legend-val" style="color:var(--steel);">REVIEW</span><span class="legend-desc">Marginal discrimination — acceptable but borderline</span></div>
+            <div class="legend-row"><span>r ≥ 0.20</span><span class="legend-val" style="color:var(--navy);">KEEP (if other criteria met)</span><span class="legend-desc">Acceptable to strong discrimination</span></div>
+            <div style="font-size:0.75rem;color:var(--text-light);margin-top:10px;line-height:1.5;">The point-biserial correlation measures how well performance on a single item predicts overall exam performance. A value ≥ 0.20 is generally considered acceptable. Values ≥ 0.30 indicate strong discrimination.</div>
+          </div>
+          <div class="legend-card">
+            <div class="legend-card-title" style="color:var(--navy);">📉 Item Difficulty (p-value)</div>
+            <div class="legend-row"><span>p &lt; 0.40</span><span class="legend-val" style="color:var(--flag-rewrite-tx);">REVISE</span><span class="legend-desc">Fewer than 40% correct — item may be too difficult or flawed</span></div>
+            <div class="legend-row"><span>0.40 ≤ p &lt; 0.50</span><span class="legend-val" style="color:var(--steel);">REVIEW</span><span class="legend-desc">Moderately difficult — verify appropriateness for cognitive level</span></div>
+            <div class="legend-row"><span>0.50 ≤ p ≤ 0.95</span><span class="legend-val" style="color:var(--navy);">KEEP (if other criteria met)</span><span class="legend-desc">Acceptable range for nursing licensure-style items</span></div>
+            <div class="legend-row"><span>p &gt; 0.95</span><span class="legend-val" style="color:var(--steel);">REVIEW</span><span class="legend-desc">Near-ceiling — little contribution to score variance</span></div>
+            <div style="font-size:0.75rem;color:var(--text-light);margin-top:10px;line-height:1.5;">The difficulty index (p) is the proportion of students who answered correctly. Ideal range for discriminating items is 0.50–0.85. Items &lt; 0.40 may be overly difficult or contain flaws.</div>
+          </div>
+          <div class="legend-card">
+            <div class="legend-card-title" style="color:var(--navy);">🔀 Discrimination Index (D)</div>
+            <div class="legend-row"><span>D &lt; 0.00</span><span class="legend-val" style="color:#c0392b;">REWRITE</span><span class="legend-desc">Negative — lower performers outperformed upper group on this item</span></div>
+            <div class="legend-row"><span>D ≥ 0.00</span><span class="legend-val" style="color:var(--navy);">Acceptable</span><span class="legend-desc">Calculated as upper 27% mean minus lower 27% mean item scores</span></div>
+            <div style="font-size:0.75rem;color:var(--text-light);margin-top:10px;line-height:1.5;">The discrimination index compares item performance between the top and bottom 27% of scorers. A positive value confirms that higher-overall performers also performed better on this specific item.</div>
+          </div>
+          <div class="legend-card">
+            <div class="legend-card-title" style="color:var(--navy);">⚠ Distractor Concern &amp; Sample Size</div>
+            <div class="legend-row"><span>Top wrong answer &gt; 40%</span><span class="legend-val" style="color:var(--flag-rewrite-tx);">REVISE</span><span class="legend-desc">One distractor is selected by a disproportionate number of students</span></div>
+            <div class="legend-row"><span>n &lt; 15 students</span><span class="legend-val" style="color:var(--flag-rewrite-tx);">REVISE</span><span class="legend-desc">Sample size too small for stable estimates — monitor over time</span></div>
+            <div style="font-size:0.75rem;color:var(--text-light);margin-top:10px;line-height:1.5;">When a single incorrect distractor is selected by more than 40% of students, it may indicate an ambiguous stem, implausible correct answer, or a distractor that is more attractive than intended. Sample sizes below 15 produce unreliable statistics and should be interpreted cautiously.</div>
+          </div>
+        </div>
+        <div class="legend-citation">
+          <strong style="display:block;font-size:0.72rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--steel);margin-bottom:6px;">References &amp; Standards</strong>
+          Haladyna, T. M., &amp; Rodriguez, M. C. (2013). <em>Developing and validating test items.</em> Routledge. &nbsp;|&nbsp;
+          McDonald, M. E. (1999). <em>Systematic assessment of learning outcomes: Developing multiple-choice exams.</em> Jones &amp; Bartlett. &nbsp;|&nbsp;
+          NCSBN Next Generation NCLEX item development standards (2023). &nbsp;|&nbsp;
+          Ebel, R. L., &amp; Frisbie, D. A. (1991). <em>Essentials of educational measurement</em> (5th ed.). Prentice-Hall.
+          <br><br>
+          <em>All thresholds reflect standards commonly applied in nursing education psychometrics and are intended to guide, not replace, faculty professional judgment. Items flagged by NIARA should be reviewed in context of course content, student population, and curricular goals before final decisions are made. For items flagged REWRITE with a negative point-biserial, faculty should consider double-keying (awarding credit for the most-chosen incorrect answer) for the current exam administration while revising the item for future use.</em>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <strong>NIARA</strong> — Nursing Item Analysis &amp; Reporting Assistant &nbsp;·&nbsp; A <strong>GrangeRN</strong> Tool &nbsp;·&nbsp; v1.1.0<br>
+  <span style="font-size:0.72rem;opacity:0.7;">All data is processed locally in your browser. No student information is transmitted or stored. &nbsp;|&nbsp; <a href="https://www.grangeRN.com" style="color:var(--steel);">GrangeRN.com</a></span>
+</footer>
+
+<script>
+// ══════════════════════════════════════════════
+//  NIARA — Nursing Item Analysis & Reporting Assistant
+//  GrangeRN | v1.1.0
+//  Client-side only. FERPA compliant by design.
+// ══════════════════════════════════════════════
+
+let parsedData = null;
+let prevParsedData = [];
+let longitudinalOn = false;
+let prevFileCount = 0;
+
+// Sort state
+let currentSort = { col: null, dir: 'asc' };
+// Flag filter state (null = all)
+let activeFlagFilter = null;
+// Module filter state
+let activeModuleFilter = null;
+// Item analysis collapse state
+let itemAnalysisCollapsed = false;
+// Question title lookup map — index -> qtitle (avoids special char issues in onclick)
+let qtitleMap = {};
+
+// ── Logo embed (load from file if available) ──
+(function() {
+  // Logo is embedded as base64 in production.
+  // For GitHub deployment, replace LOGO_PLACEHOLDER with actual base64.
+  const img = document.getElementById('logoImg');
+  if (img.src.includes('LOGO_PLACEHOLDER')) {
+    img.style.display = 'none';
+  }
+})();
+
+// ── Delegated click handler for question title links ──
+// Uses data-qkey attribute to avoid special character issues in onclick
+document.addEventListener('click', function(e) {
+  const link = e.target.closest('.qtitle-link');
+  if (!link) return;
+  const key = link.getAttribute('data-qkey');
+  if (key === null || key === undefined) return;
+  const qtitle = qtitleMap[parseInt(key)];
+  if (qtitle && parsedData) openQuestionModal(qtitle);
+});
+
+// ── File upload UI ──
+const mainZone = document.getElementById('mainUploadZone');
+const mainInput = document.getElementById('mainFileInput');
+
+mainInput.addEventListener('change', function() {
+  if (this.files[0]) {
+    mainZone.classList.add('has-file');
+    document.getElementById('mainFileName').textContent = '✓ ' + this.files[0].name;
+  }
+});
+
+['dragover','dragenter'].forEach(e => mainZone.addEventListener(e, ev => { ev.preventDefault(); mainZone.classList.add('drag-over'); }));
+['dragleave','drop'].forEach(e => mainZone.addEventListener(e, ev => { ev.preventDefault(); mainZone.classList.remove('drag-over'); }));
+mainZone.addEventListener('drop', function(ev) {
+  const file = ev.dataTransfer.files[0];
+  if (file) { mainInput.files = ev.dataTransfer.files; mainZone.classList.add('has-file'); document.getElementById('mainFileName').textContent = '✓ ' + file.name; }
+});
+
+// ── Longitudinal toggle ──
+function toggleLongitudinal() {
+  longitudinalOn = !longitudinalOn;
+  document.getElementById('toggleSwitch').classList.toggle('on', longitudinalOn);
+  const sec = document.getElementById('longitudinalSection');
+  if (longitudinalOn) { sec.classList.add('visible'); if (prevFileCount === 0) addPrevFileBlock(); }
+  else sec.classList.remove('visible');
+}
+
+function addPrevFileBlock() {
+  prevFileCount++;
+  const id = prevFileCount;
+  const container = document.getElementById('prevFilesContainer');
+  const block = document.createElement('div');
+  block.className = 'prev-file-block';
+  block.id = 'prevBlock_' + id;
+  block.innerHTML = `
+    <div class="form-grid" style="grid-template-columns:1fr 1fr;margin-bottom:14px;">
+      <div class="field">
+        <label>Semester</label>
+        <select id="prevSem_${id}">
+          <option value="">— Select —</option>
+          <option>Fall</option><option>Spring</option><option>Summer</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Year</label>
+        <select id="prevYear_${id}">
+          <option value="">— Select —</option>
+          <option>2024</option><option>2025</option><option>2026</option><option>2027</option><option>2028</option>
+        </select>
+      </div>
+    </div>
+    <div class="upload-zone" id="prevZone_${id}" style="padding:20px;">
+      <input type="file" accept=".csv" id="prevInput_${id}" onchange="prevFileSelected(${id})">
+      <span class="upload-icon" style="font-size:1.6rem;">📋</span>
+      <h3 style="font-size:0.9rem;">Previous Semester Attempt Details CSV</h3>
+      <div class="file-name-display" id="prevFileName_${id}"></div>
+    </div>
+    <div style="text-align:right;margin-top:10px;">
+      <button onclick="removePrevBlock(${id})" style="background:none;border:none;color:var(--text-light);font-size:0.82rem;cursor:pointer;">✕ Remove</button>
+    </div>
+  `;
+  container.appendChild(block);
+}
+
+function prevFileSelected(id) {
+  const input = document.getElementById('prevInput_' + id);
+  const zone = document.getElementById('prevZone_' + id);
+  if (input.files[0]) {
+    zone.classList.add('has-file');
+    document.getElementById('prevFileName_' + id).textContent = '✓ ' + input.files[0].name;
+  }
+}
+
+function removePrevBlock(id) {
+  const el = document.getElementById('prevBlock_' + id);
+  if (el) el.remove();
+}
+
+// ── Alert helper ──
+function showAlert(msg, type='error') {
+  const box = document.getElementById('alertBox');
+  box.className = 'alert visible alert-' + type;
+  box.innerHTML = msg;
+  box.scrollIntoView({ behavior:'smooth', block:'nearest' });
+}
+function clearAlert() {
+  const box = document.getElementById('alertBox');
+  box.className = 'alert';
+  box.innerHTML = '';
+}
+
+// ── Progress helper ──
+function setProgress(pct, msg) {
+  document.getElementById('progressBar').style.width = pct + '%';
+  document.getElementById('progressText').textContent = msg;
+}
+
+// ══════════════════════════════════════════════
+//  CORE PARSER
+// ══════════════════════════════════════════════
+
+function parseAttemptDetails(csvText) {
+  const lines = csvText.split(/\r?\n/);
+  const headers = parseCSVLine(lines[0]);
+
+  const COL = {};
+  headers.forEach((h,i) => { COL[h.trim()] = i; });
+
+  const required = ['Org Defined ID','FirstName','LastName','Q #','Q Type','Q Title','Q Text','Answer','Answer Match','Score','Out Of','Section #'];
+  for (const r of required) {
+    if (COL[r] === undefined) throw new Error('Missing expected column: "' + r + '". Please ensure this is a Brightspace Attempt Details export.');
+  }
+
+  const students = {};     // studentId -> student object
+  const items = {};        // qTitle -> item object (unique per title)
+  const sectionMap = {};   // tracks current section per student attempt
+
+  let currentSection = {};  // studentId -> current section label
+
+  for (let i = 1; i < lines.length; i++) {
+    const line = lines[i].trim();
+    if (!line) continue;
+    const row = parseCSVLine(line);
+    if (row.length < 10) continue;
+
+    const sid      = (row[COL['Org Defined ID']] || '').trim();
+    const fname    = (row[COL['FirstName']] || '').trim();
+    const lname    = (row[COL['LastName']] || '').trim();
+    const attemptN = (row[COL['Attempt #']] || '1').trim();
+    const attemptS = (row[COL['Attempt Start']] || '').trim();
+    const attemptE = (row[COL['Attempt End']] || '').trim();
+    const secNum   = (row[COL['Section #']] || '').trim();
+    const qnum     = (row[COL['Q #']] || '').trim();
+    const qtype    = (row[COL['Q Type']] || '').trim();
+    const qtitle   = (row[COL['Q Title']] || '').trim();
+    const qtext    = (row[COL['Q Text']] || '').trim();
+    const answer   = (row[COL['Answer']] || '').trim();
+    const match    = (row[COL['Answer Match']] || '').trim();
+    const score    = parseFloat(row[COL['Score']] || '0') || 0;
+    const outOf    = parseFloat(row[COL['Out Of']] || '0') || 0;
+    const isBonus  = (row[COL['Bonus?']] || '').trim().toUpperCase() === 'TRUE';
+
+    if (!sid) continue;
+
+    // Build student record
+    if (!students[sid]) {
+      students[sid] = { id: sid, fname, lname, items: {}, start: attemptS, end: attemptE };
+    }
+
+    // Section header row (has secNum but no qnum)
+    if (secNum && !qnum && qtitle) {
+      // skip top-level exam title row (section 1 is always exam name)
+      if (secNum !== '1') {
+        currentSection[sid] = qtitle;
+      }
+      continue;
+    }
+
+    // Summary row
+    if (qtitle === 'Summary:' || (!qnum && !secNum)) continue;
+
+    // Question row
+    if (!qnum || isNaN(parseInt(qnum))) continue;
+
+    const section = currentSection[sid] || 'General';
+
+    // Init student item
+    if (!students[sid].items[qnum]) {
+      students[sid].items[qnum] = {
+        qnum, qtype, qtitle, qtext, section,
+        score: 0, outOf: 0, selected: [],
+        responses: {}, isBonus
+      };
+    }
+
+    const si = students[sid].items[qnum];
+
+    // FIB: Answer Match col contains the student's typed answer per blank
+    if (qtype === 'FIB') {
+      si.score  = score;
+      si.outOf  = outOf;
+      // Store ALL blanks as array (multi-blank support)
+      if (!si.fibAnswers) si.fibAnswers = [];
+      const blankNum = si.fibAnswers.length + 1;
+      si.fibAnswers.push({ blank: blankNum, value: match, score, outOf });
+      si.fibAnswer = match; // keep last for backward compat
+      if (!items[qtitle]) items[qtitle] = createItemRecord(qtitle, qtext, qtype, section);
+      // Only push once per student to responses (use first blank row)
+      if (si.fibAnswers.length === 1) {
+        items[qtitle].responses.push({ sid, score, outOf, fibAnswers: si.fibAnswers });
+      } else {
+        // Update the existing response entry with latest fibAnswers array
+        const existing = items[qtitle].responses.find(r => r.sid === sid);
+        if (existing) { existing.fibAnswers = si.fibAnswers; existing.score = score; existing.outOf = outOf; }
+      }
+      continue;
+    }
+
+    // MAT: Answer = left-side prompt, Answer Match = student's response (not Checked/UnChecked)
+    if (qtype === 'MAT') {
+      si.outOf = outOf;
+      si.score = score;
+      // Skip blank answer rows (Brightspace sometimes emits empty rows)
+      if (!answer) continue;
+      // Store match pairs: prompt -> studentResponse
+      if (!si.matMatches) si.matMatches = {};
+      si.matMatches[answer] = match; // answer=prompt, match=student's chosen response
+
+      if (!items[qtitle]) items[qtitle] = createItemRecord(qtitle, qtext, qtype, section);
+
+      // Track class-wide match pair counts for item modal
+      const itemRec = items[qtitle];
+      if (!itemRec.matData) itemRec.matData = {}; // prompt -> { correctAnswer, studentResponses: {response: count} }
+      if (!itemRec.matData[answer]) {
+        itemRec.matData[answer] = { correctAnswer: null, responses: {}, order: Object.keys(itemRec.matData).length };
+      }
+      itemRec.matData[answer].responses[match] = (itemRec.matData[answer].responses[match] || 0) + 1;
+
+      // allChoices not meaningful for MAT — skip
+      continue;
+    }
+
+    // MC / M-S — one row per answer choice
+    si.outOf = outOf;
+    si.score = score; // Score is same on every row for this item; last write wins (same value)
+
+    // Track which answer was selected
+    if (match === 'Checked') {
+      si.selected.push(answer);
+    }
+
+    // Aggregate distractor counts
+    if (!si.responses) si.responses = {};
+    if (!si.responses[answer]) si.responses[answer] = { count: 0, isSelected: false };
+    if (match === 'Checked') si.responses[answer].count++;
+
+    if (!items[qtitle]) items[qtitle] = createItemRecord(qtitle, qtext, qtype, section);
+
+    // Track ALL answer choices in order (for popup display)
+    const itemRec = items[qtitle];
+    if (!itemRec.allChoices) itemRec.allChoices = {};
+    if (!(answer in itemRec.allChoices)) {
+      itemRec.allChoices[answer] = { checked: 0, unchecked: 0, order: Object.keys(itemRec.allChoices).length };
+    }
+    if (match === 'Checked') itemRec.allChoices[answer].checked++;
+    else itemRec.allChoices[answer].unchecked++;
+  }
+
+  // ── Build item-level statistics ──
+  // First pass: collect all responses across students
+  for (const [sid, student] of Object.entries(students)) {
+    for (const [qnum, si] of Object.entries(student.items)) {
+      if (si.qtype === 'FIB') continue; // handled inline above
+      const rec = items[si.qtitle];
+      if (!rec) continue;
+
+      if (si.qtype === 'MAT') {
+        // Determine correct answers from perfect scorers: prompt -> itself when score === outOf
+        if (si.outOf > 0 && (si.score / si.outOf) >= 0.99 && si.matMatches) {
+          for (const [prompt, response] of Object.entries(si.matMatches)) {
+            if (rec.matData && rec.matData[prompt]) {
+              rec.matData[prompt].correctAnswer = prompt; // for MAT, correct = prompt matches itself
+            }
+          }
+        }
+        rec.responses.push({
+          sid,
+          score: si.score,
+          outOf: si.outOf,
+          selected: [],
+          matMatches: si.matMatches || {}
+        });
+        continue;
+      }
+
+      rec.responses.push({
+        sid,
+        score: si.score,
+        outOf: si.outOf,
+        selected: si.selected,
+        distractor_counts: si.responses
+      });
+    }
+  }
+
+  // Second pass: compute statistics per item
+  for (const [title, item] of Object.entries(items)) {
+    computeItemStats(item);
+  }
+
+  // Compute total scores per student for point-biserial
+  const totalScores = {};
+  for (const [sid, student] of Object.entries(students)) {
+    let total = 0;
+    for (const si of Object.values(student.items)) {
+      total += si.score;
+    }
+    totalScores[sid] = total;
+  }
+
+  // Compute point-biserial for each item
+  for (const [title, item] of Object.entries(items)) {
+    computePointBiserial(item, totalScores);
+  }
+
+  // Assign flags
+  for (const item of Object.values(items)) {
+    item.flag = assignFlag(item);
+  }
+
+  // Class-level stats
+  const scores = Object.values(totalScores);
+  const classStats = computeClassStats(scores, students, items);
+
+  return { students, items, totalScores, classStats };
+}
+
+function createItemRecord(qtitle, qtext, qtype, section) {
+  return {
+    qtitle, qtext, qtype, section,
+    responses: [],       // array of per-student response objects
+    n: 0,
+    difficulty: null,
+    sd: null,
+    pointBiserial: null,
+    discriminationIndex: null,
+    topWrongAnswer: null,
+    topWrongRate: null,
+    flag: null,
+    flagReason: null,
+    distractorCounts: {},
+    allChoices: {}       // answer text -> { checked, unchecked, order }
+  };
+}
+
+function computeItemStats(item) {
+  if (item.qtype === 'FIB') {
+    const resps = item.responses;
+    item.n = resps.length;
+    if (item.n === 0) return;
+    const correct = resps.filter(r => r.outOf > 0 && (r.score / r.outOf) >= 0.99).length;
+    item.difficulty = correct / item.n;
+    const scores = resps.map(r => r.outOf > 0 ? r.score / r.outOf : 0);
+    item.sd = stdDev(scores);
+    // Top wrong FIB answer — look across all blanks
+    const wrongAnswers = {};
+    resps.filter(r => r.outOf > 0 && (r.score / r.outOf) < 0.99).forEach(r => {
+      const blanks = r.fibAnswers || [{ value: r.fibAnswer || '(blank)' }];
+      blanks.forEach(b => {
+        const val = b.value || '(blank)';
+        wrongAnswers[val] = (wrongAnswers[val] || 0) + 1;
+      });
+    });
+    const sorted = Object.entries(wrongAnswers).sort((a,b) => b[1]-a[1]);
+    if (sorted.length > 0) {
+      item.topWrongAnswer = sorted[0][0];
+      item.topWrongRate = sorted[0][1] / item.n;
+    }
+    return;
+  }
+
+  // MC / M-S / MAT
+  const resps = item.responses;
+  item.n = resps.length;
+  if (item.n === 0) return;
+
+  // Difficulty: proportion with full score
+  const propScores = resps.map(r => r.outOf > 0 ? r.score / r.outOf : 0);
+  item.difficulty = mean(propScores);
+  item.sd = stdDev(propScores);
+
+  // MAT: correct answers are already identified per-prompt in matData
+  // No allChoices, no selected[] — skip choice-based analysis
+  if (item.qtype === 'MAT') {
+    item.correctAnswers = [];
+    item.correctAnswer = null;
+    // Top wrong for MAT: prompt where most students got it wrong
+    if (item.matData) {
+      let worstPrompt = null, worstPct = 0;
+      for (const [prompt, data] of Object.entries(item.matData)) {
+        const correctAns = data.correctAnswer || prompt;
+        const correctCount = data.responses[correctAns] || 0;
+        const wrongRate = item.n > 0 ? 1 - (correctCount / item.n) : 0;
+        if (wrongRate > worstPct) { worstPct = wrongRate; worstPrompt = prompt; }
+      }
+      item.topWrongAnswer = worstPrompt;
+      item.topWrongRate = worstPct;
+    }
+    return;
+  }
+
+  // Aggregate distractor counts (MC / M-S only)
+  const disCounts = {};
+  resps.forEach(r => {
+    if (r.distractor_counts) {
+      for (const [ans, data] of Object.entries(r.distractor_counts)) {
+        if (!disCounts[ans]) disCounts[ans] = 0;
+        disCounts[ans] += (data.count || 0);
+      }
+    }
+  });
+  item.distractorCounts = disCounts;
+
+  // Identify correct answers
+  // For MC: one correct answer (majority vote among full-scorers' selections)
+  // For M-S: multiple correct answers — choices selected by >50% of perfect scorers
+  // Perfect scorer = score/outOf >= 0.99 (handle floating point rounding like 1.67/1.67)
+  item.correctAnswers = [];
+  item.correctAnswer = null;
+  const correctResps = resps.filter(r => r.outOf > 0 && (r.score / r.outOf) >= 0.99);
+  if (correctResps.length > 0) {
+    if (item.qtype === 'M-S') {
+      const correctAnswerVotes = {};
+      correctResps.forEach(r => {
+        (r.selected || []).forEach(ans => {
+          correctAnswerVotes[ans] = (correctAnswerVotes[ans] || 0) + 1;
+        });
+      });
+      item.correctAnswers = Object.entries(correctAnswerVotes)
+        .filter(([,votes]) => votes / correctResps.length > 0.5)
+        .map(([ans]) => ans);
+      item.correctAnswer = item.correctAnswers[0] || null;
+    } else {
+      // MC: single correct answer
+      const correctAnswerVotes = {};
+      correctResps.forEach(r => {
+        (r.selected || []).forEach(ans => {
+          correctAnswerVotes[ans] = (correctAnswerVotes[ans] || 0) + 1;
+        });
+      });
+      const sorted = Object.entries(correctAnswerVotes).sort((a,b) => b[1]-a[1]);
+      item.correctAnswer = sorted[0] ? sorted[0][0] : null;
+      item.correctAnswers = item.correctAnswer ? [item.correctAnswer] : [];
+    }
+  }
+
+  // Top wrong answer — exclude ALL correct answers (for M-S, multiple may be correct)
+  const correctAnswerSet = new Set(item.correctAnswers || []);
+  const wrongCounts = {};
+  resps.filter(r => r.outOf > 0 && (r.score / r.outOf) < 0.99).forEach(r => {
+    (r.selected || []).forEach(ans => {
+      if (!correctAnswerSet.has(ans)) {
+        wrongCounts[ans] = (wrongCounts[ans] || 0) + 1;
+      }
+    });
+  });
+  const wrongSorted = Object.entries(wrongCounts).sort((a,b) => b[1]-a[1]);
+  if (wrongSorted.length > 0) {
+    item.topWrongAnswer = wrongSorted[0][0];
+    item.topWrongRate = wrongSorted[0][1] / item.n;
+  }
+
+  // Discrimination Index: upper 27% vs lower 27%
+  // Requires per-student item scores
+  computeDiscrimination(item);
+}
+
+function computeDiscrimination(item) {
+  const propScores = item.responses.map(r => r.outOf > 0 ? r.score / r.outOf : 0);
+  if (propScores.length < 6) { item.discriminationIndex = null; return; }
+  const sorted = [...propScores].sort((a,b) => a-b);
+  const cutoff = Math.floor(propScores.length * 0.27);
+  const lower = sorted.slice(0, cutoff);
+  const upper = sorted.slice(sorted.length - cutoff);
+  item.discriminationIndex = mean(upper) - mean(lower);
+}
+
+function computePointBiserial(item, totalScores) {
+  // Build paired arrays: item prop score, student total score
+  const pairs = [];
+  item.responses.forEach(r => {
+    if (totalScores[r.sid] !== undefined) {
+      const itemProp = r.outOf > 0 ? r.score / r.outOf : 0;
+      pairs.push([itemProp, totalScores[r.sid]]);
+    }
+  });
+  if (pairs.length < 4) { item.pointBiserial = null; return; }
+  const xs = pairs.map(p => p[0]);
+  const ys = pairs.map(p => p[1]);
+  item.pointBiserial = pearsonR(xs, ys);
+}
+
+// ── FLAG LOGIC ──
+function assignFlag(item) {
+  const pb = item.pointBiserial;
+  const di = item.discriminationIndex;
+  const diff = item.difficulty;
+  const n = item.n;
+  const twr = item.topWrongRate;
+
+  // REWRITE conditions
+  if (pb !== null && pb < 0) {
+    return { flag: 'REWRITE', reason: 'Negative point-biserial (' + fmt2(pb) + '). Higher-performing students answered incorrectly more often. Verify the answer key immediately.' };
+  }
+  if (di !== null && di < 0) {
+    return { flag: 'REWRITE', reason: 'Negative discrimination index (' + fmt2(di) + '). Item is not differentiating between higher and lower performers. Review for keying error or ambiguous stem.' };
+  }
+
+  // REVISE conditions
+  if (pb !== null && pb < 0.15 && pb >= 0) {
+    return { flag: 'REVISE', reason: 'Very low point-biserial (' + fmt2(pb) + '). Item is not meaningfully discriminating. Consider revising stem or distractors.' };
+  }
+  if (n < 15) {
+    return { flag: 'REVISE', reason: 'Small sample size (n=' + n + '). Statistics are unstable. Monitor over future administrations before drawing conclusions.' };
+  }
+  if (twr !== null && twr > 0.40) {
+    return { flag: 'REVISE', reason: 'Top wrong answer selected by ' + pct(twr) + ' of students. Review this distractor for unintended plausibility or consider partial credit.' };
+  }
+  if (diff !== null && diff < 0.40) {
+    return { flag: 'REVISE', reason: 'Low difficulty (' + pct(diff) + ' correct). Verify this item is at an appropriate cognitive level and the stem is clearly worded.' };
+  }
+
+  // REVIEW conditions
+  if (pb !== null && pb < 0.20) {
+    return { flag: 'REVIEW', reason: 'Marginal point-biserial (' + fmt2(pb) + '). Discrimination is acceptable but borderline. Review in context of overall exam performance.' };
+  }
+  if (diff !== null && diff > 0.95) {
+    return { flag: 'REVIEW', reason: 'Near-ceiling difficulty (' + pct(diff) + ' correct). Item contributes little to score variance. Consider whether it serves a useful coverage purpose.' };
+  }
+  if (diff !== null && diff < 0.50) {
+    return { flag: 'REVIEW', reason: 'Moderately difficult (' + pct(diff) + ' correct). Verify item is testing appropriate content at the right cognitive level.' };
+  }
+
+  // KEEP
+  return { flag: 'KEEP', reason: 'Item performing within acceptable psychometric parameters. No action required at this time.' };
+}
+
+// ── CLASS STATS ──
+function computeClassStats(scores, students, items) {
+  const n = scores.length;
+  const avg = mean(scores);
+  const sd = stdDev(scores);
+  const min = Math.min(...scores);
+  const max = Math.max(...scores);
+
+  // Determine total possible points — EXCLUDES bonus items from denominator
+  // Bonus points earned still count toward student score (numerator)
+  let totalPossible = 0;
+  const firstStudent = Object.values(students)[0];
+  if (firstStudent) {
+    totalPossible = Object.values(firstStudent.items)
+      .filter(i => !i.isBonus)
+      .reduce((s, i) => s + (i.outOf || 0), 0);
+  }
+
+  // Flag counts
+  const flags = { KEEP: 0, REVIEW: 0, REVISE: 0, REWRITE: 0 };
+  for (const item of Object.values(items)) {
+    if (item.flag) flags[item.flag.flag]++;
+  }
+
+  // Module performance — exclude bonus from possible totals
+  const modScores = {};
+  for (const student of Object.values(students)) {
+    for (const si of Object.values(student.items)) {
+      const mod = si.section;
+      if (!modScores[mod]) modScores[mod] = { correct: 0, total: 0 };
+      modScores[mod].correct += si.score;
+      if (!si.isBonus) modScores[mod].total += si.outOf;
+    }
+  }
+
+  return { n, avg, sd, min, max, totalPossible, flags, modScores };
+}
+
+// ══════════════════════════════════════════════
+//  MAIN GENERATE
+// ══════════════════════════════════════════════
+async function generateReport() {
+  clearAlert();
+
+  const course   = document.getElementById('courseSelect').value;
+  const semester = document.getElementById('semesterSelect').value;
+  const year     = document.getElementById('yearSelect').value;
+  const examName = document.getElementById('examName').value.trim();
+  const file     = document.getElementById('mainFileInput').files[0];
+
+  // Validate
+  if (!course)   { showAlert('Please select a course.'); return; }
+  if (!semester) { showAlert('Please select a semester.'); return; }
+  if (!year)     { showAlert('Please select a year.'); return; }
+  if (!examName) { showAlert('Please enter the exam or quiz name.'); return; }
+  if (!file)     { showAlert('Please upload the Attempt Details CSV file.'); return; }
+
+  const btn = document.getElementById('generateBtn');
+  btn.disabled = true;
+  const prog = document.getElementById('progressWrap');
+  prog.classList.add('visible');
+  setProgress(10, 'Reading file...');
+
+  try {
+    const csvText = await readFile(file);
+    setProgress(30, 'Parsing attempt data...');
+
+    parsedData = parseAttemptDetails(csvText);
+    parsedData.meta = { course, semester, year, examName,
+      courseLabel: document.getElementById('courseSelect').options[document.getElementById('courseSelect').selectedIndex].text };
+
+    setProgress(70, 'Computing statistics...');
+    await sleep(100);
+
+    // Parse previous files if longitudinal
+    prevParsedData = [];
+    if (longitudinalOn) {
+      for (let id = 1; id <= prevFileCount; id++) {
+        const pFile = document.getElementById('prevInput_' + id);
+        const pSem  = document.getElementById('prevSem_' + id);
+        const pYear = document.getElementById('prevYear_' + id);
+        if (pFile && pFile.files[0] && pSem && pSem.value && pYear && pYear.value) {
+          const pText = await readFile(pFile.files[0]);
+          const pData = parseAttemptDetails(pText);
+          pData.meta = { semester: pSem.value, year: pYear.value };
+          prevParsedData.push(pData);
+        }
+      }
+    }
+
+    setProgress(90, 'Rendering report...');
+    await sleep(100);
+
+    renderResults();
+    setProgress(100, 'Complete!');
+
+    document.getElementById('resultsSection').classList.add('visible');
+    document.getElementById('resultsSection').scrollIntoView({ behavior:'smooth' });
+
+  } catch(err) {
+    showAlert('<strong>Error parsing file:</strong> ' + err.message + '<br><small>Please ensure you are uploading a Brightspace Attempt Details CSV export.</small>');
+    console.error(err);
+  } finally {
+    btn.disabled = false;
+    setTimeout(() => { prog.classList.remove('visible'); setProgress(0,''); }, 1500);
+  }
+}
+
+// ══════════════════════════════════════════════
+//  RENDER RESULTS
+// ══════════════════════════════════════════════
+function renderResults() {
+  const { students, items, classStats, meta } = parsedData;
+
+  // Header
+  document.getElementById('resultsTitle').textContent = meta.examName + ' — ' + meta.semester + ' ' + meta.year;
+  document.getElementById('resultsMeta').textContent = meta.courseLabel;
+
+  if (longitudinalOn && prevParsedData.length > 0) {
+    document.getElementById('downloadLongBtn').style.display = 'flex';
+  }
+
+  // Stats cards
+  const tp = classStats.totalPossible;
+  const statsGrid = document.getElementById('statsGrid');
+  statsGrid.innerHTML = `
+    <div class="stat-card"><div class="stat-value">${pct(classStats.avg / (tp||100))}</div><div class="stat-label">Class Mean</div></div>
+    <div class="stat-card"><div class="stat-value">${pct(classStats.sd / (tp||100))}</div><div class="stat-label">Std Deviation</div></div>
+    <div class="stat-card"><div class="stat-value">${classStats.n}</div><div class="stat-label">Students Tested</div></div>
+    <div class="stat-card"><div class="stat-value">${Object.keys(items).length}</div><div class="stat-label">Unique Items</div></div>
+  `;
+
+  // Flag grid — clickable filters
+  const f = classStats.flags;
+  document.getElementById('flagGrid').innerHTML = `
+    <div class="flag-card flag-keep" id="fc-keep" onclick="toggleFlagFilter('KEEP')" title="Click to filter by Keep">
+      <div class="flag-count">${f.KEEP}</div><div class="flag-label">✓ Keep</div>
+    </div>
+    <div class="flag-card flag-review" id="fc-review" onclick="toggleFlagFilter('REVIEW')" title="Click to filter by Review">
+      <div class="flag-count">${f.REVIEW}</div><div class="flag-label">👁 Review</div>
+    </div>
+    <div class="flag-card flag-revise" id="fc-revise" onclick="toggleFlagFilter('REVISE')" title="Click to filter by Revise">
+      <div class="flag-count">${f.REVISE}</div><div class="flag-label">✏ Revise</div>
+    </div>
+    <div class="flag-card flag-rewrite" id="fc-rewrite" onclick="toggleFlagFilter('REWRITE')" title="Click to filter by Rewrite">
+      <div class="flag-count">${f.REWRITE}</div><div class="flag-label">🔴 Rewrite</div>
+    </div>
+  `;
+  // Add hint below flag grid
+  let hintEl = document.getElementById('flagFilterHint');
+  if (!hintEl) {
+    hintEl = document.createElement('div');
+    hintEl.id = 'flagFilterHint';
+    hintEl.className = 'flag-filter-hint';
+    document.getElementById('flagGrid').after(hintEl);
+  }
+  hintEl.textContent = 'Click a flag card to filter the item table · Click again to clear filter';
+
+  // Module tabs
+  const modules = ['All', ...new Set(Object.values(items).map(i => i.section))];
+  const tabsEl = document.getElementById('moduleTabs');
+  tabsEl.innerHTML = '';
+  modules.forEach((mod, idx) => {
+    const btn = document.createElement('button');
+    btn.className = 'mod-tab' + (idx===0?' active':'');
+    btn.textContent = mod;
+    btn.onclick = () => {
+      document.querySelectorAll('.mod-tab').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      const filter = mod === 'All' ? null : mod;
+      renderItemTable(filter);
+    };
+    tabsEl.appendChild(btn);
+  });
+
+  renderItemTable(null);
+  renderStudentSelect();
+  buildDKPanel();
+}
+
+function toggleFlagFilter(flag) {
+  if (activeFlagFilter === flag) {
+    activeFlagFilter = null;
+  } else {
+    activeFlagFilter = flag;
+  }
+  // Update card visual states
+  ['KEEP','REVIEW','REVISE','REWRITE'].forEach(f => {
+    const el = document.getElementById('fc-' + f.toLowerCase());
+    if (el) {
+      el.classList.toggle('active-filter', activeFlagFilter === f);
+    }
+  });
+  renderItemTable(activeModuleFilter);
+}
+
+function toggleItemAnalysis() {
+  itemAnalysisCollapsed = !itemAnalysisCollapsed;
+  const body = document.getElementById('itemAnalysisBody');
+  const btn = document.getElementById('itemAnalysisToggle');
+  body.classList.toggle('collapsed', itemAnalysisCollapsed);
+  body.style.maxHeight = itemAnalysisCollapsed ? '0' : '9999px';
+  btn.textContent = itemAnalysisCollapsed ? '▼ Expand' : '▲ Collapse';
+}
+
+function sortTable(col) {
+  if (currentSort.col === col) {
+    currentSort.dir = currentSort.dir === 'asc' ? 'desc' : 'asc';
+  } else {
+    currentSort.col = col;
+    currentSort.dir = col === 'flag' ? 'asc' : 'desc';
+  }
+  // Update header icons
+  document.querySelectorAll('thead th.sortable').forEach(th => {
+    th.classList.remove('sort-asc','sort-desc');
+    if (th.dataset.col === col) {
+      th.classList.add('sort-' + currentSort.dir);
+      th.querySelector('.sort-icon').textContent = currentSort.dir === 'asc' ? '↑' : '↓';
+    } else {
+      th.querySelector('.sort-icon').textContent = '⇅';
+    }
+  });
+  renderItemTable(activeModuleFilter);
+}
+
+function renderItemTable(moduleFilter) {
+  activeModuleFilter = moduleFilter;
+  const { items } = parsedData;
+  const tbody = document.getElementById('itemTableBody');
+  tbody.innerHTML = '';
+  qtitleMap = {}; // reset lookup map each render
+
+  const flagOrder = { REWRITE:0, REVISE:1, REVIEW:2, KEEP:3 };
+
+  let filteredItems = Object.values(items)
+    .filter(i => !moduleFilter || i.section === moduleFilter)
+    .filter(i => !activeFlagFilter || (i.flag && i.flag.flag === activeFlagFilter));
+
+  // Sort
+  const col = currentSort.col;
+  const dir = currentSort.dir === 'asc' ? 1 : -1;
+  if (col) {
+    filteredItems.sort((a, b) => {
+      let av, bv;
+      if (col === 'flag') {
+        av = flagOrder[a.flag?.flag] ?? 99;
+        bv = flagOrder[b.flag?.flag] ?? 99;
+      } else if (col === 'qtitle' || col === 'section') {
+        av = (a[col] || '').toLowerCase();
+        bv = (b[col] || '').toLowerCase();
+        return av < bv ? -dir : av > bv ? dir : 0;
+      } else {
+        av = a[col] ?? -999;
+        bv = b[col] ?? -999;
+      }
+      return (av - bv) * dir;
+    });
+  } else {
+    // Default sort: flag order
+    filteredItems.sort((a,b) => (flagOrder[a.flag?.flag]||99) - (flagOrder[b.flag?.flag]||99));
+  }
+
+  const filterLabel = activeFlagFilter ? ` [${activeFlagFilter} filter]` : '';
+  document.getElementById('itemTableTitle').textContent =
+    (moduleFilter || 'All Items') + filterLabel + ' (' + filteredItems.length + ' items)';
+
+  filteredItems.forEach((item, idx) => {
+    // Store in lookup map using a stable key
+    const mapKey = Object.keys(qtitleMap).length;
+    qtitleMap[mapKey] = item.qtitle;
+
+    const f = item.flag || { flag:'KEEP', reason:'' };
+    // Build specific recommendation for REWRITE items with negative pb
+    let rec = f.reason;
+    if (f.flag === 'REWRITE' && item.pointBiserial !== null && item.pointBiserial < 0) {
+      const topWrong = item.topWrongAnswer;
+      const topWrongPct = item.topWrongRate ? pct(item.topWrongRate) : 'n/a';
+      if (topWrong) {
+        rec = `Negative discrimination (r=${fmt2(item.pointBiserial)}). Consider double-keying: award credit for correct answer AND "${esc(topWrong)}" (selected by ${topWrongPct} of students) for this exam. Rewrite/retire for next administration.`;
+      } else {
+        rec = `Negative discrimination (r=${fmt2(item.pointBiserial)}). Immediate review required. Consider double-keying all responses for this exam. Rewrite item for next administration.`;
+      }
+    }
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td><span class="flag-pill pill-${f.flag.toLowerCase()}">${f.flag}</span></td>
+      <td style="max-width:220px;"><span class="qtitle-link" data-qkey="${mapKey}" title="Click to view question detail"><strong>${esc(item.qtitle)}</strong></span></td>
+      <td style="white-space:nowrap;">${item.qtype}</td>
+      <td style="white-space:nowrap;font-size:0.82rem;">${esc(item.section)}</td>
+      <td style="text-align:center;">${item.difficulty !== null ? pct(item.difficulty) : 'n/a'}</td>
+      <td style="text-align:center;">${item.pointBiserial !== null ? fmt2(item.pointBiserial) : 'n/a'}</td>
+      <td style="text-align:center;">${item.discriminationIndex !== null ? fmt2(item.discriminationIndex) : 'n/a'}</td>
+      <td style="text-align:center;">${item.n}</td>
+      <td style="max-width:180px;font-size:0.82rem;">${item.topWrongAnswer ? esc(item.topWrongAnswer) + ' <span style="color:var(--text-light);">(' + pct(item.topWrongRate) + ')</span>' : '—'}</td>
+      <td style="max-width:260px;font-size:0.82rem;font-style:italic;color:var(--text-light);">${rec}</td>
+    `;
+    tbody.appendChild(tr);
+  });
+
+  // Sync dual scroll
+  setTimeout(syncScrollBars, 50);
+}
+
+function renderStudentSelect() {
+  const { students } = parsedData;
+  const sel = document.getElementById('studentSelect');
+  sel.innerHTML = '<option value="">— Select Student —</option>';
+  Object.values(students)
+    .sort((a,b) => a.lname.localeCompare(b.lname))
+    .forEach(s => {
+      const opt = document.createElement('option');
+      opt.value = s.id;
+      opt.textContent = s.lname + ', ' + s.fname;
+      sel.appendChild(opt);
+    });
+}
+
+function showStudentReport() {
+  const sid = document.getElementById('studentSelect').value;
+  const area = document.getElementById('studentReportArea');
+  if (!sid) { area.innerHTML = ''; return; }
+
+  const { students, items, totalScores, classStats } = parsedData;
+  const student = students[sid];
+  if (!student) return;
+
+  const total = totalScores[sid] || 0;
+  const tp = classStats.totalPossible || 100; // already excludes bonus
+  const pctScore = tp > 0 ? Math.round((total/tp)*1000)/10 : 0;
+
+  // Group items by section
+  const bySection = {};
+  Object.values(student.items).forEach(si => {
+    if (!bySection[si.section]) bySection[si.section] = [];
+    bySection[si.section].push(si);
+  });
+
+  // Module performance — exclude bonus from possible totals
+  const modPerf = {};
+  for (const [sec, sitems] of Object.entries(bySection)) {
+    const got = sitems.reduce((s,i) => s+i.score, 0);
+    const pos = sitems.filter(i => !i.isBonus).reduce((s,i) => s+i.outOf, 0);
+    modPerf[sec] = { got, pos, pct: pos>0 ? got/pos : 0, count: sitems.length };
+  }
+
+  // Remediation text
+  const weakMods = Object.entries(modPerf)
+    .filter(([,v]) => v.pct < 0.70)
+    .sort((a,b) => a[1].pct - b[1].pct)
+    .map(([k,v]) => k + ' (' + pct(v.pct) + ')');
+  let remText = weakMods.length > 0
+    ? 'Priority review areas: ' + weakMods.join(', ') + '. Recommend focused study on content where performance fell below 70%.'
+    : 'Performance is consistent across all content areas. No priority remediation areas identified at this time.';
+
+  // All student items flat
+  const allItems = Object.values(student.items);
+
+  // Score color
+  const scoreColor = pctScore >= 77 ? '#1b7a3e' : pctScore >= 70 ? '#d4620a' : '#c0392b';
+
+  // ── Header ──
+  let html = `<div class="student-header-block">
+    <div>
+      <div class="student-name">${esc(student.lname)}, ${esc(student.fname)}</div>
+      <div style="font-size:0.82rem;opacity:0.7;margin-top:3px;">${esc(parsedData.meta.courseLabel)} · ${esc(parsedData.meta.examName)} · ${esc(parsedData.meta.semester)} ${esc(parsedData.meta.year)}</div>
+    </div>
+    <div class="student-score-badge" style="background:${scoreColor}20;border-color:${scoreColor};color:${scoreColor};">
+      ${fmt1(total)} / ${tp} &nbsp;·&nbsp; ${pctScore}%
+    </div>
+  </div>`;
+
+  // ── Side-by-side: Module table + Remediation ──
+  html += `<div class="student-top-row">
+    <div>
+      <div class="module-label" style="margin-bottom:10px;">Module Performance Summary</div>
+      <table style="font-size:0.84rem;width:100%;">
+        <thead><tr>
+          <th style="background:var(--navy);color:white;padding:6px 12px;text-align:left;font-size:0.72rem;letter-spacing:0.1em;text-transform:uppercase;">Module</th>
+          <th style="background:var(--navy);color:white;padding:6px 12px;text-align:center;font-size:0.72rem;letter-spacing:0.1em;text-transform:uppercase;">Items</th>
+          <th style="background:var(--navy);color:white;padding:6px 12px;text-align:center;font-size:0.72rem;letter-spacing:0.1em;text-transform:uppercase;">Score</th>
+          <th style="background:var(--navy);color:white;padding:6px 12px;text-align:center;font-size:0.72rem;letter-spacing:0.1em;text-transform:uppercase;">%</th>
+        </tr></thead><tbody>`;
+  for (const [sec, mp] of Object.entries(modPerf)) {
+    const bg = mp.pct >= 0.85 ? '#e8f5e9' : mp.pct >= 0.70 ? '' : '#fce4ec';
+    html += `<tr style="background:${bg};">
+      <td style="padding:6px 12px;">${esc(sec)}</td>
+      <td style="padding:6px 12px;text-align:center;">${mp.count}</td>
+      <td style="padding:6px 12px;text-align:center;">${fmt1(mp.got)}/${fmt1(mp.pos)}</td>
+      <td style="padding:6px 12px;text-align:center;font-weight:700;">${pct(mp.pct)}</td>
+    </tr>`;
+  }
+  html += `</tbody></table>
+    </div>
+    <div>
+      <div class="module-label" style="margin-bottom:10px;">Remediation Summary</div>
+      <div class="remediation-box" style="margin-top:0;">${esc(remText)}</div>
+    </div>
+  </div>`;
+
+  // ── Toggle buttons ──
+  html += `<div class="student-view-toggle">
+    <button class="student-view-btn active" id="svBtn-module" onclick="setStudentView('module')">📚 View by Module</button>
+    <button class="student-view-btn" id="svBtn-result" onclick="setStudentView('result')">📊 View by Result</button>
+  </div>`;
+
+  // ── Question list container ──
+  html += `<div class="student-question-list" id="studentQList"></div>`;
+
+  area.innerHTML = html;
+
+  // Store items on window for toggle access
+  window._studentItems = allItems;
+  window._studentBySection = bySection;
+
+  // Default view: by module
+  renderStudentQList('module');
+}
+
+function setStudentView(view) {
+  document.getElementById('svBtn-module').classList.toggle('active', view === 'module');
+  document.getElementById('svBtn-result').classList.toggle('active', view === 'result');
+  renderStudentQList(view);
+}
+
+function renderStudentQList(view) {
+  const container = document.getElementById('studentQList');
+  if (!container) return;
+
+  const allItems = window._studentItems || [];
+  const bySection = window._studentBySection || {};
+  const { items: itemData } = parsedData;
+
+  const getResult = (si) => {
+    if (si.outOf > 0 && (si.score / si.outOf) >= 0.99) return 'correct';
+    if (si.score > 0) return 'partial';
+    return 'incorrect';
+  };
+  const resultLabel = { correct: 'Correct', partial: 'Partial', incorrect: 'Incorrect' };
+  const resultClass = { correct: 'rb-correct', partial: 'rb-partial', incorrect: 'rb-incorrect' };
+  const resultOrder = { incorrect: 0, partial: 1, correct: 2 };
+
+  function buildExpandPanel(si) {
+    const item = itemData[si.qtitle];
+    if (!item) return '<div style="padding:8px;font-size:0.82rem;color:var(--text-light);">Question detail not available.</div>';
+
+    const selectedSet = new Set(si.selected || []);
+    const correctSet = new Set(item.correctAnswers || (item.correctAnswer ? [item.correctAnswer] : []));
+    const isSATA = si.qtype === 'M-S' || si.qtype === 'MAT';
+
+    let html = '';
+    if (item.qtext) {
+      html += '<div class="sq-stem">' + esc(item.qtext) + '</div>';
+    }
+
+    if (si.qtype === 'FIB') {
+      const blanks = si.fibAnswers || [{ blank: 1, value: si.fibAnswer || '(no answer)', score: si.score, outOf: si.outOf }];
+      const isMulti = blanks.length > 1;
+      blanks.forEach(b => {
+        const isRight = b.outOf > 0 && (b.score / b.outOf) >= 0.99;
+        if (isMulti) {
+          html += '<div style="font-size:0.72rem;font-weight:700;color:var(--navy);margin:6px 0 4px;">Blank ' + b.blank + '</div>';
+        }
+        html += '<div class="sq-choice ' + (isRight ? 'sq-correct' : 'sq-wrong') + '">'
+          + '<div class="sq-choice-letter">' + (isRight ? '\u2713' : '\u2717') + '</div>'
+          + '<div style="flex:1;">Student answered: <strong>' + esc(b.value || '(no answer)') + '</strong></div>'
+          + '<span class="sq-choice-tag ' + (isRight ? 'sq-tag-correct' : 'sq-tag-selected') + '">' + (isRight ? 'Correct' : 'Incorrect') + '</span>'
+          + '</div>';
+      });
+      return html;
+    }
+
+    if (si.qtype === 'MAT') {
+      const matMatches = si.matMatches || {};
+      const matData = item.matData || {};
+      html += '<div style="font-size:0.72rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--steel);margin-bottom:8px;">Matching \u2014 green\u00a0=\u00a0correct \u00b7 red\u00a0=\u00a0incorrect match</div>';
+      const prompts = Object.keys(matData).sort((a,b) => (matData[a].order||0) - (matData[b].order||0));
+      prompts.forEach(prompt => {
+        const studentResponse = matMatches[prompt] || '(no answer)';
+        const correctAns = (matData[prompt] && matData[prompt].correctAnswer) || prompt;
+        const isRight = studentResponse === correctAns;
+        html += '<div class="sq-choice ' + (isRight ? 'sq-correct' : 'sq-wrong') + '" style="flex-wrap:wrap;">'
+          + '<div style="flex:1;min-width:0;"><span style="font-weight:700;">' + esc(prompt) + '</span> \u2192 '
+          + '<span style="' + (isRight ? 'color:#1b7a3e;' : 'color:#c0392b;') + 'font-weight:700;">' + esc(studentResponse) + '</span>'
+          + (!isRight ? ' <span style="color:var(--text-light);font-size:0.78rem;">(correct: ' + esc(correctAns) + ')</span>' : '')
+          + '</div>'
+          + '<span class="sq-choice-tag ' + (isRight ? 'sq-tag-correct' : 'sq-tag-selected') + '">' + (isRight ? '\u2713 Correct' : '\u2717 Wrong') + '</span>'
+          + '</div>';
+      });
+      return html;
+    }
+
+    const allChoices = item.allChoices || {};
+    const entries = Object.entries(allChoices).sort((a,b) => a[1].order - b[1].order);
+    const letters = 'ABCDEFGHIJ';
+
+    if (isSATA) {
+      html += '<div style="font-size:0.72rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--steel);margin-bottom:8px;">Select All That Apply — green = correct option · red = incorrectly selected</div>';
+    }
+
+    entries.forEach(([ans, data], idx) => {
+      const isCorrect = correctSet.has(ans);
+      const isSelected = selectedSet.has(ans);
+      let cls = '', tag = '';
+      if (isCorrect && isSelected) {
+        cls = 'sq-correct';
+        tag = '<span class="sq-choice-tag sq-tag-both">\u2713 Correct</span>';
+      } else if (isCorrect && !isSelected) {
+        cls = 'sq-correct';
+        tag = '<span class="sq-choice-tag sq-tag-correct">Correct Answer</span>';
+      } else if (!isCorrect && isSelected) {
+        cls = 'sq-wrong';
+        tag = '<span class="sq-choice-tag sq-tag-selected">\u2717 You Selected</span>';
+      }
+      html += '<div class="sq-choice ' + cls + '">'
+        + '<div class="sq-choice-letter">' + (letters[idx] || (idx+1)) + '</div>'
+        + '<div style="flex:1;">' + esc(ans) + '</div>'
+        + tag
+        + '</div>';
+    });
+
+    if (entries.length === 0) {
+      html += '<div style="font-size:0.82rem;color:var(--text-light);padding:6px 0;">Answer choice detail not available for this item.</div>';
+    }
+    return html;
+  }
+
+  function buildQRow(si, extraInfo) {
+    const r = getResult(si);
+    const expandId = 'sqx-' + si.qnum + '-' + (si.qtitle || '').replace(/[^a-z0-9]/gi,'').slice(0,10);
+    const bonusTag = si.isBonus ? ' <span style="font-size:0.7rem;background:#fff3cd;color:#7c4a00;padding:1px 6px;border-radius:4px;font-weight:700;">BONUS</span>' : '';
+    const expandHtml = buildExpandPanel(si);
+    return '<div class="student-q-row" onclick="toggleStudentExpand(\'' + expandId + '\', this)">'
+      + '<span class="result-badge ' + resultClass[r] + '">' + resultLabel[r] + '</span>'
+      + '<span style="flex:1;">' + esc(si.qtitle || 'Q' + si.qnum) + bonusTag + '</span>'
+      + (extraInfo ? '<span style="font-size:0.78rem;color:var(--text-light);white-space:nowrap;">' + esc(extraInfo) + '</span>' : '')
+      + '<span style="font-size:0.8rem;color:var(--text-light);white-space:nowrap;">' + fmt1(si.score) + '/' + fmt1(si.outOf) + '</span>'
+      + '<span class="sq-chevron">\u25bc</span>'
+      + '</div>'
+      + '<div class="student-q-expand" id="' + expandId + '">' + expandHtml + '</div>';
+  }
+
+  let html = '';
+
+  if (view === 'module') {
+    for (const [sec, sitems] of Object.entries(bySection)) {
+      html += '<div class="student-group-header">' + esc(sec) + '</div>';
+      [...sitems].sort((a,b) => resultOrder[getResult(a)] - resultOrder[getResult(b)])
+        .forEach(si => { html += buildQRow(si, null); });
+    }
+  } else {
+    ['incorrect','partial','correct'].forEach(r => {
+      const group = allItems.filter(si => getResult(si) === r);
+      if (group.length === 0) return;
+      const icons = { incorrect: '\u2717', partial: '\u25d1', correct: '\u2713' };
+      html += '<div class="student-group-header">' + icons[r] + ' ' + resultLabel[r] + ' (' + group.length + ')</div>';
+      group.forEach(si => { html += buildQRow(si, si.section); });
+    });
+  }
+
+  container.innerHTML = html;
+}
+
+function toggleStudentExpand(expandId, rowEl) {
+  const panel = document.getElementById(expandId);
+  if (!panel) return;
+  const isOpen = panel.classList.contains('open');
+  panel.classList.toggle('open', !isOpen);
+  rowEl.classList.toggle('expanded', !isOpen);
+  const chevron = rowEl.querySelector('.sq-chevron');
+  if (chevron) chevron.textContent = isOpen ? '\u25bc' : '\u25b2';
+}
+
+// ══════════════════════════════════════════════
+//  QUESTION DETAIL MODAL
+// ══════════════════════════════════════════════
+function openQuestionModal(qtitle) {
+  const { items } = parsedData;
+  const item = items[qtitle];
+  if (!item) return;
+
+  document.getElementById('modalTitle').textContent = item.qtitle;
+  const f = item.flag || { flag: 'KEEP', reason: '' };
+  document.getElementById('modalFlag').textContent =
+    f.flag + ' · ' + (item.section || '') + ' · ' + item.qtype +
+    ' · n=' + item.n +
+    (item.difficulty !== null ? ' · Difficulty: ' + pct(item.difficulty) : '') +
+    (item.pointBiserial !== null ? ' · PB: ' + fmt2(item.pointBiserial) : '');
+
+  document.getElementById('modalStem').textContent = item.qtext || '(Question stem not available in this CSV export)';
+
+  const choicesEl = document.getElementById('modalChoices');
+  choicesEl.innerHTML = '';
+
+  const totalN = item.n;
+
+  if (item.qtype === 'FIB') {
+    // Multi-blank FIB: group responses by blank number, show each blank separately
+    const heading = document.createElement('div');
+    heading.style.cssText = 'font-size:0.78rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--steel);margin-bottom:10px;';
+    heading.textContent = 'Student Responses (Fill-in-the-Blank)';
+    choicesEl.appendChild(heading);
+
+    // Collect all blanks across all students
+    const blankData = {}; // blankNum -> { answerCounts: {val: {correct, incorrect}} }
+    (item.responses || []).forEach(r => {
+      const blanks = r.fibAnswers || [{ blank: 1, value: r.fibAnswer || '(blank)', score: r.score, outOf: r.outOf }];
+      blanks.forEach(b => {
+        const bn = b.blank || 1;
+        if (!blankData[bn]) blankData[bn] = {};
+        const val = (b.value || '(blank)').trim();
+        if (!blankData[bn][val]) blankData[bn][val] = { correct: 0, incorrect: 0 };
+        const isCorrect = r.outOf > 0 && (r.score / r.outOf) >= 0.99;
+        if (isCorrect) blankData[bn][val].correct++;
+        else blankData[bn][val].incorrect++;
+      });
+    });
+
+    const blankNums = Object.keys(blankData).sort((a,b) => a-b);
+    const isMultiBlank = blankNums.length > 1;
+
+    blankNums.forEach(bn => {
+      if (isMultiBlank) {
+        const blankLabel = document.createElement('div');
+        blankLabel.style.cssText = 'font-size:0.78rem;font-weight:700;color:var(--navy);margin:10px 0 6px;';
+        blankLabel.textContent = 'Blank ' + bn;
+        choicesEl.appendChild(blankLabel);
+      }
+      const sorted = Object.entries(blankData[bn]).sort((a,b) => (b[1].correct+b[1].incorrect) - (a[1].correct+a[1].incorrect));
+      sorted.forEach(([ans, counts]) => {
+        const total = counts.correct + counts.incorrect;
+        const rate = totalN > 0 ? total / totalN : 0;
+        const isCorrectAns = counts.correct > 0 && counts.incorrect === 0;
+        const div = document.createElement('div');
+        div.className = 'modal-choice' + (isCorrectAns ? ' correct' : '');
+        div.innerHTML = `
+          <div class="modal-choice-letter" style="${isCorrectAns ? '' : 'background:var(--steel);'}">${isCorrectAns ? '✓' : '✗'}</div>
+          <div class="modal-choice-text">${esc(ans)}</div>
+          <div class="modal-choice-stats">${total}/${totalN} (${pct(rate)})</div>
+        `;
+        choicesEl.appendChild(div);
+      });
+    });
+
+    document.getElementById('questionModal').classList.add('open');
+    return;
+  }
+
+  // MAT — show prompt/correct/class performance table
+  if (item.qtype === 'MAT') {
+    const heading = document.createElement('div');
+    heading.style.cssText = 'font-size:0.78rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--steel);margin-bottom:10px;';
+    heading.textContent = 'Matching Item — Class Performance by Prompt';
+    choicesEl.appendChild(heading);
+
+    const matData = item.matData || {};
+    const entries = Object.entries(matData).sort((a,b) => a[1].order - b[1].order);
+
+    entries.forEach(([prompt, data]) => {
+      const correctAns = data.correctAnswer || prompt;
+      const correctCount = data.responses[correctAns] || 0;
+      const correctRate = totalN > 0 ? correctCount / totalN : 0;
+
+      const promptEl = document.createElement('div');
+      promptEl.style.cssText = 'margin-bottom:10px;border:1px solid var(--border);border-radius:8px;overflow:hidden;';
+
+      // Prompt header
+      const promptHeader = document.createElement('div');
+      promptHeader.style.cssText = 'background:var(--navy);color:white;padding:6px 12px;font-size:0.82rem;font-weight:700;';
+      promptHeader.textContent = 'Prompt: ' + prompt;
+      promptEl.appendChild(promptHeader);
+
+      // Correct answer row
+      const correctRow = document.createElement('div');
+      correctRow.style.cssText = 'display:flex;align-items:center;gap:10px;padding:6px 12px;background:#e8f5e9;font-size:0.84rem;';
+      correctRow.innerHTML = `<span style="color:#1b7a3e;font-weight:700;">✓ Correct match:</span><span style="flex:1;">${esc(correctAns)}</span><span style="color:#1b7a3e;font-weight:700;">${correctCount}/${totalN} (${pct(correctRate)})</span>`;
+      promptEl.appendChild(correctRow);
+
+      // Wrong responses
+      const wrongEntries = Object.entries(data.responses)
+        .filter(([resp]) => resp !== correctAns)
+        .sort((a,b) => b[1]-a[1]);
+
+      wrongEntries.forEach(([resp, count]) => {
+        const rate = totalN > 0 ? count / totalN : 0;
+        const row = document.createElement('div');
+        row.style.cssText = 'display:flex;align-items:center;gap:10px;padding:5px 12px;font-size:0.84rem;border-top:1px solid var(--offwhite);';
+        row.innerHTML = `<span style="color:#c0392b;font-weight:700;">✗</span><span style="flex:1;">${esc(resp)}</span><span style="color:var(--text-light);">${count}/${totalN} (${pct(rate)})</span>`;
+        promptEl.appendChild(row);
+      });
+
+      choicesEl.appendChild(promptEl);
+    });
+
+    document.getElementById('questionModal').classList.add('open');
+    return;
+  }
+
+  // MC / M-S / MAT — use allChoices which has accurate per-answer counts
+  const allChoices = item.allChoices || {};
+  const correctAnswers = new Set(item.correctAnswers || (item.correctAnswer ? [item.correctAnswer] : []));
+  const topWrong = item.topWrongAnswer;
+  const isMATA = item.qtype === 'M-S' || item.qtype === 'MAT';
+
+  // Sort by original order of appearance in CSV
+  const entries = Object.entries(allChoices).sort((a,b) => a[1].order - b[1].order);
+
+  if (entries.length === 0) {
+    const note = document.createElement('div');
+    note.style.cssText = 'font-size:0.88rem;color:var(--text-light);padding:10px 0;';
+    note.textContent = 'Answer choice breakdown not available for this item.';
+    choicesEl.appendChild(note);
+    document.getElementById('questionModal').classList.add('open');
+    return;
+  }
+
+  const heading = document.createElement('div');
+  heading.style.cssText = 'font-size:0.78rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--steel);margin-bottom:10px;';
+  heading.textContent = isMATA
+    ? 'Answer Choices — Select All That Apply (SATA) — Student Selections'
+    : 'Answer Choices — Student Selections';
+  choicesEl.appendChild(heading);
+
+  entries.forEach(([ans, data]) => {
+    const count = data.checked;
+    const rate = totalN > 0 ? count / totalN : 0;
+    const isCorrect = correctAnswers.has(ans);
+    const isTopWrong = ans === topWrong && !isCorrect;
+    const letters = 'ABCDEFGHIJ';
+    const letterIdx = data.order;
+
+    const div = document.createElement('div');
+    div.className = 'modal-choice' + (isCorrect ? ' correct' : isTopWrong ? ' top-wrong' : '');
+    const correctLabel = isCorrect
+      ? (isMATA ? ' <em style="font-size:0.75rem;opacity:0.8;">(Correct option)</em>' : ' <em style="font-size:0.75rem;opacity:0.8;">(Keyed answer)</em>')
+      : '';
+    const wrongLabel = isTopWrong ? ' <em style="font-size:0.75rem;opacity:0.8;">(Top wrong answer)</em>' : '';
+    div.innerHTML = `
+      <div class="modal-choice-letter">${letters[letterIdx] || (letterIdx+1)}</div>
+      <div class="modal-choice-text">${esc(ans)}${correctLabel}${wrongLabel}</div>
+      <div class="modal-choice-stats">${count}/${totalN} (${pct(rate)})</div>
+    `;
+    choicesEl.appendChild(div);
+  });
+
+  document.getElementById('questionModal').classList.add('open');
+}
+
+function closeModal(event) {
+  if (event.target.id === 'questionModal') {
+    document.getElementById('questionModal').classList.remove('open');
+  }
+}
+
+// ── Close modal on Escape ──
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') document.getElementById('questionModal').classList.remove('open');
+});
+
+// ══════════════════════════════════════════════
+//  DUAL SCROLL SYNC
+// ══════════════════════════════════════════════
+function syncScrollBars() {
+  const tableWrap = document.getElementById('tableWrap');
+  const scrollTop = document.getElementById('scrollTopBar');
+  const scrollTopInner = document.getElementById('scrollTopInner');
+  if (!tableWrap || !scrollTop) return;
+
+  scrollTopInner.style.width = tableWrap.scrollWidth + 'px';
+
+  let syncing = false;
+  scrollTop.onscroll = () => { if (!syncing) { syncing = true; tableWrap.scrollLeft = scrollTop.scrollLeft; syncing = false; } };
+  tableWrap.onscroll = () => { if (!syncing) { syncing = true; scrollTop.scrollLeft = tableWrap.scrollLeft; syncing = false; } };
+}
+
+// ══════════════════════════════════════════════
+//  COLLAPSIBLE LEGEND
+// ══════════════════════════════════════════════
+function toggleLegend() {
+  const body = document.getElementById('legendBody');
+  const btn = document.getElementById('legendToggleBtn');
+  const isCollapsed = body.classList.contains('collapsed');
+  body.classList.toggle('collapsed', !isCollapsed);
+  body.style.maxHeight = isCollapsed ? '9999px' : '0';
+  btn.textContent = isCollapsed ? '▲ Collapse' : '▼ Expand';
+}
+
+// ══════════════════════════════════════════════
+//  CLEAR & RESTART
+// ══════════════════════════════════════════════
+function clearAndRestart() {
+  if (!confirm('Clear all data and start over? This will reset all uploaded files, results, and settings.')) return;
+  parsedData = null;
+  prevParsedData = [];
+  longitudinalOn = false;
+  prevFileCount = 0;
+  activeFlagFilter = null;
+  activeModuleFilter = null;
+  currentSort = { col: null, dir: 'asc' };
+  itemAnalysisCollapsed = false;
+
+  document.getElementById('mainFileInput').value = '';
+  document.getElementById('mainFileName').textContent = '';
+  document.getElementById('mainUploadZone').classList.remove('has-file');
+  document.getElementById('courseSelect').value = '';
+  document.getElementById('semesterSelect').value = '';
+  document.getElementById('yearSelect').value = '';
+  document.getElementById('examName').value = '';
+  document.getElementById('resultsSection').classList.remove('visible');
+  document.getElementById('prevFilesContainer').innerHTML = '';
+  document.getElementById('longitudinalSection').classList.remove('visible');
+  document.getElementById('toggleSwitch').classList.remove('on');
+  clearAlert();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// ══════════════════════════════════════════════
+//  STUDENT INDIVIDUAL EXCEL DOWNLOAD
+// ══════════════════════════════════════════════
+function downloadStudentExcel() {
+  if (!parsedData) return;
+  const sid = document.getElementById('studentSelect').value;
+  if (!sid) { showAlert('Please select a student first.', 'warn'); return; }
+
+  const { students, items, totalScores, classStats, meta } = parsedData;
+  const student = students[sid];
+  if (!student) return;
+
+  const wb = XLSX.utils.book_new();
+  const NAV = '1e3a6e', WHITE = 'FFFFFF', GREEN = '1b7a3e', YELLOW = 'd4a017', ORANGE = 'd4620a', RED = 'c0392b';
+  const OFFWHITE = 'F4F7FB', STEEL = '4a7ab5';
+  const tp = classStats.totalPossible || 1;
+  const total = totalScores[sid] || 0;
+  const pctScore = tp > 0 ? Math.round((total/tp)*1000)/10 : 0;
+
+  // Group by section for module table
+  const bySection = {};
+  Object.values(student.items).forEach(si => {
+    if (!bySection[si.section]) bySection[si.section] = [];
+    bySection[si.section].push(si);
+  });
+
+  const modPerf = {};
+  for (const [sec, sitems] of Object.entries(bySection)) {
+    const got = sitems.reduce((s,i) => s+i.score, 0);
+    const pos = sitems.reduce((s,i) => s+i.outOf, 0);
+    modPerf[sec] = { got, pos, pct: pos>0 ? got/pos : 0, count: sitems.length };
+  }
+
+  // Missed/partial items only — flat list, titles only
+  const missedItems = Object.values(student.items).filter(si => {
+    const isCorrect = si.outOf > 0 && (si.score / si.outOf) >= 0.99;
+    return !isCorrect;
+  });
+
+  const rows = [
+    // Row 0: Main header
+    ['NIARA — Student Exam Performance Report', '', '', '', ''],
+    // Row 1: Branding
+    ['GrangeRN · Nursing Item Analysis & Reporting Assistant', '', '', '', ''],
+    // Row 2: blank
+    ['', '', '', '', ''],
+    // Row 3: Student info header
+    ['STUDENT INFORMATION', '', '', '', ''],
+    ['Name', student.lname + ', ' + student.fname, '', '', ''],
+    ['Course', meta.courseLabel, '', '', ''],
+    ['Exam', meta.examName, '', '', ''],
+    ['Semester / Year', meta.semester + ' ' + meta.year, '', '', ''],
+    ['Exam Score', fmt1(total) + ' / ' + tp + ' (' + pctScore + '%)', '', '', ''],
+    ['', '', '', '', ''],
+    // Row 9: Module performance
+    ['MODULE PERFORMANCE SUMMARY', '', '', '', ''],
+    ['Content Area', 'Items', 'Score', '% Correct', ''],
+  ];
+
+  for (const [sec, mp] of Object.entries(modPerf)) {
+    rows.push([sec, mp.count, fmt1(mp.got) + '/' + fmt1(mp.pos), pct(mp.pct), '']);
+  }
+
+  rows.push(['', '', '', '', '']);
+  rows.push(['ITEMS REQUIRING REVIEW', '', '', '', '']);
+  rows.push(['The following question topics were answered incorrectly or received partial credit. Use these topic areas to guide your review.', '', '', '', '']);
+  rows.push(['', '', '', '', '']);
+  rows.push(['#', 'Question Topic / Title', 'Result', 'Score', '']);
+
+  let itemNum = 1;
+  missedItems.forEach(si => {
+    const isPartial = si.score > 0;
+    const result = isPartial ? 'Partial Credit' : 'Incorrect';
+    rows.push([itemNum++, si.qtitle || 'Q' + si.qnum, result, fmt1(si.score) + '/' + fmt1(si.outOf), '']);
+  });
+
+  if (missedItems.length === 0) {
+    rows.push(['', 'No items missed — all questions answered correctly.', '', '', '']);
+  }
+
+  rows.push(['', '', '', '', '']);
+  rows.push(['This report was generated by NIARA (Nursing Item Analysis & Reporting Assistant) · GrangeRN', '', '', '', '']);
+
+  const ws = XLSX.utils.aoa_to_sheet(rows);
+  ws['!cols'] = [{wch:6},{wch:52},{wch:16},{wch:14},{wch:4}];
+
+  // Merges for header rows
+  ws['!merges'] = [
+    {s:{r:0,c:0},e:{r:0,c:4}},
+    {s:{r:1,c:0},e:{r:1,c:4}},
+    {s:{r:3,c:0},e:{r:3,c:4}},
+  ];
+
+  // Style main header
+  styleCell(ws,'A1',{font:{bold:true,color:{rgb:WHITE},sz:15,name:'Calibri'},fill:{fgColor:{rgb:NAV}},alignment:{horizontal:'left',vertical:'center'}});
+  styleCell(ws,'A2',{font:{color:{rgb:WHITE},sz:9},fill:{fgColor:{rgb:NAV}},alignment:{horizontal:'left'}});
+  ws['!rows'] = [{hpt:32},{hpt:18},{hpt:8}];
+
+  // Style section headers
+  const sectionRows = [3, 10]; // 0-indexed
+  sectionRows.forEach(r => {
+    const ref = XLSX.utils.encode_cell({r, c:0});
+    if (!ws[ref]) ws[ref] = {v:'',t:'s'};
+    ws[ref].s = {font:{bold:true,color:{rgb:WHITE},sz:9},fill:{fgColor:{rgb:'152d57'}},alignment:{horizontal:'left'}};
+  });
+
+  // Find and style the module table header row and Items Requiring Review header
+  const modHeaderRow = 11; // 0-indexed row 11
+  for (let c = 0; c < 4; c++) {
+    const ref = XLSX.utils.encode_cell({r:modHeaderRow,c});
+    if (!ws[ref]) ws[ref] = {v:'',t:'s'};
+    ws[ref].s = {font:{bold:true,color:{rgb:WHITE},sz:9},fill:{fgColor:{rgb:STEEL}},alignment:{horizontal:'center'}};
+  }
+
+  // Color module rows by performance
+  let modRow = modHeaderRow + 1;
+  for (const [sec, mp] of Object.entries(modPerf)) {
+    const fillColor = mp.pct >= 0.85 ? 'C8E6C9' : mp.pct >= 0.70 ? OFFWHITE : 'FCCDD5';
+    for (let c = 0; c < 4; c++) {
+      const ref = XLSX.utils.encode_cell({r:modRow,c});
+      if (!ws[ref]) ws[ref] = {v:'',t:'s'};
+      ws[ref].s = {fill:{fgColor:{rgb:fillColor}}};
+    }
+    modRow++;
+  }
+
+  // Find items table header row
+  const itemsTableHeaderRow = modRow + 4;
+  for (let c = 0; c < 4; c++) {
+    const ref = XLSX.utils.encode_cell({r:itemsTableHeaderRow,c});
+    if (!ws[ref]) ws[ref] = {v:'',t:'s'};
+    ws[ref].s = {font:{bold:true,color:{rgb:WHITE},sz:9},fill:{fgColor:{rgb:NAV}},alignment:{horizontal:'center'}};
+  }
+
+  // Color missed item rows
+  let itemRow = itemsTableHeaderRow + 1;
+  missedItems.forEach((si,i) => {
+    const isPartial = si.score > 0;
+    const fillColor = isPartial ? 'FFF8E1' : 'FCE4EC';
+    for (let c = 0; c < 4; c++) {
+      const ref = XLSX.utils.encode_cell({r:itemRow,c});
+      if (!ws[ref]) ws[ref] = {v:'',t:'s'};
+      ws[ref].s = {fill:{fgColor:{rgb:fillColor}}};
+    }
+    itemRow++;
+  });
+
+  XLSX.utils.book_append_sheet(wb, ws, '📋 ' + student.lname + ' Report');
+
+  const safeLast = student.lname.replace(/[^a-zA-Z]/g,'');
+  const safeFirst = student.fname.replace(/[^a-zA-Z]/g,'');
+  const courseNum = meta.course;
+  const safeExam = meta.examName.replace(/[^a-zA-Z0-9]/g,'');
+  const fileName = `${safeLast}_${safeFirst}_NURS${courseNum}_${safeExam}_${meta.semester}${meta.year}.xlsx`;
+  XLSX.writeFile(wb, fileName);
+}
+
+// ══════════════════════════════════════════════
+//  DOUBLE-KEY PANEL
+// ══════════════════════════════════════════════
+function toggleDKPanel() {
+  const panel = document.getElementById('dkPanel');
+  panel.classList.toggle('open');
+}
+
+function buildDKPanel() {
+  const { items } = parsedData;
+  const dkItems = identifyDKCandidates(items);
+
+  const btnWrap = document.getElementById('dkBtnWrap');
+  const panel = document.getElementById('dkPanel');
+  const countEl = document.getElementById('dkCount');
+
+  if (dkItems.length === 0) {
+    btnWrap.style.display = 'none';
+    return;
+  }
+
+  btnWrap.style.display = 'block';
+  countEl.textContent = '(' + dkItems.length + ' item' + (dkItems.length > 1 ? 's' : '') + ')';
+
+  let html = `
+    <div class="dk-panel-header">
+      <h3>⚠ Double-Key Review Recommendations</h3>
+      <p>${dkItems.length} item${dkItems.length > 1 ? 's' : ''} identified for SME review based on item analysis statistics</p>
+    </div>
+  `;
+
+  dkItems.forEach(dk => {
+    const { item, pattern, recommendation, concerns, totalN } = dk;
+    const allChoices = item.allChoices || {};
+    const correct = item.correctAnswer;
+    const entries = Object.entries(allChoices).sort((a,b) => a[1].order - b[1].order);
+
+    const patternIcon = pattern.type === 'keying_error' ? '🔑' : pattern.type === 'stem_ambiguity' ? '📝' : '⚖';
+
+    html += `<div class="dk-item">
+      <div class="dk-item-title">${esc(item.qtitle)}</div>
+      <div style="font-size:0.78rem;color:var(--text-light);margin-bottom:10px;">
+        ${esc(item.section)} · ${item.qtype} · n=${item.n} · 
+        Difficulty: ${item.difficulty !== null ? pct(item.difficulty) : 'n/a'} · 
+        Point-Biserial: ${item.pointBiserial !== null ? fmt2(item.pointBiserial) : 'n/a'}
+      </div>
+      <div class="dk-stem">${esc(item.qtext || '(Stem not available in CSV)')}</div>
+      <div class="dk-choices">`;
+
+    entries.forEach(([ans, data]) => {
+      const count = data.checked;
+      const rate = totalN > 0 ? count / totalN : 0;
+      const isCorrect = ans === correct;
+      const isConcern = concerns.includes(ans);
+      let cls = isCorrect ? 'dk-correct' : isConcern ? 'dk-concern' : 'dk-minor';
+      let badge = isCorrect ? '<span class="dk-badge dk-badge-correct">Keyed Answer</span>' :
+                  isConcern ? '<span class="dk-badge dk-badge-concern">Review for Credit</span>' : '';
+      const barWidth = Math.round(rate * 100);
+
+      html += `<div class="dk-choice ${cls}">
+        <div class="dk-choice-label">${esc(ans)}</div>
+        <div class="dk-choice-bar"><div class="dk-choice-bar-fill" style="width:${barWidth}%"></div></div>
+        <div class="dk-choice-stat">${count}/${totalN} (${pct(rate)})</div>
+        ${badge}
+      </div>`;
+    });
+
+    html += `</div>
+      <div class="dk-pattern">${patternIcon} Statistical pattern: <span style="font-weight:400;">${esc(pattern.sentence)}</span></div>
+      <div class="dk-rec">${esc(recommendation)}</div>
+      <div class="dk-sme">SME review required. Consultation with additional subject matter experts is warranted where clinical judgment is contested. Statistics are one signal — other explanations for outliers may exist.</div>
+    </div>`;
+  });
+
+  // Methodology note at bottom
+  html += `<div class="dk-methodology">
+    <strong>Analysis Methodology &amp; Thresholds</strong>
+    Items are surfaced for double-key review when one or more of the following statistical conditions are met: (1) Point-biserial correlation for the keyed answer is negative (r &lt; 0.00), indicating higher-performing students selected the keyed answer less often than lower-performing students; (2) A distractor (incorrect answer choice) was selected by more than 40% of students, suggesting it may be functioning statistically like a correct answer; (3) Item discrimination index is negative, indicating the upper 27% of scorers performed worse on this item than the lower 27%. Post-hoc pattern analysis classifies each item as a probable keying error, stem ambiguity, or construction problem based on the distribution of wrong-answer selections across distractors. All statistics are computed from classical test theory using the Brightspace Attempt Details CSV export. These are recommendations only — a subject matter expert must conduct independent review before any scoring change is made.
+  </div>`;
+
+  panel.innerHTML = html;
+}
+
+function identifyDKCandidates(items) {
+  const candidates = [];
+
+  for (const item of Object.values(items)) {
+    if (!item.flag) continue;
+    if (item.qtype === 'FIB') continue; // FIB doesn't have discrete distractors
+
+    const pb = item.pointBiserial;
+    const di = item.discriminationIndex;
+    const twr = item.topWrongRate;
+    const flag = item.flag.flag;
+    const totalN = item.n;
+
+    // Qualifying conditions
+    const negPB = pb !== null && pb < 0;
+    const negDI = di !== null && di < 0;
+    const highTWR = twr !== null && twr > 0.40;
+
+    if (!negPB && !negDI && !highTWR) continue;
+
+    // Build concern list — distractors worth naming
+    const allChoices = item.allChoices || {};
+    const correct = item.correctAnswer;
+    const entries = Object.entries(allChoices).sort((a,b) => b[1].checked - a[1].checked);
+    const concerns = entries
+      .filter(([ans, data]) => ans !== correct && data.checked > 0)
+      .filter(([ans, data]) => {
+        const rate = totalN > 0 ? data.checked / totalN : 0;
+        return rate >= 0.10; // at least 10% selected it
+      })
+      .map(([ans]) => ans);
+
+    // Post-hoc pattern analysis
+    const wrongEntries = entries.filter(([ans]) => ans !== correct);
+    const wrongCounts = wrongEntries.map(([,d]) => d.checked);
+    const totalWrong = wrongCounts.reduce((s,v) => s+v, 0);
+    const topWrongCount = wrongCounts[0] || 0;
+    const topWrongRate = totalN > 0 ? topWrongCount / totalN : 0;
+    const dominanceRatio = totalWrong > 0 ? topWrongCount / totalWrong : 0;
+
+    let pattern, recommendation;
+
+    if (dominanceRatio >= 0.65 && topWrongRate >= 0.15) {
+      // One distractor dominates — likely keying error or double-correct
+      pattern = {
+        type: 'keying_error',
+        sentence: 'One distractor accounts for the majority of wrong-answer selections, with higher-performing students choosing it at meaningful rates. This pattern is consistent with a keying error or a defensibly double-correct item.'
+      };
+      const concernAns = wrongEntries[0] ? wrongEntries[0][0] : null;
+      const concernCount = wrongEntries[0] ? wrongEntries[0][1].checked : 0;
+      recommendation = `The keyed answer is: "${correct || 'undetermined'}". The distractor warranting review is: "${concernAns || 'see above'}" — selected by ${concernCount}/${totalN} students (${pct(totalN > 0 ? concernCount/totalN : 0)}). SME should determine whether this distractor is also defensibly correct given the stem exactly as written. If yes, award credit for both. If the item is ambiguous rather than genuinely double-keyed by content, remove from scoring. Retire or revise this item regardless of outcome — do not reuse in current form.`;
+    } else if (wrongCounts.length >= 2 && dominanceRatio < 0.55) {
+      // Multiple distractors selected at comparable rates — stem likely ambiguous
+      pattern = {
+        type: 'stem_ambiguity',
+        sentence: 'Wrong-answer selections are distributed across multiple distractors at comparable rates. This pattern suggests the stem may be ambiguous or unclear rather than a keying error involving one specific distractor.'
+      };
+      recommendation = `Students are not converging on a single wrong answer, suggesting the stem itself may be the problem. SME should review the stem for ambiguity, double negatives, or unclear clinical context. Recommendation is to consider removing this item from scoring for this administration and rewriting the stem before next use, rather than double-keying.`;
+    } else {
+      // Two options competing roughly equally
+      pattern = {
+        type: 'construction',
+        sentence: 'Two answer choices are selected at comparable rates, suggesting a construction problem where two options appear plausible to test-takers.'
+      };
+      const top2 = wrongEntries.slice(0, 2).map(([ans, d]) => `"${ans}" (${d.checked}/${totalN})`).join(' and ');
+      recommendation = `Two distractors are competing: ${top2}. SME should evaluate whether both options share content overlap with the keyed answer or whether the stem can be revised to make the correct answer unambiguous. Consider removing from scoring if the stem cannot clearly differentiate.`;
+    }
+
+    candidates.push({ item, pattern, recommendation, concerns, totalN });
+  }
+
+  return candidates;
+}
+
+// ══════════════════════════════════════════════
+//  EXCEL EXPORT
+// ══════════════════════════════════════════════
+function downloadExcel() {
+  if (!parsedData) return;
+  const wb = buildWorkbook(parsedData);
+  const { meta } = parsedData;
+  const courseNum = meta.course;
+  const safeName = (meta.examName).replace(/[^a-zA-Z0-9]/g,'');
+  const fileName = `NURS${courseNum}_${safeName}_${meta.semester}${meta.year}_NIARReport.xlsx`;
+  XLSX.writeFile(wb, fileName);
+}
+
+function downloadLongitudinal() {
+  if (!parsedData || prevParsedData.length === 0) return;
+  const wb = buildLongitudinalWorkbook(parsedData, prevParsedData);
+  const { meta } = parsedData;
+  const courseNum = meta.course;
+  const safeName = (meta.examName).replace(/[^a-zA-Z0-9]/g,'');
+  const fileName = `NURS${courseNum}_${safeName}_${meta.semester}${meta.year}_LongitudinalReport.xlsx`;
+  XLSX.writeFile(wb, fileName);
+}
+
+function buildWorkbook(data) {
+  const wb = XLSX.utils.book_new();
+  const { students, items, classStats, totalScores, meta } = data;
+
+  const NAV = '1e3a6e', STEEL = '4a7ab5', POWDER = '8aafd4', WHITE = 'FFFFFF';
+  const OFFWHITE = 'F4F7FB', BORDER = 'C8D8EC';
+  // New flag colors matching HTML
+  const FLAG_KEEP_BG   = '1b7a3e', FLAG_KEEP_TX   = 'FFFFFF';
+  const FLAG_REVIEW_BG = 'd4a017', FLAG_REVIEW_TX = '3d2800';
+  const FLAG_REVISE_BG = 'd4620a', FLAG_REVISE_TX = 'FFFFFF';
+  const FLAG_REWRITE_BG= 'c0392b', FLAG_REWRITE_TX= 'FFFFFF';
+
+  const headerStyle = { font:{bold:true, color:{rgb:WHITE}, sz:13}, fill:{fgColor:{rgb:NAV}}, alignment:{horizontal:'center',vertical:'center'} };
+  const subHeaderStyle = { font:{bold:true, color:{rgb:WHITE}, sz:10}, fill:{fgColor:{rgb:'152d57'}}, alignment:{horizontal:'left',vertical:'center'} };
+  const colHeaderStyle = { font:{bold:true, color:{rgb:WHITE}, sz:9}, fill:{fgColor:{rgb:NAV}}, alignment:{horizontal:'center',vertical:'center'}, border:{bottom:{style:'thin',color:{rgb:STEEL}}} };
+  const labelStyle = { font:{bold:true, color:{rgb:NAV}, sz:9}, fill:{fgColor:{rgb:OFFWHITE}} };
+
+  // ── TAB 1: Exam Summary ──
+  const ws1 = XLSX.utils.aoa_to_sheet([]);
+  const tp = classStats.totalPossible || 1;
+
+  const s1Data = [
+    ['NIARA — Nursing Item Analysis & Reporting Assistant', '', '', '', '', '', ''],
+    [meta.courseLabel, '', '', '', '', '', ''],
+    [meta.examName + '  |  ' + meta.semester + ' ' + meta.year, '', '', '', '', '', ''],
+    ['','','','','','',''],
+    ['CLASS PERFORMANCE', '', '', 'EXAM OVERVIEW', '', '', ''],
+    ['Mean Score', pct(classStats.avg/tp), '', 'Students Tested', classStats.n, '', ''],
+    ['Standard Deviation', pct(classStats.sd/tp), '', 'Total Unique Items', Object.keys(items).length, '', ''],
+    ['Highest Score', pct(classStats.max/tp), '', 'Exam Date', data.students[Object.keys(data.students)[0]]?.start?.split(' ')[0] || '', '', ''],
+    ['Lowest Score', pct(classStats.min/tp), '', 'Total Points Possible', tp, '', ''],
+    ['','','','','','',''],
+    ['ITEM FLAG SUMMARY', '', '', '', '', '', ''],
+    ['✓ KEEP', classStats.flags.KEEP, '', '👁 REVIEW', classStats.flags.REVIEW, '', ''],
+    ['✏ REVISE', classStats.flags.REVISE, '', '🔴 REWRITE', classStats.flags.REWRITE, '', ''],
+    ['','','','','','',''],
+    ['MODULE PERFORMANCE', '', '', '', '', '', ''],
+    ['Module', 'Avg Score', '% Correct', 'Items Assessed', '', '', ''],
+  ];
+
+  for (const [mod, mp] of Object.entries(classStats.modScores)) {
+    const uniqueItemsInMod = Object.values(items).filter(i => i.section === mod).length;
+    s1Data.push([mod, fmt1(mp.correct/classStats.n) + '/' + fmt1(mp.total/classStats.n), pct(mp.total>0?mp.correct/mp.total:0), uniqueItemsInMod,'','','']);
+  }
+
+  XLSX.utils.sheet_add_aoa(ws1, s1Data, {origin:'A1'});
+
+  // Styling via cell-level style
+  styleCell(ws1,'A1', {font:{bold:true,color:{rgb:WHITE},sz:16,name:'Calibri'}, fill:{fgColor:{rgb:NAV}}, alignment:{horizontal:'left',vertical:'center'}});
+  styleCell(ws1,'A2', {font:{bold:true,color:{rgb:WHITE},sz:11}, fill:{fgColor:{rgb:NAV}}, alignment:{horizontal:'left'}});
+  styleCell(ws1,'A3', {font:{color:{rgb:WHITE},sz:10}, fill:{fgColor:{rgb:NAV}}, alignment:{horizontal:'left'}});
+
+  ws1['!merges'] = [
+    {s:{r:0,c:0},e:{r:0,c:6}},
+    {s:{r:1,c:0},e:{r:1,c:6}},
+    {s:{r:2,c:0},e:{r:2,c:6}},
+    {s:{r:4,c:0},e:{r:4,c:2}},
+    {s:{r:4,c:3},e:{r:4,c:6}},
+    {s:{r:10,c:0},e:{r:10,c:6}},
+    {s:{r:14,c:0},e:{r:14,c:6}},
+  ];
+
+  ws1['!cols'] = [{wch:35},{wch:15},{wch:4},{wch:25},{wch:15},{wch:4},{wch:4}];
+  ws1['!rows'] = [{hpt:30},{hpt:22},{hpt:22},{hpt:8},{hpt:20}];
+
+  XLSX.utils.book_append_sheet(wb, ws1, '📊 Exam Summary');
+
+  // ── TAB 2: Item Status Report ──
+  const ws2 = XLSX.utils.aoa_to_sheet([]);
+  const itemRows = [
+    ['ITEM STATUS REPORT — ' + meta.examName + ' | ' + meta.semester + ' ' + meta.year,'','','','','','','','','','',''],
+    ['FLAG','Question Title','Type','Module','% Correct','Pt-Biserial','Disc. Index','N (Responses)','Top Wrong Answer','Recommendation','Faculty Action Taken','Comments / Notes'],
+  ];
+
+  const sortedItems = Object.values(items).sort((a,b) => {
+    const order = {REWRITE:0,REVISE:1,REVIEW:2,KEEP:3};
+    return (order[a.flag?.flag]||9)-(order[b.flag?.flag]||9);
+  });
+
+  sortedItems.forEach(item => {
+    const f = item.flag || {flag:'KEEP',reason:''};
+    let rec = f.reason;
+    if (f.flag === 'REWRITE' && item.pointBiserial !== null && item.pointBiserial < 0) {
+      const topWrong = item.topWrongAnswer;
+      const topWrongPct = item.topWrongRate ? pct(item.topWrongRate) : 'n/a';
+      if (topWrong) {
+        rec = `Negative discrimination (r=${fmt2(item.pointBiserial)}). Consider double-keying: award credit for correct answer AND "${topWrong}" (selected by ${topWrongPct}) for this exam. Rewrite/retire for next administration.`;
+      } else {
+        rec = `Negative discrimination (r=${fmt2(item.pointBiserial)}). Immediate review required. Consider double-keying all responses for this exam. Rewrite item for next administration.`;
+      }
+    }
+    itemRows.push([
+      f.flag,
+      item.qtitle,
+      item.qtype,
+      item.section,
+      item.difficulty !== null ? pct(item.difficulty) : 'n/a',
+      item.pointBiserial !== null ? fmt2(item.pointBiserial) : 'n/a',
+      item.discriminationIndex !== null ? fmt2(item.discriminationIndex) : 'n/a',
+      item.n,
+      item.topWrongAnswer ? item.topWrongAnswer + ' (' + pct(item.topWrongRate) + ')' : '—',
+      rec,
+      '',   // Faculty Action — dropdown placeholder (Excel data validation not supported in SheetJS community)
+      ''    // Comments — free text
+    ]);
+  });
+
+  XLSX.utils.sheet_add_aoa(ws2, itemRows, {origin:'A1'});
+  ws2['!merges'] = [{s:{r:0,c:0},e:{r:0,c:11}}];
+  ws2['!cols'] = [{wch:12},{wch:40},{wch:8},{wch:22},{wch:12},{wch:12},{wch:12},{wch:14},{wch:35},{wch:60},{wch:38},{wch:40}];
+
+  // Color flag cells and alternate row shading
+  itemRows.slice(2).forEach((row, i) => {
+    const r = i + 2;
+    const flag = row[0];
+    const cellRef = XLSX.utils.encode_cell({r, c:0});
+    const fillMap = {KEEP:{rgb:FLAG_KEEP_BG}, REVIEW:{rgb:FLAG_REVIEW_BG}, REVISE:{rgb:FLAG_REVISE_BG}, REWRITE:{rgb:FLAG_REWRITE_BG}};
+    const fontMap = {KEEP:{rgb:FLAG_KEEP_TX,bold:true}, REVIEW:{rgb:FLAG_REVIEW_TX,bold:true}, REVISE:{rgb:FLAG_REVISE_TX,bold:true}, REWRITE:{rgb:FLAG_REWRITE_TX,bold:true}};
+    if (ws2[cellRef] && fillMap[flag]) {
+      ws2[cellRef].s = { fill:{fgColor:fillMap[flag]}, font:fontMap[flag], alignment:{horizontal:'center'} };
+    }
+    if (i % 2 === 0) {
+      for (let c = 1; c <= 11; c++) {
+        const cr = XLSX.utils.encode_cell({r, c});
+        if (!ws2[cr]) ws2[cr] = {v:'', t:'s'};
+        ws2[cr].s = { fill:{fgColor:{rgb:'F4F7FB'}} };
+      }
+    }
+    // Style the Faculty Action column header note
+    const actionCell = XLSX.utils.encode_cell({r, c:10});
+    if (!ws2[actionCell]) ws2[actionCell] = {v:'', t:'s'};
+  });
+
+  styleCell(ws2,'A1', {font:{bold:true,color:{rgb:WHITE},sz:13}, fill:{fgColor:{rgb:NAV}}, alignment:{horizontal:'left',vertical:'center'}});
+  for (let c = 0; c < 12; c++) {
+    const cr = XLSX.utils.encode_cell({r:1,c});
+    if (!ws2[cr]) ws2[cr] = {v:'',t:'s'};
+    ws2[cr].s = {font:{bold:true,color:{rgb:WHITE},sz:9}, fill:{fgColor:{rgb:'152d57'}}, alignment:{horizontal:'center',vertical:'center'}};
+  }
+
+  XLSX.utils.book_append_sheet(wb, ws2, '📋 Item Status');
+
+  // ── TAB 3: Student Diagnostics ──
+  const ws3 = XLSX.utils.aoa_to_sheet([]);
+  let row3 = 0;
+  const s3Data = [];
+
+  s3Data.push(['STUDENT DIAGNOSTIC REPORTS — ' + meta.examName + ' | ' + meta.semester + ' ' + meta.year,'','','','','']);
+  row3++;
+
+  const sortedStudents = Object.values(students).sort((a,b) => a.lname.localeCompare(b.lname));
+
+  sortedStudents.forEach(student => {
+    const total = totalScores[student.id] || 0;
+    const pctS = tp > 0 ? Math.round((total/tp)*1000)/10 : 0;
+
+    s3Data.push(['']);
+    s3Data.push([student.lname + ', ' + student.fname, '', 'Score: ' + fmt1(total) + ' / ' + tp + ' (' + pctS + '%)', '', '', '']);
+    row3 += 2;
+
+    // Module summary
+    const bySection = {};
+    Object.values(student.items).forEach(si => {
+      if (!bySection[si.section]) bySection[si.section] = [];
+      bySection[si.section].push(si);
+    });
+
+    s3Data.push(['Module','Items','Score','%','','']);
+    row3++;
+    for (const [sec, sitems] of Object.entries(bySection)) {
+      const got = sitems.reduce((s,i)=>s+i.score,0);
+      const pos = sitems.reduce((s,i)=>s+i.outOf,0);
+      s3Data.push([sec, sitems.length, fmt1(got)+'/'+fmt1(pos), pct(pos>0?got/pos:0),'','']);
+      row3++;
+    }
+
+    // Item detail
+    s3Data.push(['Result','Question Title','Module','Score','Selected Answer','']);
+    row3++;
+    for (const [sec, sitems] of Object.entries(bySection)) {
+      sitems.forEach(si => {
+        let result = 'Incorrect';
+        if (si.outOf>0 && (si.score/si.outOf)>=0.99) result = 'Correct';
+        else if (si.score>0) result = 'Partial';
+        const selected = si.qtype==='FIB' ? (si.fibAnswer||'') : (si.selected||[]).join('; ');
+        s3Data.push([result, si.qtitle||'Q'+si.qnum, sec, fmt1(si.score)+'/'+fmt1(si.outOf), selected,'']);
+        row3++;
+      });
+    }
+    s3Data.push(['','','','','','']);
+    row3++;
+  });
+
+  XLSX.utils.sheet_add_aoa(ws3, s3Data, {origin:'A1'});
+  ws3['!cols'] = [{wch:14},{wch:45},{wch:25},{wch:14},{wch:45},{wch:4}];
+  styleCell(ws3,'A1',{font:{bold:true,color:{rgb:WHITE},sz:12},fill:{fgColor:{rgb:NAV}},alignment:{horizontal:'left',vertical:'center'}});
+  ws3['!merges'] = [{s:{r:0,c:0},e:{r:0,c:5}}];
+
+  XLSX.utils.book_append_sheet(wb, ws3, '👤 Student Diagnostics');
+
+  // ── TAB 4: Distractor Analysis ──
+  const ws4 = XLSX.utils.aoa_to_sheet([]);
+  const s4Data = [
+    ['DISTRACTOR ANALYSIS — Flagged Items Only','','','',''],
+    ['Question Title','Answer Choice','Responses','% Selected','Notes'],
+  ];
+
+  const flaggedItems = Object.values(items).filter(i => i.flag && i.flag.flag !== 'KEEP');
+  flaggedItems.forEach(item => {
+    s4Data.push([item.qtitle + ' [' + item.flag.flag + ']', '', '', '', '']);
+    if (item.qtype === 'FIB') {
+      s4Data.push(['(Fill-in-the-blank — see top wrong answers below)', '', '', '', '']);
+      if (item.topWrongAnswer) {
+        s4Data.push(['Top wrong answer', item.topWrongAnswer, '', pct(item.topWrongRate), 'Most common incorrect response']);
+      }
+    } else {
+      for (const [ans, count] of Object.entries(item.distractorCounts||{})) {
+        const isCorrect = ans === item.correctAnswer;
+        const rate = item.n > 0 ? count/item.n : 0;
+        s4Data.push([
+          isCorrect ? '✓ CORRECT ANSWER' : 'Distractor',
+          ans,
+          count,
+          pct(rate),
+          isCorrect ? '' : (rate > 0.35 ? '⚠ High selection rate — review plausibility' : '')
+        ]);
+      }
+    }
+    s4Data.push(['','','','','']);
+  });
+
+  XLSX.utils.sheet_add_aoa(ws4, s4Data, {origin:'A1'});
+  ws4['!merges'] = [{s:{r:0,c:0},e:{r:0,c:4}}];
+  ws4['!cols'] = [{wch:40},{wch:50},{wch:12},{wch:12},{wch:40}];
+  styleCell(ws4,'A1',{font:{bold:true,color:{rgb:WHITE},sz:12},fill:{fgColor:{rgb:NAV}},alignment:{horizontal:'left'}});
+
+  XLSX.utils.book_append_sheet(wb, ws4, '🔍 Distractor Analysis');
+
+  // ── TAB 5: Double-Key Review ──
+  const dkCandidates = identifyDKCandidates(items);
+  if (dkCandidates.length > 0) {
+    const ws5 = XLSX.utils.aoa_to_sheet([]);
+    const s5Data = [
+      ['DOUBLE-KEY REVIEW RECOMMENDATIONS — ' + meta.examName + ' | ' + meta.semester + ' ' + meta.year, '', '', '', '', ''],
+      ['Generated by NIARA · GrangeRN · For SME review only — statistics do not constitute a scoring change', '', '', '', '', ''],
+      ['', '', '', '', '', ''],
+    ];
+
+    dkCandidates.forEach((dk, idx) => {
+      const { item, pattern, recommendation, totalN } = dk;
+      const correct = item.correctAnswer;
+      const allChoices = item.allChoices || {};
+      const entries = Object.entries(allChoices).sort((a,b) => a[1].order - b[1].order);
+
+      s5Data.push([`ITEM ${idx+1}: ${item.qtitle}`, '', '', '', '', '']);
+      s5Data.push(['Module: ' + item.section + '  |  Type: ' + item.qtype + '  |  n=' + item.n + '  |  Difficulty: ' + (item.difficulty !== null ? pct(item.difficulty) : 'n/a') + '  |  Point-Biserial: ' + (item.pointBiserial !== null ? fmt2(item.pointBiserial) : 'n/a'), '', '', '', '', '']);
+      s5Data.push(['', '', '', '', '', '']);
+      s5Data.push(['QUESTION STEM:', '', '', '', '', '']);
+      s5Data.push([item.qtext || '(Not available)', '', '', '', '', '']);
+      s5Data.push(['', '', '', '', '', '']);
+      s5Data.push(['ANSWER CHOICES:', 'Students Selected', 'Out Of', '% Selected', 'Status', '']);
+
+      entries.forEach(([ans, data]) => {
+        const count = data.checked;
+        const rate = totalN > 0 ? count / totalN : 0;
+        const isCorrect = ans === correct;
+        const status = isCorrect ? 'KEYED ANSWER' : (dk.concerns.includes(ans) ? 'REVIEW FOR CREDIT' : '');
+        s5Data.push([ans, count, totalN, pct(rate), status, '']);
+      });
+
+      s5Data.push(['', '', '', '', '', '']);
+      s5Data.push(['STATISTICAL PATTERN:', '', '', '', '', '']);
+      s5Data.push([pattern.sentence, '', '', '', '', '']);
+      s5Data.push(['', '', '', '', '', '']);
+      s5Data.push(['RECOMMENDATION:', '', '', '', '', '']);
+      s5Data.push([recommendation, '', '', '', '', '']);
+      s5Data.push(['', '', '', '', '', '']);
+      s5Data.push(['SME REVIEW:', '', '', '', '', '']);
+      s5Data.push(['SME review required. Consultation with additional subject matter experts is warranted where clinical judgment is contested. Document rationale in writing before any scoring change. Retire or revise this item regardless of outcome.', '', '', '', '', '']);
+      s5Data.push(['', '', '', '', '', '']);
+      s5Data.push(['─────────────────────────────────────────────────────────────────────────────────', '', '', '', '', '']);
+      s5Data.push(['', '', '', '', '', '']);
+    });
+
+    // Methodology at bottom
+    s5Data.push(['ANALYSIS METHODOLOGY & THRESHOLDS', '', '', '', '', '']);
+    s5Data.push(['Items are surfaced for double-key review when one or more of the following statistical conditions are met: (1) Point-biserial correlation for the keyed answer is negative (r < 0.00); (2) A distractor was selected by more than 40% of students; (3) Item discrimination index is negative. Post-hoc pattern analysis classifies each item as a probable keying error, stem ambiguity, or construction problem based on the distribution of wrong-answer selections. All statistics computed from classical test theory using the Brightspace Attempt Details CSV export. These are recommendations only — a subject matter expert must conduct independent review before any scoring change is made. Statistics are one signal — other explanations for outliers may exist.', '', '', '', '', '']);
+
+    XLSX.utils.sheet_add_aoa(ws5, s5Data, {origin:'A1'});
+    ws5['!cols'] = [{wch:90},{wch:18},{wch:10},{wch:12},{wch:20},{wch:4}];
+    ws5['!merges'] = [
+      {s:{r:0,c:0},e:{r:0,c:5}},
+      {s:{r:1,c:0},e:{r:1,c:5}},
+    ];
+    styleCell(ws5,'A1',{font:{bold:true,color:{rgb:WHITE},sz:13},fill:{fgColor:{rgb:'7c4a00'}},alignment:{horizontal:'left',vertical:'center'}});
+    styleCell(ws5,'A2',{font:{color:{rgb:WHITE},sz:9},fill:{fgColor:{rgb:'7c4a00'}},alignment:{horizontal:'left'}});
+
+    XLSX.utils.book_append_sheet(wb, ws5, '⚠ Double-Key Review');
+  }
+
+  return wb;
+}
+
+// ── Longitudinal workbook ──
+function buildLongitudinalWorkbook(current, previousArr) {
+  const wb = XLSX.utils.book_new();
+  const { items: curItems, meta } = current;
+  const NAV = '1e3a6e', WHITE='FFFFFF', STEEL='4a7ab5';
+  const FLAG_KEEP_BG='1b7a3e', FLAG_REVIEW_BG='d4a017', FLAG_REVISE_BG='d4620a', FLAG_REWRITE_BG='c0392b';
+  const FLAG_KEEP_TX='FFFFFF', FLAG_REVIEW_TX='3d2800', FLAG_REVISE_TX='FFFFFF', FLAG_REWRITE_TX='FFFFFF';
+
+  // Combine all previous items by title
+  const allPrevItems = {};
+  previousArr.forEach(prev => {
+    for (const [title, item] of Object.entries(prev.items)) {
+      if (!allPrevItems[title]) allPrevItems[title] = [];
+      allPrevItems[title].push({ ...item, semester: prev.meta.semester, year: prev.meta.year });
+    }
+  });
+
+  const newItems = [], unchangedItems = [], editedItems = [], retiredItems = [];
+
+  // Classify current items
+  for (const [title, item] of Object.entries(curItems)) {
+    if (!allPrevItems[title]) {
+      newItems.push(item);
+    } else {
+      // Check if text changed (compare qtext)
+      const prevVersions = allPrevItems[title];
+      const latestPrev = prevVersions[prevVersions.length - 1];
+      if (latestPrev.qtext && item.qtext && latestPrev.qtext !== item.qtext) {
+        editedItems.push({ current: item, previous: latestPrev });
+      } else {
+        unchangedItems.push({ current: item, previous: latestPrev });
+      }
+    }
+  }
+
+  // Retired: in previous but not in current
+  for (const [title, versions] of Object.entries(allPrevItems)) {
+    if (!curItems[title]) {
+      const latest = versions[versions.length-1];
+      retiredItems.push({ ...latest, lastSeen: latest.semester + ' ' + latest.year });
+    }
+  }
+
+  // Tab 1: Item Status
+  const rows = [
+    ['LONGITUDINAL ITEM STATUS REPORT — ' + meta.examName + ' | ' + meta.semester + ' ' + meta.year,'','','','','','','','',''],
+    [''],
+  ];
+
+  const addSection = (label, items, isEdited=false) => {
+    rows.push([label,'','','','','','','','','']);
+    rows.push(['Flag','Question Title','Module','Current %','Current PB','Prev %','Prev PB','Change','Faculty Action Taken','Comments / Notes']);
+    items.forEach(entry => {
+      const cur = isEdited ? entry.current : (entry.current || entry);
+      const prev = isEdited ? entry.previous : entry.previous;
+      const f = cur.flag?.flag || 'KEEP';
+      rows.push([
+        f,
+        cur.qtitle,
+        cur.section,
+        cur.difficulty !== null ? pct(cur.difficulty) : 'n/a',
+        cur.pointBiserial !== null ? fmt2(cur.pointBiserial) : 'n/a',
+        prev && prev.difficulty !== null ? pct(prev.difficulty) : 'First admin',
+        prev && prev.pointBiserial !== null ? fmt2(prev.pointBiserial) : 'n/a',
+        isEdited ? '⚠ EDITED — stem or answer choices changed' : (prev ? getTrend(prev.pointBiserial, cur.pointBiserial) : 'New'),
+        '',  // Faculty Action
+        ''   // Comments
+      ]);
+    });
+    rows.push(['']);
+  };
+
+  addSection('🆕 NEW ITEMS — Added This Semester (' + newItems.length + ' items)', newItems.map(i=>({current:i})));
+  addSection('✅ UNCHANGED ITEMS (' + unchangedItems.length + ' items)', unchangedItems);
+  addSection('✏ EDITED ITEMS — Stem or Answer Choices Changed (' + editedItems.length + ' items)', editedItems, true);
+
+  const ws1 = XLSX.utils.aoa_to_sheet(rows);
+  ws1['!cols'] = [{wch:12},{wch:42},{wch:22},{wch:12},{wch:12},{wch:12},{wch:12},{wch:35},{wch:38},{wch:40}];
+  styleCell(ws1,'A1',{font:{bold:true,color:{rgb:WHITE},sz:13},fill:{fgColor:{rgb:NAV}},alignment:{horizontal:'left'}});
+  ws1['!merges'] = [{s:{r:0,c:0},e:{r:0,c:9}}];
+  // Color flag cells in longitudinal Item Status
+  const longFillMap = {KEEP:{rgb:FLAG_KEEP_BG},REVIEW:{rgb:FLAG_REVIEW_BG},REVISE:{rgb:FLAG_REVISE_BG},REWRITE:{rgb:FLAG_REWRITE_BG}};
+  const longFontMap = {KEEP:{rgb:FLAG_KEEP_TX,bold:true},REVIEW:{rgb:FLAG_REVIEW_TX,bold:true},REVISE:{rgb:FLAG_REVISE_TX,bold:true},REWRITE:{rgb:FLAG_REWRITE_TX,bold:true}};
+  rows.forEach((row, r) => {
+    const flag = row[0];
+    if (longFillMap[flag]) {
+      const ref = XLSX.utils.encode_cell({r, c:0});
+      if (!ws1[ref]) ws1[ref] = {v:flag,t:'s'};
+      ws1[ref].s = {fill:{fgColor:longFillMap[flag]},font:longFontMap[flag],alignment:{horizontal:'center'}};
+    }
+  });
+  XLSX.utils.book_append_sheet(wb, ws1, '📋 Item Status');
+
+  // Tab 2: Retired Items
+  const r2 = [
+    ['RETIRED ITEMS — Questions no longer in current exam','','','','',''],
+    ['Question Title','Module','Last Semester','Last % Correct','Last Pt-Biserial','Last Flag'],
+  ];
+  retiredItems.forEach(item => {
+    r2.push([item.qtitle, item.section, item.lastSeen,
+      item.difficulty !== null ? pct(item.difficulty) : 'n/a',
+      item.pointBiserial !== null ? fmt2(item.pointBiserial) : 'n/a',
+      item.flag?.flag || 'Unknown']);
+  });
+
+  const ws2 = XLSX.utils.aoa_to_sheet(r2);
+  ws2['!cols'] = [{wch:42},{wch:22},{wch:16},{wch:14},{wch:14},{wch:12}];
+  styleCell(ws2,'A1',{font:{bold:true,color:{rgb:WHITE},sz:12},fill:{fgColor:{rgb:NAV}},alignment:{horizontal:'left'}});
+  ws2['!merges'] = [{s:{r:0,c:0},e:{r:0,c:5}}];
+  XLSX.utils.book_append_sheet(wb, ws2, '🗄 Retired Items');
+
+  return wb;
+}
+
+function getTrend(prevPB, curPB) {
+  if (prevPB === null || curPB === null) return 'Insufficient data';
+  const diff = curPB - prevPB;
+  if (diff > 0.05) return '↑ Improved (' + fmt2(diff) + ')';
+  if (diff < -0.05) return '↓ Declined (' + fmt2(diff) + ')';
+  return '→ Stable (' + fmt2(diff) + ')';
+}
+
+// ── Style helper (requires xlsx with styles support) ──
+function styleCell(ws, ref, style) {
+  if (!ws[ref]) ws[ref] = {v:'',t:'s'};
+  ws[ref].s = style;
+}
+
+// ══════════════════════════════════════════════
+//  MATH UTILITIES
+// ══════════════════════════════════════════════
+function mean(arr) { return arr.length ? arr.reduce((s,v)=>s+v,0)/arr.length : 0; }
+function stdDev(arr) {
+  if (arr.length < 2) return 0;
+  const m = mean(arr);
+  return Math.sqrt(arr.reduce((s,v)=>s+(v-m)**2,0)/(arr.length-1));
+}
+function pearsonR(xs, ys) {
+  const n = xs.length;
+  if (n < 3) return null;
+  const mx = mean(xs), my = mean(ys);
+  let num=0, dx=0, dy=0;
+  for (let i=0;i<n;i++) {
+    num += (xs[i]-mx)*(ys[i]-my);
+    dx  += (xs[i]-mx)**2;
+    dy  += (ys[i]-my)**2;
+  }
+  const den = Math.sqrt(dx*dy);
+  return den === 0 ? 0 : num/den;
+}
+
+// ══════════════════════════════════════════════
+//  FORMAT UTILITIES
+// ══════════════════════════════════════════════
+function pct(v)  { return (Math.round(v*1000)/10).toFixed(1) + '%'; }
+function fmt2(v) { return v !== null && v !== undefined ? (Math.round(v*100)/100).toFixed(2) : 'n/a'; }
+function fmt1(v) { return v !== null && v !== undefined ? (Math.round(v*10)/10).toFixed(1) : '0'; }
+function esc(s)  { if (!s) return ''; return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+// ══════════════════════════════════════════════
+//  CSV PARSER (handles quoted fields)
+// ══════════════════════════════════════════════
+function parseCSVLine(line) {
+  const result = [];
+  let current = '';
+  let inQuotes = false;
+  for (let i = 0; i < line.length; i++) {
+    const ch = line[i];
+    if (ch === '"') {
+      if (inQuotes && line[i+1] === '"') { current += '"'; i++; }
+      else inQuotes = !inQuotes;
+    } else if (ch === ',' && !inQuotes) {
+      result.push(current);
+      current = '';
+    } else {
+      current += ch;
+    }
+  }
+  result.push(current);
+  return result;
+}
+
+function readFile(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = e => resolve(e.target.result);
+    reader.onerror = () => reject(new Error('Could not read file'));
+    reader.readAsText(file, 'UTF-8');
+  });
+}
+
+function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
+</script>
+</body>
+</html>
