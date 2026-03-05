@@ -3629,6 +3629,301 @@ function buildWorkbook(data) {
     XLSX.utils.book_append_sheet(wb, ws5, '⚠ Double-Key Review');
   }
 
+  // ── TAB 6: Revise Items ──
+  // ── TAB 7: Retire Items ──
+  // Both use the v10 block-per-question structure from the approved template.
+  // Each question block: title bar | stat label row | stat data row | stem header | stem content | choice sub-header | choice rows | white separator
+  const ACCENT      = '3D5F8F';   // blue label rows
+  const TITLE_BG    = '1e3a6e';   // title bar (navy)
+  const DATA_BG     = 'EEF3F8';   // data / stem content bg
+  const AMBER       = 'FFF3CD';   // faculty action cell
+  const AMBER_BORDER= 'D4A017';
+  const COR_BG      = 'C8E6C9';   // correct answer row bg
+  const COR_TX      = '1b7a3e';
+  const FLAG_BG     = 'FFF3E0';   // flagged choice row bg (orange-tint)
+  const FLAG_TX     = 'd4620a';
+  const NO_SEL_BG   = 'FFF8E1';   // no-selections row
+  const NO_SEL_TX   = 'b8860b';
+
+  // Helper: build one item block (MC / M-S / ORD) for Revise or Retire sheet
+  // Returns array of row arrays, plus merge specs and style specs for those rows
+  // offset = current absolute row index (0-based) before this block is added
+  function buildItemBlock(item, offset) {
+    const rows = [];
+    const merges = [];
+    const styles = []; // {r, c, style}
+
+    const titleStyle    = {font:{bold:true,color:{rgb:WHITE},sz:14},fill:{fgColor:{rgb:TITLE_BG}},alignment:{horizontal:'left',vertical:'center'},wrap:false};
+    const accentStyle   = {font:{bold:true,color:{rgb:WHITE},sz:11},fill:{fgColor:{rgb:ACCENT}},alignment:{horizontal:'center',vertical:'center'},wrapText:true};
+    const accentLStyle  = {font:{bold:true,color:{rgb:WHITE},sz:11},fill:{fgColor:{rgb:ACCENT}},alignment:{horizontal:'left',vertical:'center'},wrapText:true};
+    const dataStyle     = {font:{color:{rgb:NAV},sz:11},fill:{fgColor:{rgb:DATA_BG}},alignment:{horizontal:'center',vertical:'center'},wrapText:true};
+    const dataLStyle    = {font:{color:{rgb:NAV},sz:11},fill:{fgColor:{rgb:DATA_BG}},alignment:{horizontal:'left',vertical:'center'},wrapText:true};
+    const findingStyle  = {font:{italic:true,color:{rgb:'555566'},sz:10},fill:{fgColor:{rgb:DATA_BG}},alignment:{horizontal:'left',vertical:'center',wrapText:true}};
+    const amberStyle    = {font:{bold:true,color:{rgb:'3d2800'},sz:10},fill:{fgColor:{rgb:AMBER}},alignment:{horizontal:'center',vertical:'center'}};
+    const stemHdrStyle  = {font:{bold:true,color:{rgb:WHITE},sz:11},fill:{fgColor:{rgb:ACCENT}},alignment:{horizontal:'left',vertical:'center'}};
+    const stemDataStyle = {font:{color:{rgb:NAV},sz:10},fill:{fgColor:{rgb:DATA_BG}},alignment:{horizontal:'left',vertical:'top',wrapText:true}};
+    const yellowStyle   = {fill:{fgColor:{rgb:'FFFDE7'}},alignment:{horizontal:'left',vertical:'top',wrapText:true}};
+
+    const qt = item.qtype || 'MC';
+    const finding = buildNIARAFinding(item);
+    const entries = item.allChoices
+      ? Object.entries(item.allChoices).sort((a,b)=>(a[1].order||0)-(b[1].order||0))
+      : [];
+
+    let r = offset;
+
+    // ROW 0: Title bar — A:L merged, navy bg
+    rows.push(['Question Title: ' + (item.qtitle || 'Untitled'), '','','','','','','','','','','','']);
+    merges.push({s:{r,c:0},e:{r,c:11}});
+    for (let c=0;c<13;c++) styles.push({r,c,style:{...titleStyle,fill:{fgColor:{rgb:TITLE_BG}}}});
+    styles.push({r,c:12,style:{fill:{fgColor:{rgb:TITLE_BG}}}});
+    r++;
+
+    // ROW 1: Stat label row — blue header
+    rows.push(['Question Type','Module / Content Area','','','Total\nStudents','Difficulty\n(% Correct)','Item\nPt-Biserial','Discrimination\nIndex','NIARA Automated Note','','','','Faculty Action']);
+    merges.push({s:{r,c:1},e:{r,c:3}});
+    merges.push({s:{r,c:8},e:{r,c:11}});
+    [0,1,4,5,6,7,8,12].forEach(c=>{
+      styles.push({r,c,style:accentStyle});
+    });
+    styles.push({r,c:1,style:accentLStyle});
+    r++;
+
+    // ROW 2: Stat data row
+    const diff = item.difficulty !== null && item.difficulty !== undefined ? pct(item.difficulty) : 'n/a';
+    const pb   = item.pointBiserial !== null && item.pointBiserial !== undefined ? fmt2(item.pointBiserial) : 'n/a';
+    const di   = item.discriminationIndex !== null && item.discriminationIndex !== undefined ? fmt2(item.discriminationIndex) : 'n/a';
+    rows.push([qt, item.section||'','','', item.n||'', diff, pb, di, finding,'','','','']);
+    merges.push({s:{r,c:1},e:{r,c:3}});
+    merges.push({s:{r,c:8},e:{r,c:11}});
+    [0,4,5,6,7].forEach(c=> styles.push({r,c,style:dataStyle}));
+    styles.push({r,c:1,style:dataLStyle});
+    styles.push({r,c:8,style:findingStyle});
+    styles.push({r,c:12,style:amberStyle});
+    r++;
+
+    // ROW 3: Stem header row
+    rows.push(['Question Stem','','','','','','','Proposed Revised Stem Wording','','','','Faculty Comments','']);
+    merges.push({s:{r,c:0},e:{r,c:6}});
+    merges.push({s:{r,c:7},e:{r,c:10}});
+    merges.push({s:{r,c:11},e:{r,c:12}});
+    [0,7,11].forEach(c=>styles.push({r,c,style:stemHdrStyle}));
+    r++;
+
+    // ROW 4: Stem content row
+    rows.push([item.qtext||'','','','','','','','','','','','','']);
+    merges.push({s:{r,c:0},e:{r,c:6}});
+    merges.push({s:{r,c:7},e:{r,c:12}});
+    styles.push({r,c:0,style:stemDataStyle});
+    styles.push({r,c:7,style:yellowStyle});
+    r++;
+
+    // ROW 5: Choice sub-header row
+    if (qt === 'MAT') {
+      rows.push(['Pair','Prompt','','','','Keyed Response','% Correct','Item PB','','','NIARA Automated Note','Proposed Revision','Faculty Comments']);
+    } else if (qt === 'FIB') {
+      rows.push(['Response Type','Student Response','','','','n / N','% Submitting','','','','NIARA Automated Note','Proposed Key / Stem Revision','Faculty Comments']);
+    } else if (qt === 'ORD') {
+      rows.push(['Step','Correct Step Text','','','','% Correct','','Item PB','','','NIARA Automated Note','Proposed Step Revision','Faculty Comments']);
+    } else {
+      rows.push(['Choice Type','Answer Choice Text','','','','n / N','% Selected','Distractor PB','Top 27%','Bot 27%','NIARA Automated Note','Proposed Revised Wording','']);
+      merges.push({s:{r,c:1},e:{r,c:4}});
+    }
+    for (let c=0;c<13;c++) styles.push({r,c,style:accentStyle});
+    styles.push({r,c:0,style:accentStyle});
+    styles.push({r,c:1,style:accentLStyle});
+    r++;
+
+    // Choice rows
+    if (qt === 'MAT') {
+      const pairs = item.matPairs || [];
+      pairs.forEach((pair, pi) => {
+        const choiceType = 'Pair ' + (pi+1);
+        const pairNote = pair.note || '';
+        rows.push([choiceType, pair.prompt||'','','', pair.keyed||'', pair.pctCorrect != null ? pct(pair.pctCorrect) : '', '', '', '', '', pairNote, '', '']);
+        const isLow = pair.pctCorrect != null && pair.pctCorrect < 0.5;
+        const rowBg = isLow ? FLAG_BG : DATA_BG;
+        const rowTx = isLow ? FLAG_TX : NAV;
+        for (let c=0;c<13;c++) styles.push({r,c,style:{font:{color:{rgb:rowTx},sz:10},fill:{fgColor:{rgb:rowBg}},alignment:{horizontal:c===0?'center':'left',vertical:'center',wrapText:true}}});
+        styles.push({r,c:11,style:yellowStyle});
+        styles.push({r,c:12,style:yellowStyle});
+        r++;
+      });
+    } else if (qt === 'FIB') {
+      const fibResponses = item.fibResponses || [];
+      fibResponses.forEach(resp => {
+        const isKeyed = resp.isKeyed;
+        const isHighRate = !isKeyed && resp.rate > 0.25;
+        const rowBg = isKeyed ? COR_BG : (isHighRate ? FLAG_BG : DATA_BG);
+        const rowTx = isKeyed ? COR_TX : (isHighRate ? FLAG_TX : NAV);
+        const choiceType = isKeyed ? 'Keyed Answer' : (isHighRate ? 'High Rate\nReview' : 'Incorrect\nResponse');
+        rows.push([choiceType, resp.text||'','','', resp.n+' / '+item.n, pct(resp.rate),'','','','', resp.note||'','','']);
+        for (let c=0;c<13;c++) styles.push({r,c,style:{font:{color:{rgb:rowTx},sz:10},fill:{fgColor:{rgb:rowBg}},alignment:{horizontal:c===0?'center':'left',vertical:'center',wrapText:true}}});
+        styles.push({r,c:11,style:yellowStyle});
+        styles.push({r,c:12,style:yellowStyle});
+        r++;
+      });
+    } else if (qt === 'ORD') {
+      const steps = item.ordSteps || [];
+      steps.forEach((step, si) => {
+        const isLow = step.pctCorrect != null && step.pctCorrect < 0.5;
+        const rowBg = isLow ? FLAG_BG : DATA_BG;
+        const rowTx = isLow ? FLAG_TX : NAV;
+        rows.push(['Step '+(si+1), step.text||'','','', step.pctCorrect!=null?pct(step.pctCorrect):'','', '', '','','', step.note||'','','']);
+        for (let c=0;c<13;c++) styles.push({r,c,style:{font:{color:{rgb:rowTx},sz:10},fill:{fgColor:{rgb:rowBg}},alignment:{horizontal:c===0?'center':'left',vertical:'center',wrapText:true}}});
+        styles.push({r,c:11,style:yellowStyle});
+        styles.push({r,c:12,style:yellowStyle});
+        r++;
+      });
+    } else {
+      // MC / M-S
+      entries.forEach(([ans, cdata]) => {
+        const isCorrect = ans === item.correctAnswer || (Array.isArray(item.correctAnswer) && item.correctAnswer.includes(ans));
+        const n = cdata.checked || 0;
+        const total = item.n || 1;
+        const selRate = total > 0 ? n / total : 0;
+        const dpb = cdata.pointBiserial != null ? fmt2(cdata.pointBiserial) : 'n/a';
+        const top = cdata.top27 != null ? cdata.top27 : '';
+        const bot = cdata.bot27 != null ? cdata.bot27 : '';
+        const isHighPerformerFlag = !isCorrect && cdata.pointBiserial != null && cdata.pointBiserial > 0;
+        const isNoSelections = n === 0;
+        let choiceType, rowBg, rowTx;
+        if (isCorrect) {
+          choiceType = 'Correct Answer'; rowBg = COR_BG; rowTx = COR_TX;
+        } else if (isHighPerformerFlag) {
+          choiceType = 'High Performer\nSelection'; rowBg = FLAG_BG; rowTx = FLAG_TX;
+        } else if (isNoSelections) {
+          choiceType = 'No Selections\nReview'; rowBg = NO_SEL_BG; rowTx = NO_SEL_TX;
+        } else {
+          choiceType = 'Distractor'; rowBg = DATA_BG; rowTx = NAV;
+        }
+        const autoNote = buildChoiceNote(isCorrect, isHighPerformerFlag, isNoSelections, selRate, dpb);
+        rows.push([choiceType, ans,'','', n+' / '+total, pct(selRate), dpb, top, bot, autoNote, '', '','']);
+        merges.push({s:{r,c:1},e:{r,c:4}});
+        merges.push({s:{r,c:9},e:{r,c:9}}); // note col K
+        for (let c=0;c<13;c++) styles.push({r,c,style:{font:{color:{rgb:rowTx},sz:10},fill:{fgColor:{rgb:rowBg}},alignment:{horizontal:c===0?'center':'left',vertical:'center',wrapText:true}}});
+        styles.push({r,c:0,style:{font:{bold:false,color:{rgb:rowTx},sz:9},fill:{fgColor:{rgb:rowBg}},alignment:{horizontal:'center',vertical:'center',wrapText:true}}});
+        styles.push({r,c:1,style:{font:{color:{rgb:rowTx},sz:10},fill:{fgColor:{rgb:rowBg}},alignment:{horizontal:'left',vertical:'center',wrapText:true}}});
+        styles.push({r,c:11,style:yellowStyle});
+        r++;
+      });
+    }
+
+    // White separator row
+    rows.push(['','','','','','','','','','','','','']);
+    for (let c=0;c<13;c++) styles.push({r,c,style:{fill:{fgColor:{rgb:WHITE}}}});
+    r++;
+
+    return { rows, merges, styles, endRow: r };
+  }
+
+  function buildNIARAFinding(item) {
+    if (!item || item.difficulty === null) return 'Insufficient data for analysis.';
+    const diff = Math.round((item.difficulty||0)*1000)/10;
+    const pb   = item.pointBiserial !== null ? fmt2(item.pointBiserial) : 'n/a';
+    const di   = item.discriminationIndex !== null ? fmt2(item.discriminationIndex) : 'n/a';
+    let note = `Difficulty ${diff}%, PB ${pb}, DI ${di}.`;
+    if (diff < 30) note += ' Item is highly difficult -- most students answered incorrectly.';
+    else if (diff > 90) note += ' Near-ceiling item -- consider retiring or replacing to improve discrimination.';
+    if (item.pointBiserial !== null && item.pointBiserial < 0) note += ' Negative PB indicates high performers are selecting incorrectly -- review key.';
+    if (item.discriminationIndex !== null && item.discriminationIndex < 0) note += ' Negative DI -- item does not discriminate between high and low performers.';
+    return note;
+  }
+
+  function buildChoiceNote(isCorrect, isHighPerf, isNoSel, rate, dpb) {
+    if (isCorrect) return 'Correct answer. Negative PB confirms higher-scoring students reliably selected this option.';
+    if (isHighPerf) return `High selection (${Math.round(rate*100)}%) AND positive distractor PB. High-performing students choosing this -- may be a defensible answer. Review the key.`;
+    if (isNoSel) return 'No students selected this option. Not functioning as a distractor. Replace with a more plausible alternative.';
+    return `Functioning normally. Selection rate ${Math.round(rate*100)}%, PB negative. No action required.`;
+  }
+
+  function buildItemReviewSheet(wb, itemsToInclude, sheetLabel, tabName, meta) {
+    const ws = XLSX.utils.aoa_to_sheet([]);
+    const allRows = [];
+    const allMerges = [];
+    const allStyles = [];
+
+    // Sheet header banner (row 0)
+    const bannerText = 'NIARA  --  ' + sheetLabel + '  |  ' + (meta.examName||'') + '  |  ' + (meta.semester||'') + ' ' + (meta.year||'');
+    allRows.push([bannerText,'','','','','','','','','','','','']);
+    allMerges.push({s:{r:0,c:0},e:{r:0,c:12}});
+    allStyles.push({r:0,c:0,style:{font:{bold:true,color:{rgb:WHITE},sz:13},fill:{fgColor:{rgb:TITLE_BG}},alignment:{horizontal:'left',vertical:'center'}}});
+
+    // Instruction rows (rows 1-5, collapsible in Excel via grouping -- not applied here, just visible)
+    const instructions = [
+      ['WHAT IS THIS SHEET?','','This worksheet lists every exam item flagged for ' + sheetLabel.toLowerCase() + '. Each block of rows below represents one question. Review the NIARA Finding for each item, then document your decision.','','','','','','','','','',''],
+      ['WHAT DO I DO?','','(1) Read the question stem and NIARA Finding.  (2) Review each answer choice and its statistics.  (3) Click the amber Faculty Action cell on the title row and select your decision.  (4) Write proposed rewording in the yellow cells.  (5) Add overall notes in the Faculty Comments column.','','','','','','','','','',''],
+      ['COLUMN GUIDE','','n/N = students selecting this choice / total.  % = selection rate.  Distractor PB = point-biserial for this answer choice -- positive on a distractor means high performers choosing it (flag).  Top/Bot 27% = high-scoring vs. low-scoring students selecting this option.  Col K = NIARA automated note.  Col L = proposed rewording.  Col M = faculty comments.','','','','','','','','','',''],
+      ['FACULTY ACTION','','On each question title row, click the amber cell and choose: No Action Taken | Revise Stem | Revise Answer Choice(s) | Rekey -- Correct Answer Changed | Retire from Bank | Insufficient Data -- Monitor Next Semester.  Required for accreditation documentation.','','','','','','','','','',''],
+      ['COLOR GUIDE','','Green text = correct answer.  Orange text = flagged choice.  Gray italic = automated note.  Yellow cells = your write-in areas.  Amber cell = required faculty action dropdown.','','','','','','','','','',''],
+    ];
+    instructions.forEach((row, i) => {
+      allRows.push(row);
+      allMerges.push({s:{r:i+1,c:2},e:{r:i+1,c:12}});
+      allStyles.push({r:i+1,c:0,style:{font:{bold:true,color:{rgb:NAV},sz:9},fill:{fgColor:{rgb:'EEF3F8'}}}});
+      allStyles.push({r:i+1,c:2,style:{font:{color:{rgb:'444444'},sz:9},fill:{fgColor:{rgb:'EEF3F8'}},alignment:{wrapText:true,vertical:'center'}}});
+    });
+
+    let currentRow = 6;
+
+    if (itemsToInclude.length === 0) {
+      allRows.push(['No items flagged for ' + sheetLabel.toLowerCase() + ' on this exam.','','','','','','','','','','','','']);
+      allMerges.push({s:{r:currentRow,c:0},e:{r:currentRow,c:12}});
+      allStyles.push({r:currentRow,c:0,style:{font:{italic:true,color:{rgb:'777777'},sz:10},fill:{fgColor:{rgb:'F4F7FB'}}}});
+    } else {
+      itemsToInclude.forEach(item => {
+        const block = buildItemBlock(item, currentRow);
+        block.rows.forEach(row => allRows.push(row));
+        block.merges.forEach(m => allMerges.push(m));
+        block.styles.forEach(s => allStyles.push(s));
+        currentRow = block.endRow;
+      });
+    }
+
+    XLSX.utils.sheet_add_aoa(ws, allRows, {origin:'A1'});
+    ws['!merges'] = allMerges;
+    ws['!cols'] = [
+      {wch:14},  // A: Choice Type / Step
+      {wch:42},  // B: Answer Choice Text
+      {wch:4},{wch:4},{wch:4},  // C-E: merged with B
+      {wch:9},   // F: n/N
+      {wch:9},   // G: % Selected
+      {wch:9},   // H: Distractor PB
+      {wch:7},   // I: Top 27%
+      {wch:7},   // J: Bot 27%
+      {wch:48},  // K: NIARA Note
+      {wch:30},  // L: Proposed Revised Wording
+      {wch:28},  // M: Faculty Comments / Action
+    ];
+
+    // Apply styles
+    allStyles.forEach(({r, c, style}) => {
+      const ref = XLSX.utils.encode_cell({r, c});
+      if (!ws[ref]) ws[ref] = {v:'', t:'s'};
+      ws[ref].s = style;
+    });
+
+    // Banner row 0 — fill all cells
+    for (let c=0;c<13;c++) {
+      const ref = XLSX.utils.encode_cell({r:0,c});
+      if (!ws[ref]) ws[ref] = {v:'',t:'s'};
+      ws[ref].s = {font:{bold:true,color:{rgb:WHITE},sz:13},fill:{fgColor:{rgb:TITLE_BG}},alignment:{horizontal:'left',vertical:'center'}};
+    }
+
+    XLSX.utils.book_append_sheet(wb, ws, tabName);
+  }
+
+  // Classify items into Revise vs Retire
+  const reviseItems = [], retireItems = [];
+  Object.values(items).forEach(item => {
+    const flag = item.flag?.flag || 'KEEP';
+    if (flag === 'REVISE') reviseItems.push(item);
+    else if (flag === 'REWRITE') retireItems.push(item);
+  });
+
+  buildItemReviewSheet(wb, reviseItems, 'REVISE ITEMS', '✏ Revise Items', meta);
+  buildItemReviewSheet(wb, retireItems, 'RETIRE ITEMS',  '🔴 Retire Items', meta);
+
   return wb;
 }
 
