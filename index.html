@@ -192,6 +192,9 @@ https://github.com/nodeca/pako/blob/main/LICENSE
     align-items: center;
     gap: 14px;
   }
+  .card-longitudinal .card-header {
+    background: #2d6a4f;
+  }
   .step-number {
     width: 28px; height: 28px;
     border-radius: 50%;
@@ -378,10 +381,15 @@ https://github.com/nodeca/pako/blob/main/LICENSE
   .add-prev-btn:hover { background: var(--powder-lt); border-style: solid; }
 
   /* ── GENERATE BUTTON ── */
+  @keyframes niara-pulse {
+    0%   { box-shadow: 0 4px 16px rgba(13,124,102,0.35), 0 0 0 0 rgba(13,124,102,0.4); }
+    50%  { box-shadow: 0 6px 24px rgba(13,124,102,0.5), 0 0 0 10px rgba(13,124,102,0); }
+    100% { box-shadow: 0 4px 16px rgba(13,124,102,0.35), 0 0 0 0 rgba(13,124,102,0); }
+  }
   .generate-btn {
     width: 100%;
     padding: 16px;
-    background: linear-gradient(135deg, var(--navy) 0%, var(--steel) 100%);
+    background: linear-gradient(135deg, #0d7c66 0%, #16a085 100%);
     color: var(--white);
     border: none;
     border-radius: 10px;
@@ -391,18 +399,19 @@ https://github.com/nodeca/pako/blob/main/LICENSE
     letter-spacing: 0.04em;
     cursor: pointer;
     transition: all 0.2s;
-    box-shadow: 0 4px 16px rgba(30,58,110,0.25);
+    box-shadow: 0 4px 16px rgba(13,124,102,0.35);
     display: flex;
     align-items: center;
     justify-content: center;
     gap: 10px;
+    animation: niara-pulse 2s ease-in-out infinite;
   }
   .generate-btn:hover {
     transform: translateY(-1px);
-    box-shadow: 0 6px 20px rgba(30,58,110,0.35);
+    box-shadow: 0 6px 20px rgba(13,124,102,0.5);
   }
   .generate-btn:active { transform: translateY(0); }
-  .generate-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+  .generate-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; animation: none; }
 
   /* ── PROGRESS ── */
   .progress-wrap {
@@ -1451,10 +1460,13 @@ https://github.com/nodeca/pako/blob/main/LICENSE
   </div>
 
   <!-- ══ STEP 2: UPLOAD ══ -->
-  <div class="card">
+  <div class="card card-single">
     <div class="card-header">
       <div class="step-number">2</div>
-      <h2>Upload Current Semester Attempt Details</h2>
+      <div>
+        <h2>Single Exam Report</h2>
+        <p style="font-family:'Source Sans 3',sans-serif;font-weight:400;font-size:0.82rem;opacity:0.8;margin:2px 0 0;">Upload the Exam/Quiz Attempt Details CSV file</p>
+      </div>
     </div>
     <div class="card-body">
       <p style="font-size:0.88rem;color:var(--text-light);margin-bottom:16px;">
@@ -1471,7 +1483,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
   </div>
 
   <!-- ══ STEP 3: LONGITUDINAL TOGGLE ══ -->
-  <div class="card">
+  <div class="card card-longitudinal">
     <div class="card-header">
       <div class="step-number">3</div>
       <h2>Longitudinal Report <span style="font-family:'Source Sans 3';font-weight:400;font-size:0.85rem;opacity:0.7;">(Optional)</span></h2>
@@ -1494,7 +1506,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         </div>
         <div id="prevFilesContainer"></div>
         <button class="add-prev-btn" onclick="addPrevFileBlock()">
-          <span>＋</span> Add Previous Longitudinal Report
+          <span>＋</span> Add Previous NIARA Excel Report
         </button>
       </div>
     </div>
@@ -1522,10 +1534,10 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       </div>
       <div style="display:flex;flex-direction:column;align-items:flex-end;gap:8px;">
         <button class="download-btn download-primary" onclick="downloadExcel()">
-          ⬇ Download Excel Report
+          ⬇ Download Single Exam Report
         </button>
         <button class="download-btn download-secondary" id="downloadLongBtn" onclick="downloadLongitudinal()" style="display:none;">
-          ⬇ Download Longitudinal Report
+          ⬇ Download Longitudinal Exam Report
         </button>
       </div>
     </div>
@@ -1677,7 +1689,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
     <div class="collapsible-body collapsed" id="legendBody" style="max-height:0;">
       <div class="legend-body">
         <p style="font-size:0.85rem;color:var(--text-light);margin-bottom:18px;line-height:1.6;">
-          NIARA applies established psychometric criteria from classical test theory to classify each exam item. These thresholds are derived from the educational measurement literature including McDonald (1999), Haladyna &amp; Rodriguez (2013), and NCSBN item development standards. All calculations are performed locally in your browser; no student data is transmitted.
+          NIARA applies established psychometric criteria from classical test theory to classify each exam item. These thresholds are derived from the educational measurement literature including McDonald (1999), Haladyna &amp; Rodriguez (2013), Billings &amp; Halstead (2020), and NCSBN item development standards. All calculations are performed locally in your browser; no student data is transmitted.
         </p>
 
         <!-- PRE-GRADE FLAGS -->
@@ -1789,6 +1801,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
 
         <div class="legend-citation">
           <strong style="display:block;font-size:0.72rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--steel);margin-bottom:6px;">References &amp; Standards</strong>
+          Billings, D. M., &amp; Halstead, J. A. (2020). <em>Teaching in nursing: A guide for faculty</em> (6th ed.). Elsevier. &nbsp;|&nbsp;
           Haladyna, T. M., &amp; Rodriguez, M. C. (2013). <em>Developing and validating test items.</em> Routledge. &nbsp;|&nbsp;
           McDonald, M. E. (1999). <em>Systematic assessment of learning outcomes: Developing multiple-choice exams.</em> Jones &amp; Bartlett. &nbsp;|&nbsp;
           NCSBN Next Generation NCLEX item development standards (2023). &nbsp;|&nbsp;
@@ -1902,9 +1915,9 @@ function addPrevFileBlock() {
       </div>
     </div>
     <div class="upload-zone" id="prevZone_${id}" style="padding:20px;">
-      <input type="file" accept=".csv" id="prevInput_${id}" onchange="prevFileSelected(${id})">
+      <input type="file" accept=".csv,.xlsx" id="prevInput_${id}" onchange="prevFileSelected(${id})">
       <span class="upload-icon" style="font-size:1.6rem;">📋</span>
-      <h3 style="font-size:0.9rem;">Previous Semester Attempt Details CSV</h3>
+      <h3 style="font-size:0.9rem;">Previous NIARA Excel Report (.xlsx) or Attempt Details (.csv)</h3>
       <div class="file-name-display" id="prevFileName_${id}"></div>
     </div>
     <div style="text-align:right;margin-top:10px;">
@@ -1926,6 +1939,117 @@ function prevFileSelected(id) {
 function removePrevBlock(id) {
   const el = document.getElementById('prevBlock_' + id);
   if (el) el.remove();
+}
+
+// ══════════════════════════════════════════════
+//  PARSE PREVIOUS NIARA EXCEL (.xlsx re-import)
+// ══════════════════════════════════════════════
+async function parseNiaraExcel(arrayBuffer, metaOverrides) {
+  const wb = new ExcelJS.Workbook();
+  await wb.xlsx.load(arrayBuffer);
+
+  // Find required sheets
+  const summarySheet = wb.getWorksheet('Exam Summary') || wb.getWorksheet('Program Summary');
+  const itemSheet    = wb.getWorksheet('Item Status') || wb.getWorksheet('Active Item Status');
+  if (!itemSheet) throw new Error('Could not find "Item Status" sheet in uploaded Excel file.');
+
+  // Extract meta from header row 2
+  let semester = metaOverrides?.semester || '';
+  let year     = metaOverrides?.year     || '';
+  let examName = '';
+  let courseLabel = '';
+  if (summarySheet) {
+    const r2val = summarySheet.getRow(2).getCell(1).value || '';
+    const r2str = typeof r2val === 'object' && r2val?.richText
+      ? r2val.richText.map(rt=>rt.text).join('')
+      : String(r2val);
+    // Format: "COURSE LABEL  ·  EXAM NAME  ·  SEMESTER YEAR"
+    const parts = r2str.split(/\s+·\s+/);
+    if (parts.length >= 1) courseLabel = parts[0].trim();
+    if (parts.length >= 2) examName    = parts[1].trim();
+    if (parts.length >= 3) {
+      const semYear = parts[2].trim().split(/\s+/);
+      if (!semester) semester = semYear[0] || '';
+      if (!year)     year     = semYear[1] || '';
+    }
+  }
+
+  // Parse Item Status rows (data starts at row 3)
+  const items = {};
+  let hasFingerprint = false;
+  // Check if col 15 (O) header is fingerprint
+  const hdrRow = itemSheet.getRow(2);
+  const hdr15 = String(hdrRow.getCell(15).value || '').toLowerCase();
+  if (hdr15.includes('fingerprint')) hasFingerprint = true;
+
+  itemSheet.eachRow((row, rowNum) => {
+    if (rowNum <= 2) return; // skip header rows
+    function cellStr(col) { const v = row.getCell(col).value; return v === null || v === undefined ? '' : String(v).trim(); }
+    function cellNum(col) { const v = row.getCell(col).value; return parseFloat(String(v||'').replace('%',''))/100 || null; }
+
+    const postFlag   = cellStr(2);
+    const qtitle     = cellStr(3);
+    const qtype      = cellStr(4);
+    const section    = cellStr(5);
+    const difficulty = cellStr(6) ? parseFloat(cellStr(6).replace('%',''))/100 : null;
+    const pb         = cellStr(7) && cellStr(7) !== 'n/a' ? parseFloat(cellStr(7)) : null;
+    const disc       = cellStr(8) && cellStr(8) !== 'n/a' ? parseFloat(cellStr(8)) : null;
+    const n          = parseInt(cellStr(9)) || 0;
+    const topWrong   = cellStr(10) || '';
+    const reason     = cellStr(11) || '';
+    const pgLabel    = cellStr(1);
+    const fingerprint = hasFingerprint ? cellStr(15) : null;
+
+    if (!qtitle && !qtype) return; // skip empty rows
+
+    const key = fingerprint || qtitle || (rowNum + '');
+    items[key] = {
+      qtitle, qtype, section,
+      difficulty: difficulty,
+      pointBiserial: pb,
+      discriminationIndex: disc,
+      n,
+      topWrongAnswer: topWrong ? topWrong.replace(/\s*\(.*\)$/,'') : '',
+      topWrongRate: topWrong ? (parseFloat((topWrong.match(/\(([^)]+)\)/)||[])[1]||'0')/100) : 0,
+      flag: { flag: postFlag || 'KEEP', reason },
+      preGradeFlags: {
+        vak: pgLabel.includes('VERIFY'),
+        aac: pgLabel.includes('CREDIT'),
+      },
+      distractorCounts: {},
+      allChoices: {},
+      correctAnswer: null,
+      responses: [],
+      isBonus: false,
+      // Store fingerprint for future matching
+      _fingerprint: fingerprint || null,
+    };
+  });
+
+  // Reconstruct minimal classStats
+  const allFlags = Object.values(items).map(i => i.flag?.flag || 'KEEP');
+  const classStats = {
+    n: Math.max(...Object.values(items).map(i=>i.n), 0),
+    kr20: null,
+    isPooled: false,
+    flags: {
+      KEEP:   allFlags.filter(f=>f==='KEEP').length,
+      REVISE: allFlags.filter(f=>f==='REVISE').length,
+      RETIRE: allFlags.filter(f=>f==='RETIRE').length,
+      VAK:    Object.values(items).filter(i=>i.preGradeFlags?.vak).length,
+      AAC:    Object.values(items).filter(i=>i.preGradeFlags?.aac).length,
+    },
+    modScores: {},
+    avg: 0, sd: 0, totalPossible: 0,
+  };
+
+  return {
+    items,
+    classStats,
+    students: {},
+    totalScores: {},
+    meta: { semester, year, examName, courseLabel, course: '' },
+  };
 }
 
 // ── Alert helper ──
@@ -2000,9 +2124,11 @@ function parseAttemptDetails(csvText) {
     }
 
     // Section header row (has secNum but no qnum)
-    if (secNum && !qnum && qtitle) {
-      // skip top-level exam title row (section 1 is always exam name)
-      if (secNum !== '1') {
+    // Do NOT skip section 1 — some exams use it as a real content area.
+    // If section 1 is just an exam title with no questions, the next section
+    // header will overwrite currentSection before any questions are processed.
+    if (secNum && !qnum) {
+      if (qtitle && qtitle !== 'Summary:') {
         currentSection[sid] = qtitle;
       }
       continue;
@@ -2521,9 +2647,17 @@ async function generateReport() {
         const pSem  = document.getElementById('prevSem_' + id);
         const pYear = document.getElementById('prevYear_' + id);
         if (pFile && pFile.files[0] && pSem && pSem.value && pYear && pYear.value) {
-          const pText = await readFile(pFile.files[0]);
-          const pData = parseAttemptDetails(pText);
-          pData.meta = { semester: pSem.value, year: pYear.value };
+          const pFileObj = pFile.files[0];
+          const isXlsx = pFileObj.name.toLowerCase().endsWith('.xlsx');
+          let pData;
+          if (isXlsx) {
+            const buf = await pFileObj.arrayBuffer();
+            pData = await parseNiaraExcel(buf, { semester: pSem.value, year: pYear.value });
+          } else {
+            const pText = await readFile(pFileObj);
+            pData = parseAttemptDetails(pText);
+          }
+          pData.meta = { ...pData.meta, semester: pSem.value, year: pYear.value };
           prevParsedData.push(pData);
         }
       }
@@ -2611,7 +2745,7 @@ function renderResults() {
   hintEl.textContent = 'Click a flag card to filter the item table · Click again to clear filter';
 
   // Module tabs
-  const modules = ['All', ...new Set(Object.values(items).map(i => i.section))];
+  const modules = ['All', ...[...new Set(Object.values(items).map(i => i.section))].sort()];
   const tabsEl = document.getElementById('moduleTabs');
   tabsEl.innerHTML = '';
   modules.forEach((mod, idx) => {
@@ -2878,7 +3012,7 @@ function showStudentReport() {
         <th style="${thS}text-align:center;">%</th>
         <th style="${thS}text-align:center;">Performance</th>
       </tr></thead><tbody>`;
-  for (const [sec, mp] of Object.entries(modPerf)) {
+  for (const [sec, mp] of Object.entries(modPerf).sort((a,b) => a[0].localeCompare(b[0]))) {
     const ps = perfStyle(mp.pct);
     modHtml += `<tr style="background:${ps.bg};">
       <td style="padding:5px 10px;">${esc(sec)}</td>
@@ -3472,7 +3606,7 @@ async function downloadStudentReport(sid) {
   });
   ws.getRow(R).height = 18; R++;
 
-  for (const [sec, mp] of Object.entries(modPerf)) {
+  for (const [sec, mp] of Object.entries(modPerf).sort((a,b) => a[0].localeCompare(b[0]))) {
     const { bg, tx } = perfFill(mp.p);
     ws.getCell(R,1).value = sec || 'Uncategorized';
     ws.getCell(R,1).style = { font:{ size:9 }, fill:wf(bg), alignment:{ vertical:'middle', indent:1 } };
@@ -3879,6 +4013,499 @@ function identifyPreGradeItems(items) {
 function identifyDKCandidates(items) { return []; }
 
 // ══════════════════════════════════════════════
+//  CHART GENERATION (Canvas 2D)
+// ══════════════════════════════════════════════
+function generateChartImage(type, data, width, height) {
+  const canvas = document.createElement('canvas');
+  canvas.width  = width  || 480;
+  canvas.height = height || 220;
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height;
+
+  // Common helpers
+  const pad = { top:30, right:20, bottom:40, left:140 };
+  function truncLabel(s, maxPx) {
+    ctx.font = '11px sans-serif';
+    while (s.length > 4 && ctx.measureText(s).width > maxPx) s = s.slice(0,-1);
+    return s;
+  }
+  function drawBg() {
+    ctx.fillStyle = '#FFFFFF';
+    ctx.fillRect(0, 0, W, H);
+  }
+  function drawTitle(title) {
+    ctx.fillStyle = '#1e3a6e';
+    ctx.font = 'bold 12px sans-serif';
+    ctx.textAlign = 'left';
+    ctx.fillText(title, pad.left, 18);
+  }
+
+  if (type === 'flagBar') {
+    // Horizontal bar: KEEP / REVISE / RETIRE
+    drawBg();
+    const colors = ['#1b7a3e','#d4620a','#7b1a2a'];
+    const labels = ['KEEP','REVISE','RETIRE'];
+    const counts = [data.KEEP||0, data.REVISE||0, data.RETIRE||0];
+    const total  = counts.reduce((a,b)=>a+b,0)||1;
+    drawTitle('Item Flag Summary');
+    const barH = 32, gap = 14;
+    const chartLeft = pad.left, chartRight = W - pad.right;
+    const chartW = chartRight - chartLeft;
+    const startY = 38;
+    labels.forEach((lbl, i) => {
+      const y = startY + i*(barH+gap);
+      const bw = Math.max(4, (counts[i]/total)*chartW);
+      ctx.fillStyle = colors[i];
+      ctx.fillRect(chartLeft, y, bw, barH);
+      // label left
+      ctx.fillStyle = '#1e3a6e';
+      ctx.font = 'bold 11px sans-serif';
+      ctx.textAlign = 'right';
+      ctx.fillText(lbl, chartLeft - 8, y + barH/2 + 4);
+      // count + % right of bar
+      ctx.fillStyle = '#333333';
+      ctx.font = '11px sans-serif';
+      ctx.textAlign = 'left';
+      const pctStr = total > 0 ? Math.round(counts[i]/total*100)+'%' : '0%';
+      ctx.fillText(counts[i]+' ('+pctStr+')', chartLeft + bw + 6, y + barH/2 + 4);
+    });
+
+  } else if (type === 'histogram') {
+    // Score distribution histogram
+    drawBg();
+    drawTitle('Score Distribution');
+    const bins = Array(10).fill(0);
+    (data.scores||[]).forEach(s => {
+      const idx = Math.min(9, Math.floor(s * 10));
+      bins[idx]++;
+    });
+    const maxBin = Math.max(...bins, 1);
+    const chartLeft = pad.left, chartRight = W - pad.right;
+    const chartTop = 36, chartBottom = H - pad.bottom;
+    const chartW = chartRight - chartLeft, chartH = chartBottom - chartTop;
+    const bw = chartW / 10;
+    bins.forEach((cnt, i) => {
+      const bh = (cnt/maxBin)*chartH;
+      const x = chartLeft + i*bw;
+      const y = chartBottom - bh;
+      ctx.fillStyle = '#4a7ab5';
+      ctx.fillRect(x+2, y, bw-4, bh);
+      // x-axis label
+      ctx.fillStyle = '#555';
+      ctx.font = '9px sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText((i*10)+'–'+(i*10+10)+'%', x+bw/2, chartBottom+14);
+    });
+    // y-axis label
+    ctx.save();
+    ctx.translate(14, chartTop+chartH/2);
+    ctx.rotate(-Math.PI/2);
+    ctx.fillStyle = '#555';
+    ctx.font = '10px sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText('# Students', 0, 0);
+    ctx.restore();
+    // x axis baseline
+    ctx.strokeStyle = '#ccc';
+    ctx.beginPath(); ctx.moveTo(chartLeft, chartBottom); ctx.lineTo(chartRight, chartBottom); ctx.stroke();
+
+  } else if (type === 'moduleBar' || type === 'ngenBar') {
+    drawBg();
+    drawTitle(type==='moduleBar' ? 'Module / Content Area Performance' : 'NGEN Question Type Performance');
+    const entries = data.entries || []; // [{label, pct}]
+    const n = entries.length || 1;
+    const chartLeft = pad.left, chartRight = W - pad.right;
+    const chartTop = 34, chartBottom = H - pad.bottom;
+    const totalH = chartBottom - chartTop;
+    const barH = Math.min(28, Math.max(14, (totalH / n) - 8));
+    const gap   = Math.max(4, (totalH - barH*n) / (n+1));
+    const chartW = chartRight - chartLeft;
+    entries.forEach((e, i) => {
+      const y = chartTop + gap + i*(barH+gap);
+      const bw = Math.max(4, e.pct * chartW);
+      const color = e.pct >= 0.90 ? '#1b7a3e' : e.pct >= 0.80 ? '#d4620a' : '#7b1a2a';
+      ctx.fillStyle = color;
+      ctx.fillRect(chartLeft, y, bw, barH);
+      // label
+      ctx.fillStyle = '#1e3a6e';
+      ctx.font = '10px sans-serif';
+      ctx.textAlign = 'right';
+      const shortened = truncLabel(e.label, chartLeft - 12);
+      ctx.fillText(shortened, chartLeft - 8, y + barH/2 + 4);
+      // pct label right of bar
+      ctx.fillStyle = '#333';
+      ctx.font = '10px sans-serif';
+      ctx.textAlign = 'left';
+      ctx.fillText(Math.round(e.pct*100)+'%', chartLeft+bw+5, y+barH/2+4);
+    });
+    // legend
+    const legY = chartBottom + 20;
+    [['≥90% Strong','#1b7a3e'],['80–90% Acceptable','#d4620a'],['<80% Needs Improvement','#7b1a2a']].forEach(([lbl,col],i) => {
+      const lx = chartLeft + i*170;
+      ctx.fillStyle = col; ctx.fillRect(lx, legY-10, 12, 12);
+      ctx.fillStyle = '#333'; ctx.font = '9px sans-serif'; ctx.textAlign = 'left';
+      ctx.fillText(lbl, lx+16, legY);
+    });
+  }
+
+  // Return base64 without prefix
+  return canvas.toDataURL('image/png').replace('data:image/png;base64,','');
+}
+
+// ══════════════════════════════════════════════
+//  TOP/BOTTOM 27% COMPUTATION
+// ══════════════════════════════════════════════
+function computeQuartiles(totalScores) {
+  // totalScores: { [sid]: numericScore }
+  const sorted = Object.entries(totalScores).sort((a,b) => a[1]-b[1]);
+  const n = sorted.length;
+  const k = Math.ceil(n * 0.27);
+  const botSet = new Set(sorted.slice(0, k).map(([sid]) => sid));
+  const topSet = new Set(sorted.slice(n-k).map(([sid]) => sid));
+  return { topSet, botSet };
+}
+
+// ══════════════════════════════════════════════
+//  QUESTION BLOCK BUILDER (For Review / For Rewrite tabs)
+// ══════════════════════════════════════════════
+function buildQuestionBlock(ws, startRow, item, theme, topSet, botSet) {
+  // theme: { headerArgb, choiceHdrArgb, correctArgb, alertArgb }
+  const C_white = 'FFFFFFFF';
+  const C_yellow = 'FFFFFDE7';
+  const C_lgray  = 'FFF5F5F5';
+  const C_navy   = 'FF1e3a6e';
+  const C_steel  = 'FF4a7ab5';
+  const C_keep   = 'FF1b7a3e';
+  const C_keepLt = 'FFe8f5e9';
+  const C_alertOrange = 'FFFFF3E0';
+  function wf(hex) { return { type:'pattern', pattern:'solid', fgColor:{ argb: hex } }; }
+  const headerFill   = wf(theme.headerArgb);
+  const choiceHdrFill = wf(theme.choiceHdrArgb);
+  const correctFill  = wf(C_keepLt);
+  const alertFill    = wf(C_alertOrange);
+  const yellowFill   = wf(C_yellow);
+  const grayFill     = wf(C_lgray);
+  const whiteFill    = wf(C_white);
+  const n = item.n || 1;
+
+  const FACULTY_ACTIONS_LIST = '"No Action Taken,Revise Stem,Revise Answer Choice(s),Rekey — Correct Answer Changed,Retire from Bank,Insufficient Data — Monitor Next Semester"';
+
+  function applyHeaderRow(r, vals, colWidths) {
+    const row = ws.getRow(r);
+    row.height = 24;
+    vals.forEach((v, ci) => {
+      const cell = row.getCell(ci+1);
+      cell.value = v;
+      cell.style = { font:{ bold:true, color:{ argb:C_white }, size:8 }, fill: headerFill, alignment:{ horizontal:'center', vertical:'middle', wrapText:true } };
+    });
+  }
+
+  function mergeAndSet(r, c1, c2, value, style, height) {
+    if (c1 !== c2) ws.mergeCells(r, c1, r, c2);
+    ws.getCell(r, c1).value = value;
+    ws.getCell(r, c1).style = style;
+    if (height) ws.getRow(r).height = height;
+  }
+
+  // Pre-grade flag text
+  const pg = item.preGradeFlags || {};
+  let pgText = '';
+  if (pg.vak && pg.vakDetails) pgText += 'VERIFY ANSWER KEY: ' + (pg.vakDetails.message||'');
+  if (pg.aac && pg.aacDetails) pgText += (pgText?' | ':'') + 'AWARD ADDITIONAL CREDIT: ' + (pg.aacDetails.message||'');
+
+  const displayTitle = item.qtype==='FIB'
+    ? (item.fibCategory?'['+item.fibCategory+'] ':'')+( item.qtext||item.qtitle||'').substring(0,120)
+    : (item.qtitle||'Unknown');
+  const stemText = item.qtext || item.qtitle || '';
+  const flagReason = item.flag?.reason || '';
+
+  let R = startRow;
+
+  // ── ROW A: Title/Stats ──
+  const rowA = ws.getRow(R);
+  rowA.height = 24;
+  // A: qtype
+  rowA.getCell(1).value = item.qtype || '';
+  rowA.getCell(1).style = { font:{ bold:true, color:{ argb:C_white }, size:9 }, fill: headerFill, alignment:{ horizontal:'center', vertical:'middle' } };
+  // B: title
+  rowA.getCell(2).value = displayTitle;
+  rowA.getCell(2).style = { font:{ bold:true, color:{ argb:C_white }, size:9 }, fill: headerFill, alignment:{ vertical:'middle', wrapText:true } };
+  // C: N
+  rowA.getCell(3).value = item.n || 0;
+  rowA.getCell(3).style = { font:{ color:{ argb:C_white }, size:9 }, fill: headerFill, alignment:{ horizontal:'center', vertical:'middle' } };
+  // D: difficulty
+  rowA.getCell(4).value = item.difficulty !== null ? (Math.round((item.difficulty||0)*100)+'%') : 'n/a';
+  rowA.getCell(4).style = { font:{ color:{ argb:C_white }, size:9 }, fill: headerFill, alignment:{ horizontal:'center', vertical:'middle' } };
+  // E: PB
+  rowA.getCell(5).value = item.pointBiserial !== null ? (item.pointBiserial||0).toFixed(2) : 'n/a';
+  rowA.getCell(5).style = { font:{ color:{ argb:C_white }, size:9 }, fill: headerFill, alignment:{ horizontal:'center', vertical:'middle' } };
+  // F: disc index
+  rowA.getCell(6).value = item.discriminationIndex !== null ? (item.discriminationIndex||0).toFixed(2) : 'n/a';
+  rowA.getCell(6).style = { font:{ color:{ argb:C_white }, size:9 }, fill: headerFill, alignment:{ horizontal:'center', vertical:'middle' } };
+  // G: section
+  rowA.getCell(7).value = item.section || 'Uncategorized';
+  rowA.getCell(7).style = { font:{ color:{ argb:C_white }, size:9 }, fill: headerFill, alignment:{ vertical:'middle', wrapText:true } };
+  // H: Faculty Action dropdown (amber)
+  rowA.getCell(8).value = 'No Action Taken';
+  rowA.getCell(8).style = { font:{ bold:true, size:9, color:{ argb:'FF6D4C41' } }, fill: wf('FFFFF8E1'), alignment:{ horizontal:'center', vertical:'middle' } };
+  ws.getCell(R,8).dataValidation = { type:'list', allowBlank:false, formulae:[FACULTY_ACTIONS_LIST], showDropDown:false };
+  // I, J: blank spacer
+  [9,10].forEach(c => { rowA.getCell(c).style = { fill: headerFill }; });
+  // K: pre-grade note (gray italic)
+  rowA.getCell(11).value = pgText || '';
+  rowA.getCell(11).style = { font:{ italic:true, color:{ argb:'FF9E9E9E' }, size:8 }, fill: grayFill, alignment:{ vertical:'middle', wrapText:true } };
+  // L, M: yellow write-in
+  rowA.getCell(12).style = yellowFill;
+  rowA.getCell(12).style = { fill: yellowFill, alignment:{ wrapText:true } };
+  rowA.getCell(13).style = { fill: yellowFill, alignment:{ wrapText:true } };
+  R++;
+
+  // ── ROW B: Stem ──
+  const stemLen = stemText.length;
+  const stemH = Math.min(80, Math.max(28, Math.ceil(stemLen/80)*14));
+  const rowB = ws.getRow(R);
+  rowB.height = stemH;
+  rowB.getCell(1).value = 'Stem';
+  rowB.getCell(1).style = { font:{ bold:true, size:8, color:{ argb:C_navy } }, fill: grayFill, alignment:{ vertical:'top', horizontal:'center' } };
+  ws.mergeCells(R, 2, R, 13);
+  ws.getCell(R, 2).value = stemText;
+  ws.getCell(R, 2).style = { font:{ size:9 }, fill: whiteFill, alignment:{ vertical:'top', wrapText:true } };
+  R++;
+
+  // ── ROW C: NIARA Finding ──
+  const findingText = flagReason + (pgText ? '\n\nPre-Grade: ' + pgText : '');
+  const findingH = Math.min(90, Math.max(40, Math.ceil(findingText.length/100)*14));
+  const rowC = ws.getRow(R);
+  rowC.height = findingH;
+  rowC.getCell(1).value = 'NIARA Finding';
+  rowC.getCell(1).style = { font:{ bold:true, size:8, color:{ argb:C_navy } }, fill: grayFill, alignment:{ vertical:'top', horizontal:'center', wrapText:true } };
+  ws.mergeCells(R, 2, R, 13);
+  ws.getCell(R, 2).value = findingText;
+  ws.getCell(R, 2).style = { font:{ italic:true, size:8, color:{ argb:'FF757575' } }, fill: wf('FFF9FBE7'), alignment:{ vertical:'top', wrapText:true } };
+  R++;
+
+  // ── CHOICE ROWS based on question type ──
+  if (item.qtype === 'MC' || item.qtype === 'M-S' || item.qtype === 'T-F') {
+    // Choice header row
+    const chRow = ws.getRow(R);
+    chRow.height = 22;
+    ['Type','Answer Choice','n/N','% Sel.','Dist. PB','Top 27%','Bot 27%','','','','NIARA Note','Proposed Wording','Faculty Comment'].forEach((h,i) => {
+      chRow.getCell(i+1).value = h;
+      chRow.getCell(i+1).style = { font:{ bold:true, color:{ argb:C_white }, size:8 }, fill: choiceHdrFill, alignment:{ horizontal:'center', vertical:'middle', wrapText:true } };
+    });
+    R++;
+
+    const choices = Object.entries(item.distractorCounts || {});
+    const correctAnswers = item.qtype==='M-S' ? new Set(item.correctAnswers||[]) : new Set([item.correctAnswer]);
+
+    choices.forEach(([ans, count]) => {
+      const isCorrect = correctAnswers.has(ans);
+      const rate = n > 0 ? count/n : 0;
+      const rowFill = isCorrect ? correctFill : (rate > 0.20 && !isCorrect ? alertFill : whiteFill);
+      const rh = ws.getRow(R);
+      rh.height = isCorrect ? 44 : (rate > 0.20 ? 44 : 36);
+
+      // A: choice type label
+      let typeLabel = isCorrect ? 'Correct Answer' : 'Distractor';
+      let typeFill  = isCorrect ? wf(C_keep) : grayFill;
+      let typeFont  = { bold:true, color:{ argb: isCorrect ? C_white : C_navy }, size:8 };
+      if (!isCorrect && rate > 0.20 && item.pointBiserial !== null) {
+        // check if high-performer selected this distractor significantly
+        const topCount = topSet ? [...topSet].filter(sid => {
+          const resp = (item.responses||[]).find(r => r.sid===sid);
+          return resp && resp.answer === ans;
+        }).length : 0;
+        const topRate = topSet ? topCount/(topSet.size||1) : 0;
+        if (topRate > 0.15) {
+          typeLabel = 'High Performer Alert';
+          typeFill  = wf('FFFFCC00');
+          typeFont  = { bold:true, color:{ argb:'FF5D4037' }, size:8 };
+        }
+      }
+      if (!isCorrect && count === 0) {
+        typeLabel = 'No Selections — Review';
+        typeFill  = grayFill;
+        typeFont  = { italic:true, color:{ argb:C_steel }, size:8 };
+      }
+      rh.getCell(1).value = typeLabel;
+      rh.getCell(1).style = { font:typeFont, fill:typeFill, alignment:{ horizontal:'center', vertical:'middle', wrapText:true } };
+      // B: choice text
+      rh.getCell(2).value = ans;
+      rh.getCell(2).style = { font:{ bold:isCorrect, size:9, color:{ argb:isCorrect?C_keep:C_navy } }, fill:rowFill, alignment:{ vertical:'middle', wrapText:true } };
+      // C: n/N
+      rh.getCell(3).value = count+'/'+n;
+      rh.getCell(3).style = { font:{ size:9 }, fill:rowFill, alignment:{ horizontal:'center', vertical:'middle' } };
+      // D: % selected
+      rh.getCell(4).value = Math.round(rate*100)+'%';
+      rh.getCell(4).style = { font:{ bold:!isCorrect&&rate>0.35, size:9, color:{ argb:!isCorrect&&rate>0.35?'FF7b1a2a':C_navy } }, fill:rowFill, alignment:{ horizontal:'center', vertical:'middle' } };
+      // E: distractor PB — compute from responses if available
+      const topCount = topSet ? [...topSet].filter(sid => {
+        const resp = (item.responses||[]).find(r => r.sid===sid);
+        return resp && resp.answer === ans;
+      }).length : 0;
+      const botCount = botSet ? [...botSet].filter(sid => {
+        const resp = (item.responses||[]).find(r => r.sid===sid);
+        return resp && resp.answer === ans;
+      }).length : 0;
+      rh.getCell(5).value = '—'; // distractor PB not individually computed
+      rh.getCell(5).style = { font:{ size:9, color:{ argb:C_steel } }, fill:rowFill, alignment:{ horizontal:'center', vertical:'middle' } };
+      // F: top 27%
+      rh.getCell(6).value = topSet ? topCount+'/'+(topSet.size||'?') : '—';
+      rh.getCell(6).style = { font:{ size:9 }, fill:rowFill, alignment:{ horizontal:'center', vertical:'middle' } };
+      // G: bot 27%
+      rh.getCell(7).value = botSet ? botCount+'/'+(botSet.size||'?') : '—';
+      rh.getCell(7).style = { font:{ size:9 }, fill:rowFill, alignment:{ horizontal:'center', vertical:'middle' } };
+      // H,I,J: blank
+      [8,9,10].forEach(c => { rh.getCell(c).style = { fill:rowFill }; });
+      // K: NIARA note
+      let note = '';
+      if (isCorrect) note = 'Keyed correct answer';
+      else if (rate > 0.40) note = 'High selection rate — review plausibility and wording';
+      else if (rate > 0.20) note = 'Moderate selection — monitor';
+      else if (count === 0) note = 'Zero selections — consider removing or rewriting this distractor';
+      rh.getCell(11).value = note;
+      rh.getCell(11).style = { font:{ italic:true, size:8, color:{ argb:C_steel } }, fill:grayFill, alignment:{ vertical:'middle', wrapText:true } };
+      // L, M: yellow write-in
+      rh.getCell(12).style = { fill:yellowFill, alignment:{ wrapText:true } };
+      rh.getCell(13).style = { fill:yellowFill, alignment:{ wrapText:true } };
+      R++;
+    });
+
+  } else if (item.qtype === 'MAT') {
+    const matData = item.matData || {};
+    if (Object.keys(matData).length > 0) {
+      // Header
+      const mhRow = ws.getRow(R);
+      mhRow.height = 22;
+      ['Pair','Prompt','Keyed Response','% Correct','Item PB','','','','','','NIARA Note','Proposed Revision','Faculty Comment'].forEach((h,i) => {
+        mhRow.getCell(i+1).value = h;
+        mhRow.getCell(i+1).style = { font:{ bold:true, color:{ argb:C_white }, size:8 }, fill: choiceHdrFill, alignment:{ horizontal:'center', vertical:'middle', wrapText:true } };
+      });
+      R++;
+      Object.entries(matData).forEach(([prompt, data], pi) => {
+        const correctRate = n > 0 ? (data.correct||0)/n : 0;
+        const bg = correctRate >= 0.70 ? correctFill : (correctRate >= 0.50 ? alertFill : whiteFill);
+        const row = ws.getRow(R);
+        row.height = 36;
+        row.getCell(1).value = 'Pair '+(pi+1);
+        row.getCell(1).style = { font:{ bold:true, size:8, color:{ argb:C_navy } }, fill:grayFill, alignment:{ horizontal:'center', vertical:'middle' } };
+        row.getCell(2).value = prompt;
+        row.getCell(2).style = { font:{ size:9 }, fill:bg, alignment:{ vertical:'middle', wrapText:true } };
+        row.getCell(3).value = prompt; // keyed response = correct match (same text for matching)
+        row.getCell(3).style = { font:{ bold:true, size:9, color:{ argb:C_keep } }, fill:bg, alignment:{ vertical:'middle', wrapText:true } };
+        row.getCell(4).value = Math.round(correctRate*100)+'%';
+        row.getCell(4).style = { font:{ bold:true, size:9, color:{ argb:correctRate>=0.70?C_keep:'FF7b1a2a' } }, fill:bg, alignment:{ horizontal:'center', vertical:'middle' } };
+        row.getCell(5).value = item.pointBiserial!==null?(item.pointBiserial||0).toFixed(2):'n/a';
+        row.getCell(5).style = { font:{ size:9 }, fill:bg, alignment:{ horizontal:'center', vertical:'middle' } };
+        [6,7,8,9,10].forEach(c => { row.getCell(c).style = { fill:bg }; });
+        const matNote = correctRate < 0.50 ? 'Low match rate — review prompt clarity and options' : '';
+        row.getCell(11).value = matNote;
+        row.getCell(11).style = { font:{ italic:true, size:8, color:{ argb:C_steel } }, fill:grayFill, alignment:{ vertical:'middle', wrapText:true } };
+        row.getCell(12).style = { fill:yellowFill, alignment:{ wrapText:true } };
+        row.getCell(13).style = { fill:yellowFill, alignment:{ wrapText:true } };
+        R++;
+      });
+    }
+
+  } else if (item.qtype === 'FIB') {
+    // FIB: keyed answer + top wrong answers
+    const responses = item.responses || [];
+    const correctAns = item.correctAnswer || '';
+    // Tally responses
+    const respCounts = {};
+    responses.forEach(r => {
+      const ans = (r.student_answer||'').trim();
+      if (!ans) return;
+      respCounts[ans] = (respCounts[ans]||0)+1;
+    });
+    const sortedResps = Object.entries(respCounts).sort((a,b)=>b[1]-a[1]);
+
+    const fhRow = ws.getRow(R);
+    fhRow.height = 22;
+    ['Response Type','Student Response','# Submitted','% Submitting','','','','','','','NIARA Note','Proposed Key / Stem Revision','Faculty Comment'].forEach((h,i) => {
+      fhRow.getCell(i+1).value = h;
+      fhRow.getCell(i+1).style = { font:{ bold:true, color:{ argb:C_white }, size:8 }, fill: choiceHdrFill, alignment:{ horizontal:'center', vertical:'middle', wrapText:true } };
+    });
+    R++;
+    sortedResps.slice(0,8).forEach(([ans, cnt]) => {
+      const isKey = ans === correctAns;
+      const rate = n > 0 ? cnt/n : 0;
+      const bg = isKey ? correctFill : (rate >= 0.25 ? alertFill : whiteFill);
+      const row = ws.getRow(R);
+      row.height = 28;
+      row.getCell(1).value = isKey ? 'Keyed Answer' : 'Wrong Answer';
+      row.getCell(1).style = { font:{ bold:isKey, size:8, color:{ argb: isKey?C_white:C_navy } }, fill: isKey?wf(C_keep):grayFill, alignment:{ horizontal:'center', vertical:'middle' } };
+      row.getCell(2).value = ans;
+      row.getCell(2).style = { font:{ bold:isKey, size:9, color:{ argb:isKey?C_keep:C_navy } }, fill:bg, alignment:{ vertical:'middle', wrapText:true } };
+      row.getCell(3).value = cnt;
+      row.getCell(3).style = { font:{ size:9 }, fill:bg, alignment:{ horizontal:'center', vertical:'middle' } };
+      row.getCell(4).value = Math.round(rate*100)+'%';
+      row.getCell(4).style = { font:{ size:9 }, fill:bg, alignment:{ horizontal:'center', vertical:'middle' } };
+      [5,6,7,8,9,10].forEach(c => { row.getCell(c).style = { fill:bg }; });
+      const note = !isKey && rate >= 0.25 ? 'High frequency wrong answer — verify key setup in Brightspace' : '';
+      row.getCell(11).value = note;
+      row.getCell(11).style = { font:{ italic:true, size:8, color:{ argb:C_steel } }, fill:grayFill, alignment:{ vertical:'middle', wrapText:true } };
+      row.getCell(12).style = { fill:yellowFill, alignment:{ wrapText:true } };
+      row.getCell(13).style = { fill:yellowFill, alignment:{ wrapText:true } };
+      R++;
+    });
+
+  } else if (item.qtype === 'ORD') {
+    // ORD: step-by-step
+    const ordData = item.ordData || [];
+    const ohRow = ws.getRow(R);
+    ohRow.height = 22;
+    ['Step','Correct Step Text','% Placed Correctly','','','','','','','','NIARA Note','Proposed Step Revision','Faculty Comment'].forEach((h,i) => {
+      ohRow.getCell(i+1).value = h;
+      ohRow.getCell(i+1).style = { font:{ bold:true, color:{ argb:C_white }, size:8 }, fill: choiceHdrFill, alignment:{ horizontal:'center', vertical:'middle', wrapText:true } };
+    });
+    R++;
+    if (ordData.length > 0) {
+      ordData.forEach((step, si) => {
+        const rate = step.pct || 0;
+        const bg = rate >= 0.70 ? correctFill : (rate >= 0.50 ? alertFill : whiteFill);
+        const row = ws.getRow(R);
+        row.height = 30;
+        row.getCell(1).value = 'Step '+(si+1);
+        row.getCell(1).style = { font:{ bold:true, size:8, color:{ argb:C_navy } }, fill:grayFill, alignment:{ horizontal:'center', vertical:'middle' } };
+        row.getCell(2).value = step.text || '';
+        row.getCell(2).style = { font:{ size:9 }, fill:bg, alignment:{ vertical:'middle', wrapText:true } };
+        row.getCell(3).value = Math.round(rate*100)+'%';
+        row.getCell(3).style = { font:{ size:9, color:{ argb:rate>=0.70?C_keep:'FF7b1a2a' } }, fill:bg, alignment:{ horizontal:'center', vertical:'middle' } };
+        [4,5,6,7,8,9,10].forEach(c => { row.getCell(c).style = { fill:bg }; });
+        row.getCell(11).value = rate < 0.50 ? 'Low placement accuracy — review step wording' : '';
+        row.getCell(11).style = { font:{ italic:true, size:8, color:{ argb:C_steel } }, fill:grayFill, alignment:{ vertical:'middle', wrapText:true } };
+        row.getCell(12).style = { fill:yellowFill, alignment:{ wrapText:true } };
+        row.getCell(13).style = { fill:yellowFill, alignment:{ wrapText:true } };
+        R++;
+      });
+    } else {
+      // No ORD data
+      const row = ws.getRow(R);
+      row.height = 22;
+      ws.mergeCells(R, 1, R, 13);
+      ws.getCell(R,1).value = 'Ordering item — step-level data not available in Brightspace CSV export.';
+      ws.getCell(R,1).style = { font:{ italic:true, size:8, color:{ argb:C_steel } }, fill:grayFill, alignment:{ vertical:'middle' } };
+      R++;
+    }
+  } else {
+    // Generic fallback
+    const row = ws.getRow(R);
+    row.height = 22;
+    ws.mergeCells(R, 1, R, 13);
+    ws.getCell(R,1).value = 'Question type: '+item.qtype+'. Detailed choice breakdown not available.';
+    ws.getCell(R,1).style = { font:{ italic:true, size:8, color:{ argb:C_steel } }, fill:grayFill, alignment:{ vertical:'middle' } };
+    R++;
+  }
+
+  // Spacer row
+  ws.getRow(R).height = 8;
+  R++;
+
+  return R; // next available row
+}
+
+// ══════════════════════════════════════════════
 //  EXCEL EXPORT
 // ══════════════════════════════════════════════
 async function downloadExcel() {
@@ -3896,7 +4523,7 @@ async function downloadExcel() {
     const a = document.createElement('a'); a.href = url; a.download = fileName; a.click();
     URL.revokeObjectURL(url);
   } finally {
-    if (btn) { btn.disabled = false; btn.innerHTML = '⬇ Download Excel Report'; }
+    if (btn) { btn.disabled = false; btn.innerHTML = '⬇ Download Single Exam Report'; }
   }
 }
 
@@ -3915,7 +4542,7 @@ async function downloadLongitudinal() {
     const a = document.createElement('a'); a.href = url; a.download = fileName; a.click();
     URL.revokeObjectURL(url);
   } finally {
-    if (btn) { btn.disabled = false; btn.innerHTML = '📈 Download Longitudinal Report'; }
+    if (btn) { btn.disabled = false; btn.innerHTML = '⬇ Download Longitudinal Exam Report'; }
   }
 }
 
@@ -3925,6 +4552,9 @@ async function buildWorkbook(data) {
   wb.created = new Date();
   const { students, items, classStats, totalScores, meta } = data;
   const tp = classStats.totalPossible || 1;
+
+  // Compute top/bottom 27% groups
+  const { topSet, botSet } = totalScores ? computeQuartiles(totalScores) : { topSet: null, botSet: null };
 
   const C = {
     nav:'FF1e3a6e', navDark:'FF152d57', steel:'FF4a7ab5',
@@ -4024,91 +4654,146 @@ async function buildWorkbook(data) {
   ws1.getRow(9).height = classStats.isPooled ? 36 : 22;
   ws1.getRow(10).height = 10;
 
-  // Flag summary bar chart (cell-based)
-  ws1.mergeCells('A11:J11');
-  ws1.getCell('A11').value = '  ITEM FLAG SUMMARY';
-  ws1.getCell('A11').style = colHdrStyle(navDFill);
-  ws1.getRow(11).height = 22;
+  // ── Chart 1: Flag Summary ──
+  let chartRow = 11;
+  try {
+    const flagChartB64 = generateChartImage('flagBar', {
+      KEEP: classStats.flags.KEEP||0,
+      REVISE: classStats.flags.REVISE||0,
+      RETIRE: classStats.flags.RETIRE||0,
+    }, 480, 180);
+    const flagImgId = wb.addImage({ base64: flagChartB64, extension: 'png' });
+    ws1.addImage(flagImgId, { tl:{ col:0, row: chartRow-1 }, ext:{ width:480, height:180 } });
+    chartRow += 12; // advance ~12 rows for 180px image
+  } catch(e) { chartRow += 2; }
 
-  const totalItems = Object.keys(items).length || 1;
-  const flagData = [
-    { label:'✓ KEEP',    count: classStats.flags.KEEP,   fill: keepFill },
-    { label:'✏ REVISE',  count: classStats.flags.REVISE, fill: reviseFill },
-    { label:'RETIRE',    count: classStats.flags.RETIRE, fill: retireFill },
-  ];
-  flagData.forEach((f, i) => {
-    const r = 12 + i;
-    const barLen = Math.round((f.count / totalItems) * 7);
-    ws1.getCell(r, 1).value = f.label;
-    ws1.getCell(r, 1).style = flagStyle(f.fill);
-    ws1.getCell(r, 2).value = f.count + ' items (' + pct(f.count/totalItems) + ')';
-    ws1.getCell(r, 2).style = { font:{ size:9, color:{ argb:C.nav } }, fill: owFill, alignment:{ horizontal:'center', vertical:'middle' } };
-    for (let c = 3; c <= 10; c++) {
-      ws1.getCell(r, c).style = { fill: c <= 2 + barLen ? f.fill : owFill };
-    }
-    ws1.getRow(r).height = 24;
-  });
+  // ── Chart 2: Score Distribution ──
+  try {
+    const scoreArr = totalScores ? Object.values(totalScores).map(s => tp > 0 ? s/tp : 0) : [];
+    const scoreChartB64 = generateChartImage('histogram', { scores: scoreArr }, 480, 180);
+    const scoreImgId = wb.addImage({ base64: scoreChartB64, extension: 'png' });
+    ws1.addImage(scoreImgId, { tl:{ col:5, row: 10 }, ext:{ width:480, height:180 } });
+  } catch(e) {}
 
-  ws1.getRow(15).height = 8;
-  ws1.mergeCells('A16:J16');
-  ws1.getCell('A16').value = '  PRE-GRADE ACTION REQUIRED';
-  ws1.getCell('A16').style = colHdrStyle(vakFill);
-  ws1.getRow(16).height = 22;
+  // ── Pre-grade callout (text row after flag chart) ──
+  const vakCount = classStats.flags.VAK||0;
+  const aacCount = classStats.flags.AAC||0;
+  ws1.mergeCells('A'+chartRow+':J'+chartRow);
+  const pgCallout = [
+    vakCount > 0 ? vakCount + ' item(s) flagged VERIFY ANSWER KEY — review before posting grades.' : null,
+    aacCount > 0 ? aacCount + ' item(s) flagged AWARD ADDITIONAL CREDIT — SME review required.' : null,
+  ].filter(Boolean).join('  |  ') || 'No pre-grade action items identified.';
+  ws1.getCell('A'+chartRow).value = pgCallout;
+  ws1.getCell('A'+chartRow).style = { font:{ italic:true, size:8, color:{ argb:(vakCount||aacCount)?C.vak:C.steel } }, fill: owFill, alignment:{ horizontal:'left', vertical:'middle', wrapText:true } };
+  ws1.getRow(chartRow).height = 22;
+  chartRow++;
 
-  [
-    { label:'🔑 VERIFY ANSWER KEY',       count: classStats.flags.VAK||0, fill: vakFill },
-    { label:'⚠ AWARD ADDITIONAL CREDIT', count: classStats.flags.AAC||0, fill: aacFill },
-  ].forEach((f, i) => {
-    const r = 17 + i;
-    ws1.getCell(r, 1).value = f.label;
-    ws1.getCell(r, 1).style = flagStyle(f.fill);
-    ws1.getCell(r, 2).value = f.count + ' items';
-    ws1.getCell(r, 2).style = { font:{ size:9, color:{ argb:C.nav } }, fill: owFill, alignment:{ horizontal:'center' } };
-    ws1.mergeCells(r, 3, r, 10);
-    ws1.getCell(r, 3).value = f.count > 0 ? 'See Pre-Grade Actions tab before posting grades.' : 'No items flagged.';
-    ws1.getCell(r, 3).style = { font:{ italic:true, size:9, color:{ argb:C.steel } }, fill: owFill, alignment:{ horizontal:'left' } };
-    ws1.getRow(r).height = 22;
-  });
+  ws1.getRow(chartRow).height = 8; chartRow++;
 
-  ws1.getRow(19).height = 10;
-  ws1.mergeCells('A20:J20');
-  ws1.getCell('A20').value = '  MODULE / CONTENT AREA PERFORMANCE';
-  ws1.getCell('A20').style = colHdrStyle();
-  ws1.getRow(20).height = 22;
+  // ── Module Performance Table ──
+  ws1.mergeCells('A'+chartRow+':J'+chartRow);
+  ws1.getCell('A'+chartRow).value = '  MODULE / CONTENT AREA PERFORMANCE';
+  ws1.getCell('A'+chartRow).style = colHdrStyle();
+  ws1.getRow(chartRow).height = 22;
+  chartRow++;
 
-  const modHdrRow = ws1.getRow(21);
+  const modHdrRow = ws1.getRow(chartRow);
   modHdrRow.height = 20;
-  ['Module/Content Area','Items','Avg Score','% Correct','Performance'].forEach((h, i) => {
+  ['Module/Content Area','Items','% Correct','Performance',''].forEach((h, i) => {
     modHdrRow.getCell(i+1).value = h;
     modHdrRow.getCell(i+1).style = colHdrStyle(wf(C.accent1));
   });
-  ws1.mergeCells('E21:J21');
+  ws1.mergeCells(chartRow, 5, chartRow, 10);
+  chartRow++;
 
-  let modRow = 22;
-  for (const [mod, mp] of Object.entries(classStats.modScores)) {
+  const modScoresSorted = Object.entries(classStats.modScores).sort((a,b) => a[0].localeCompare(b[0]));
+  for (const [mod, mp] of modScoresSorted) {
     const uniqueCount = Object.values(items).filter(i => i.section === mod).length;
     const modPct = mp.total > 0 ? mp.correct / mp.total : 0;
-    const bg = modRow % 2 === 0 ? C.offwhite : C.white;
-    const row = ws1.getRow(modRow);
+    const bg = chartRow % 2 === 0 ? C.offwhite : C.white;
+    const row = ws1.getRow(chartRow);
     row.height = 20;
     row.getCell(1).value = mod || 'Uncategorized';
     row.getCell(1).style = { font:{ size:9 }, fill: wf(bg), alignment:{ vertical:'middle' } };
     row.getCell(2).value = uniqueCount;
     row.getCell(2).style = { font:{ size:9 }, fill: wf(bg), alignment:{ horizontal:'center', vertical:'middle' } };
-    row.getCell(3).value = fmt1(mp.correct/classStats.n) + '/' + fmt1(mp.total/classStats.n);
-    row.getCell(3).style = { font:{ size:9 }, fill: wf(bg), alignment:{ horizontal:'center', vertical:'middle' } };
-    const pctColor = modPct >= 0.77 ? C.keep : modPct >= 0.70 ? C.revise : C.retire;
-    row.getCell(4).value = pct(modPct);
-    row.getCell(4).style = { font:{ bold:true, size:9, color:{ argb:pctColor } }, fill: wf(bg), alignment:{ horizontal:'center', vertical:'middle' } };
-    const barLen = Math.round(modPct * 6);
-    ws1.mergeCells(modRow, 5, modRow, 10);
-    for (let c = 5; c <= 10; c++) {
-      ws1.getCell(modRow, c).style = { fill: c <= 4 + barLen ? wf(pctColor) : owFill };
-    }
-    modRow++;
+    const pctColor = modPct >= 0.90 ? C.keep : modPct >= 0.80 ? C.revise : C.retire;
+    const perfLabel = modPct >= 0.90 ? 'Strong' : modPct >= 0.80 ? 'Acceptable' : 'Needs Improvement';
+    row.getCell(3).value = pct(modPct);
+    row.getCell(3).style = { font:{ bold:true, size:9, color:{ argb:pctColor } }, fill: wf(bg), alignment:{ horizontal:'center', vertical:'middle' } };
+    row.getCell(4).value = perfLabel;
+    row.getCell(4).style = { font:{ size:9, color:{ argb:pctColor } }, fill: wf(bg), alignment:{ horizontal:'center', vertical:'middle' } };
+    ws1.mergeCells(chartRow, 5, chartRow, 10);
+    ws1.getCell(chartRow, 5).style = { fill: wf(bg) };
+    chartRow++;
   }
 
-  ws1.columns = [{width:22},{width:14},{width:13},{width:13},{width:8},{width:8},{width:8},{width:8},{width:8},{width:8}];
+  // ── Chart 3: Module Bar ──
+  const modEntries = modScoresSorted.map(([mod, mp]) => ({ label: mod, pct: mp.total>0?mp.correct/mp.total:0 }));
+  if (modEntries.length > 0) {
+    try {
+      const modH = Math.min(300, Math.max(180, modEntries.length * 35 + 60));
+      const modChartB64 = generateChartImage('moduleBar', { entries: modEntries }, 600, modH);
+      const modImgId = wb.addImage({ base64: modChartB64, extension: 'png' });
+      ws1.addImage(modImgId, { tl:{ col:0, row: chartRow }, ext:{ width:600, height: modH } });
+      chartRow += Math.ceil(modH/15) + 1;
+    } catch(e) {}
+  }
+
+  // ── NGEN Performance (if any) ──
+  const ngenItems = Object.values(items).filter(i => !i.isBonus && ['M-S','MAT','FIB','ORD'].includes(i.qtype));
+  if (ngenItems.length > 0) {
+    ws1.getRow(chartRow).height = 8; chartRow++;
+    ws1.mergeCells('A'+chartRow+':J'+chartRow);
+    ws1.getCell('A'+chartRow).value = '  NGEN QUESTION TYPE PERFORMANCE';
+    ws1.getCell('A'+chartRow).style = colHdrStyle();
+    ws1.getRow(chartRow).height = 22; chartRow++;
+
+    const ngenByType = {};
+    ngenItems.forEach(i => {
+      if (!ngenByType[i.qtype]) ngenByType[i.qtype] = { correct:0, total:0 };
+      const d = i.difficulty ?? 0;
+      ngenByType[i.qtype].correct += d * (i.n||0);
+      ngenByType[i.qtype].total   += i.n||0;
+    });
+    const ngenHdrRow = ws1.getRow(chartRow);
+    ngenHdrRow.height = 20;
+    ['Type','Items','% Correct','Performance'].forEach((h,i) => {
+      ngenHdrRow.getCell(i+1).value = h;
+      ngenHdrRow.getCell(i+1).style = colHdrStyle(wf(C.accent2));
+    });
+    ws1.mergeCells(chartRow, 5, chartRow, 10);
+    chartRow++;
+    const ngenEntries = [];
+    for (const [qt, d] of Object.entries(ngenByType)) {
+      const p = d.total > 0 ? d.correct/d.total : 0;
+      ngenEntries.push({ label: qt, pct: p });
+      const bg = chartRow%2===0 ? C.offwhite : C.white;
+      const pctColor = p>=0.90?C.keep:p>=0.80?C.revise:C.retire;
+      const perfLabel = p>=0.90?'Strong':p>=0.80?'Acceptable':'Needs Improvement';
+      const row = ws1.getRow(chartRow); row.height = 20;
+      row.getCell(1).value = qt; row.getCell(1).style = { font:{size:9}, fill:wf(bg), alignment:{vertical:'middle'} };
+      row.getCell(2).value = ngenItems.filter(i=>i.qtype===qt).length;
+      row.getCell(2).style = { font:{size:9}, fill:wf(bg), alignment:{horizontal:'center',vertical:'middle'} };
+      row.getCell(3).value = pct(p);
+      row.getCell(3).style = { font:{bold:true,size:9,color:{argb:pctColor}}, fill:wf(bg), alignment:{horizontal:'center',vertical:'middle'} };
+      row.getCell(4).value = perfLabel;
+      row.getCell(4).style = { font:{size:9,color:{argb:pctColor}}, fill:wf(bg), alignment:{horizontal:'center',vertical:'middle'} };
+      ws1.mergeCells(chartRow,5,chartRow,10); ws1.getCell(chartRow,5).style={fill:wf(bg)};
+      chartRow++;
+    }
+    // Chart 4: NGEN bar
+    if (ngenEntries.length > 0) {
+      try {
+        const ngenChartB64 = generateChartImage('ngenBar', { entries: ngenEntries }, 480, 180);
+        const ngenImgId = wb.addImage({ base64: ngenChartB64, extension: 'png' });
+        ws1.addImage(ngenImgId, { tl:{ col:0, row: chartRow }, ext:{ width:480, height:180 } });
+        chartRow += 13;
+      } catch(e) {}
+    }
+  }
+
+  ws1.columns = [{width:26},{width:10},{width:12},{width:16},{width:8},{width:8},{width:8},{width:8},{width:8},{width:8}];
 
   // ===============================================
   //  TAB 2 — ITEM STATUS
@@ -4116,18 +4801,25 @@ async function buildWorkbook(data) {
   const ws2 = wb.addWorksheet('Item Status');
   ws2.views = [{ showGridLines: false }];
 
-  ws2.mergeCells('A1:N1');
+  ws2.mergeCells('A1:O1');
   ws2.getCell('A1').value = 'ITEM STATUS REPORT — ' + meta.examName + ' | ' + meta.semester + ' ' + meta.year;
   ws2.getCell('A1').style = { font:{ bold:true, color:{ argb:C.white }, size:13 }, fill: navFill, alignment:{ horizontal:'left', vertical:'middle' } };
   ws2.getRow(1).height = 30;
 
-  const is2Headers = ['PRE-GRADE','POST-EXAM FLAG','Question Title','Type','Module/Content Area','% Correct','Pt-Biserial','Disc. Index','N','Top Wrong Answer','NIARA Recommendation','Faculty Action Taken','Comments / Notes','Date Reviewed'];
+  const is2Headers = ['PRE-GRADE','POST-EXAM FLAG','Question Title','Type','Module/Content Area','% Correct','Pt-Biserial','Disc. Index','N','Top Wrong Answer','NIARA Recommendation','Faculty Action Taken','Comments / Notes','Date Reviewed','Item Fingerprint'];
   const hrow2 = ws2.getRow(2);
   hrow2.height = 36;
   is2Headers.forEach((h, i) => { hrow2.getCell(i+1).value = h; hrow2.getCell(i+1).style = colHdrStyle(); });
-  ws2.autoFilter = { from:'A2', to:'N2' };
+  ws2.autoFilter = { from:'A2', to:'O2' };
 
   const FACULTY_ACTIONS = 'No Action Taken,Revised Stem,Revised Answer Choices,Rekeyed,Retired from Bank,Insufficient Data — Monitor Next Semester';
+
+  function normalizeText(t) { return (t||'').toLowerCase().trim().replace(/\s+/g,' '); }
+  function itemSignatureLocal(item) {
+    const stem = normalizeText(item.qtext || item.qtitle || '');
+    const choices = Object.keys(item.distractorCounts || {}).map(normalizeText).sort().join('||');
+    return stem + '###' + choices;
+  }
 
   const sortedItems = Object.values(items).sort((a,b) => {
     const order = { RETIRE:0, REVISE:1, KEEP:2 };
@@ -4158,7 +4850,7 @@ async function buildWorkbook(data) {
       item.discriminationIndex!==null?fmt2(item.discriminationIndex):'n/a',
       item.n,
       item.topWrongAnswer?item.topWrongAnswer+' ('+pct(item.topWrongRate)+')':'—',
-      rec, 'No Action Taken', '', ''];
+      rec, 'No Action Taken', '', '', itemSignatureLocal(item)];
     vals.forEach((v, ci) => {
       row.getCell(ci+1).value = v;
       row.getCell(ci+1).style = { font:{ size:9 }, fill: wf(bg), alignment:{ vertical:'middle', wrapText: ci===10 } };
@@ -4169,215 +4861,127 @@ async function buildWorkbook(data) {
     ws2.getCell(r,12).style = { font:{ size:9 }, fill: wf(C.yellow), alignment:{ horizontal:'center', vertical:'middle' } };
     ws2.getCell(r,13).style = { font:{ size:9 }, fill: wf(C.blue), alignment:{ vertical:'middle' } };
     ws2.getCell(r,14).style = { font:{ size:9 }, fill: wf(C.lgray), alignment:{ horizontal:'center', vertical:'middle' } };
+    // Col O: fingerprint — hidden column for re-import matching
+    ws2.getCell(r,15).style = { font:{ size:8, color:{ argb:'FFBDBDBD' } }, fill: wf(C.lgray), alignment:{ vertical:'middle' } };
   });
 
   ws2.columns = [
     {width:28},{width:12},{width:50},{width:8},{width:24},
     {width:11},{width:11},{width:11},{width:7},{width:34},
-    {width:65},{width:42},{width:45},{width:14}
+    {width:65},{width:42},{width:45},{width:14},{width:0}
   ];
+  // Hide the fingerprint column
+  ws2.getColumn(15).hidden = true;
 
   // ===============================================
-  //  TAB 3 — DISTRACTOR ANALYSIS (REVISE + RETIRE only)
+  //  TAB 3 — FOR REVIEW (REVISE items, orange)
   // ===============================================
-  const ws3 = wb.addWorksheet('Distractor Analysis');
+  const ws3 = wb.addWorksheet('For Review');
+  ws3.properties = { tabColor: { argb: 'FFE65100' } };
   ws3.views = [{ showGridLines: false }];
 
-  ws3.mergeCells('A1:G1');
-  ws3.getCell('A1').value = 'DISTRACTOR ANALYSIS — REVISE & RETIRE Items | ' + meta.examName + ' | ' + meta.semester + ' ' + meta.year;
-  ws3.getCell('A1').style = { font:{ bold:true, color:{ argb:C.white }, size:13 }, fill: navFill, alignment:{ horizontal:'left', vertical:'middle' } };
+  ws3.mergeCells('A1:M1');
+  ws3.getCell('A1').value = 'FOR REVIEW — Items Flagged REVISE | ' + meta.examName + ' | ' + meta.semester + ' ' + meta.year;
+  ws3.getCell('A1').style = { font:{ bold:true, color:{ argb:C.white }, size:13 }, fill: reviseFill, alignment:{ horizontal:'left', vertical:'middle' } };
   ws3.getRow(1).height = 30;
 
-  ws3.mergeCells('A2:G2');
-  ws3.getCell('A2').value = 'KEEP items are excluded. Use the AutoFilter arrows on row 3 to sort or filter by flag or type.';
-  ws3.getCell('A2').style = { font:{ italic:true, size:8, color:{ argb:C.steel } }, fill: owFill, alignment:{ horizontal:'left', vertical:'middle' } };
-  ws3.getRow(2).height = 18;
-
-  const daHeaders = ['FLAG','Question Title','Question Stem','Answer Choice','Responses','% Selected','Notes'];
-  const dahRow = ws3.getRow(3);
-  dahRow.height = 28;
-  daHeaders.forEach((h,i) => { dahRow.getCell(i+1).value = h; dahRow.getCell(i+1).style = colHdrStyle(); });
-  ws3.autoFilter = { from:'A3', to:'G3' };
-
-  const flaggedItems = Object.values(items)
-    .filter(i => i.flag && i.flag.flag !== 'KEEP')
-    .sort((a,b) => { const o={RETIRE:0,REVISE:1}; return (o[a.flag?.flag]||9)-(o[b.flag?.flag]||9); });
-
-  let daRow = 4;
-  flaggedItems.forEach(item => {
-    const f = item.flag;
-    const stemText = item.qtext || item.qtitle || '';
-    const displayTitle = item.qtype==='FIB'
-      ? (item.fibCategory?'['+item.fibCategory+'] ':'')+stemText.substring(0,80)
-      : (item.qtitle||'');
-
-    if (item.qtype === 'FIB') {
-      const r = ws3.getRow(daRow);
-      r.height = 22;
-      r.getCell(1).value = f.flag; r.getCell(1).style = flagStyle(flagFillMap[f.flag]||keepFill);
-      r.getCell(2).value = displayTitle; r.getCell(2).style = { font:{ bold:true, size:9, color:{ argb:C.nav } }, fill: owFill, alignment:{ vertical:'middle' } };
-      r.getCell(3).value = stemText.substring(0,300); r.getCell(3).style = { font:{ size:9, italic:true }, fill: owFill, alignment:{ vertical:'middle', wrapText:true } };
-      r.getCell(4).value = '(Fill-in-the-blank)'; r.getCell(4).style = { font:{ size:9, italic:true, color:{ argb:C.steel } }, fill: owFill };
-      if (item.topWrongAnswer) { r.getCell(6).value = pct(item.topWrongRate); r.getCell(7).value = 'Top incorrect: ' + item.topWrongAnswer; }
-      daRow++;
-      return;
-    }
-
-    const choices = Object.entries(item.distractorCounts || {});
-    choices.forEach(([ans, count], ci) => {
-      const isCorrect = item.qtype==='M-S' ? (item.correctAnswers||[]).includes(ans) : ans===item.correctAnswer;
-      const rate = item.n > 0 ? count/item.n : 0;
-      const r = ws3.getRow(daRow);
-      r.height = ci===0 ? 22 : 18;
-      const bg = isCorrect ? 'FFe8f5e9' : (ci%2===0 ? C.white : C.offwhite);
-      r.getCell(1).value = ci===0 ? f.flag : '';
-      r.getCell(1).style = ci===0 ? flagStyle(flagFillMap[f.flag]||keepFill) : { fill: owFill };
-      r.getCell(2).value = ci===0 ? displayTitle : '';
-      r.getCell(2).style = { font:{ bold:ci===0, size:9, color:{ argb:C.nav } }, fill: wf(ci===0?C.offwhite:C.white), alignment:{ vertical:'middle' } };
-      r.getCell(3).value = ci===0 ? stemText.substring(0,300) : '';
-      r.getCell(3).style = { font:{ size:8, italic:true }, fill: wf(ci===0?C.offwhite:C.white), alignment:{ vertical:'middle', wrapText:true } };
-      r.getCell(4).value = (isCorrect?'✓ ':'')+ans;
-      r.getCell(4).style = { font:{ bold:isCorrect, size:9, color:{ argb:isCorrect?C.keep:C.nav } }, fill: wf(bg), alignment:{ vertical:'middle', wrapText:true } };
-      r.getCell(5).value = count;
-      r.getCell(5).style = { font:{ size:9 }, fill: wf(bg), alignment:{ horizontal:'center', vertical:'middle' } };
-      const rateColor = isCorrect ? C.keep : (rate>0.35 ? C.retire : C.nav);
-      r.getCell(6).value = pct(rate);
-      r.getCell(6).style = { font:{ bold:rate>0.35&&!isCorrect, size:9, color:{ argb:rateColor } }, fill: wf(bg), alignment:{ horizontal:'center', vertical:'middle' } };
-      r.getCell(7).value = isCorrect ? 'Keyed correct answer' : (rate>0.35 ? '⚠ High selection — review plausibility' : rate>0.20 ? 'Monitor' : '');
-      r.getCell(7).style = { font:{ size:9, color:{ argb:rate>0.35&&!isCorrect?C.retire:C.steel } }, fill: wf(bg), alignment:{ vertical:'middle', wrapText:true } };
-      daRow++;
-    });
-    ws3.getRow(daRow).height = 6; daRow++;
+  // Collapsible instruction block (rows 2-6, outlineLevel:1, hidden by default)
+  const reviseInstructions = [
+    'WHAT IS THIS SHEET: Items flagged REVISE showed psychometric weakness this semester. They are not urgent — no grade change needed — but should be revised before the next administration.',
+    'WHAT TO DO: Review each item\'s stem, answer choices, and NIARA findings. Select a Faculty Action from the dropdown in column H. Use columns L and M to document proposed wording changes and notes.',
+    'COLUMN GUIDE: A=Type | B=Question Title | C=N | D=Difficulty% | E=Pt-Biserial | F=Disc.Index | G=Module | H=Faculty Action (dropdown) | K=NIARA Note | L=Proposed Revision | M=Faculty Comments',
+    'FACULTY ACTION (col H): Choose from: No Action Taken / Revise Stem / Revise Answer Choice(s) / Rekey / Retire from Bank / Insufficient Data — Monitor Next Semester',
+    'COLOR GUIDE: Dark orange header = item title row | Gray = NIARA notes | Green bg = correct answer | Yellow = write-in fields',
+  ];
+  reviseInstructions.forEach((txt, i) => {
+    const rn = i+2;
+    ws3.mergeCells(rn, 1, rn, 13);
+    ws3.getCell(rn, 1).value = txt;
+    ws3.getCell(rn, 1).style = { font:{ italic:true, size:8, color:{ argb:C.steel } }, fill: wf(C.offwhite), alignment:{ vertical:'middle', wrapText:true, indent:1 } };
+    ws3.getRow(rn).height = 18;
+    ws3.getRow(rn).outlineLevel = 1;
+    ws3.getRow(rn).hidden = true;
   });
 
-  ws3.columns = [{width:12},{width:40},{width:55},{width:50},{width:11},{width:12},{width:42}];
+  // Column headers row 7
+  ws3.getRow(7).height = 28;
+  ['Type','Question Title','N','Difficulty%','Pt-Biserial','Disc. Index','Module/Content Area','Faculty Action','','','NIARA Automated Note','Proposed Revision','Faculty Comments'].forEach((h,i) => {
+    ws3.getCell(7, i+1).value = h;
+    ws3.getCell(7, i+1).style = colHdrStyle(reviseFill);
+  });
 
-  // ===============================================
-  //  TAB 4 — PRE-GRADE ACTIONS
-  // ===============================================
-  const ws4 = wb.addWorksheet('Pre-Grade Actions');
-  ws4.views = [{ showGridLines: false }];
+  ws3.columns = [{width:8},{width:40},{width:10},{width:11},{width:11},{width:10},{width:22},{width:20},{width:8},{width:8},{width:38},{width:30},{width:30}];
 
-  ws4.mergeCells('A1:I1');
-  ws4.getCell('A1').value = 'PRE-GRADE ACTION LOG — ' + meta.examName + ' | ' + meta.semester + ' ' + meta.year;
-  ws4.getCell('A1').style = { font:{ bold:true, color:{ argb:C.white }, size:13 }, fill: retireFill, alignment:{ horizontal:'left', vertical:'middle' } };
-  ws4.getRow(1).height = 30;
+  const reviseItems = Object.values(items)
+    .filter(i => i.flag && i.flag.flag === 'REVISE')
+    .sort((a,b) => (a.section||'').localeCompare(b.section||''));
 
-  ws4.mergeCells('A2:I2');
-  ws4.getCell('A2').value = 'NIARA · GrangeRN · Statistics are one signal — SME review required before any scoring change. Document all decisions for accreditation records.';
-  ws4.getCell('A2').style = { font:{ italic:true, color:{ argb:C.white }, size:8 }, fill: retireFill, alignment:{ horizontal:'left', vertical:'middle' } };
-  ws4.getRow(2).height = 18;
-  ws4.getRow(3).height = 8;
-
-  const pgHeaders = ['FLAG TYPE','Question Title','Type','N','Pt-Biserial','Statistical Finding','Faculty Action Taken','Decision Rationale','Date Resolved'];
-  const pg4hRow = ws4.getRow(4);
-  pg4hRow.height = 28;
-  pgHeaders.forEach((h,i) => { pg4hRow.getCell(i+1).value = h; pg4hRow.getCell(i+1).style = colHdrStyle(vakFill); });
-  ws4.autoFilter = { from:'A4', to:'I4' };
-
-  const PRE_GRADE_ACTIONS = 'No Action Taken,Award Credit — Both Answers,Award Credit — Distractor Only,Rekeyed to Different Answer,Removed from Scoring,No Action — Key Confirmed Correct,Insufficient Data — Monitor';
-  const pregradeItems = Object.values(items).filter(i => i.preGradeFlags && (i.preGradeFlags.vak || i.preGradeFlags.aac));
-
-  let pg4Row = 5;
-  if (pregradeItems.length === 0) {
-    ws4.mergeCells('A5:I5');
-    ws4.getCell('A5').value = 'No pre-grade action items identified for this exam.';
-    ws4.getCell('A5').style = { font:{ italic:true, size:10, color:{ argb:C.steel } }, fill: owFill, alignment:{ horizontal:'left', vertical:'middle' } };
-    ws4.getRow(5).height = 22;
-    pg4Row = 6;
+  const reviewTheme = { headerArgb: C.revise, choiceHdrArgb: 'FFa04500' };
+  let revRow = 8;
+  if (reviseItems.length === 0) {
+    ws3.mergeCells(revRow, 1, revRow, 13);
+    ws3.getCell(revRow, 1).value = 'No items flagged REVISE on this exam.';
+    ws3.getCell(revRow, 1).style = { font:{ italic:true, size:10, color:{ argb:C.steel } }, fill: wf(C.offwhite), alignment:{ horizontal:'left', vertical:'middle' } };
+    ws3.getRow(revRow).height = 28;
   } else {
-    pregradeItems.forEach(item => {
-      const pg = item.preGradeFlags;
-      const displayTitle = item.qtype==='FIB'
-        ? (item.fibCategory?'['+item.fibCategory+'] ':'')+( item.qtext||item.qtitle||'').substring(0,100)
-        : (item.qtitle||'');
-      const bg = pg4Row%2===0 ? C.offwhite : C.white;
-      [
-        [pg.vak, '🔑 VERIFY ANSWER KEY', vakFill, pg.vakDetails?.message||'Negative point-biserial — high performers avoiding keyed answer.'],
-        [pg.aac, '⚠ AWARD ADDITIONAL CREDIT', aacFill, pg.aacDetails?.message||'Distractor or incorrect option selected at high rate.']
-      ].forEach(([active, label, fill, finding]) => {
-        if (!active) return;
-        const row = ws4.getRow(pg4Row);
-        row.height = 22;
-        const vals = [label, displayTitle, item.qtype, item.n,
-          item.pointBiserial!==null?fmt2(item.pointBiserial):'n/a', finding, 'No Action Taken', '', ''];
-        vals.forEach((v,ci) => {
-          row.getCell(ci+1).value = v;
-          row.getCell(ci+1).style = { font:{ size:9 }, fill: wf(bg), alignment:{ vertical:'middle', wrapText:ci===5 } };
-        });
-        row.getCell(1).style = flagStyle(fill);
-        ws4.getCell(pg4Row,7).dataValidation = { type:'list', allowBlank:false, formulae:['"'+PRE_GRADE_ACTIONS+'"'], showDropDown:false };
-        ws4.getCell(pg4Row,7).style = { font:{ size:9 }, fill: wf(C.yellow), alignment:{ horizontal:'center', vertical:'middle' } };
-        ws4.getCell(pg4Row,8).style = { font:{ size:9 }, fill: wf(C.blue), alignment:{ vertical:'middle', wrapText:true } };
-        ws4.getCell(pg4Row,9).style = { font:{ size:9 }, fill: wf(C.lgray), alignment:{ horizontal:'center', vertical:'middle' } };
-        pg4Row++;
-      });
+    reviseItems.forEach(item => {
+      revRow = buildQuestionBlock(ws3, revRow, item, reviewTheme, topSet, botSet);
     });
   }
 
-  pg4Row++;
-  ws4.mergeCells('A'+pg4Row+':I'+pg4Row);
-  ws4.getCell('A'+pg4Row).value = 'METHODOLOGY';
-  ws4.getCell('A'+pg4Row).style = { font:{ bold:true, color:{ argb:C.white }, size:9 }, fill: navDFill, alignment:{ horizontal:'left', vertical:'middle' } };
-  ws4.getRow(pg4Row).height = 20; pg4Row++;
-  ws4.mergeCells('A'+pg4Row+':I'+pg4Row);
-  ws4.getCell('A'+pg4Row).value =
-    'VERIFY ANSWER KEY: Flagged when point-biserial is negative AND item difficulty is below 85% (near-ceiling items produce unreliable PB by mathematical artifact). ' +
-    'For FIB: flagged when 25% or more of students entered the same response and received zero credit. ' +
-    'AWARD ADDITIONAL CREDIT: Flagged when (MC) a distractor was selected 40% or more with poor item discrimination; (SATA) an incorrect option selected 25% or more; ' +
-    '(MAT) 25% or more matched a prompt to the same wrong response. ' +
-    'Bonus/extra credit items are excluded from all pre-grade flags. All findings require faculty SME review before any scoring change.';
-  ws4.getCell('A'+pg4Row).style = { font:{ italic:true, size:8, color:{ argb:C.steel } }, fill: owFill, alignment:{ horizontal:'left', vertical:'middle', wrapText:true } };
-  ws4.getRow(pg4Row).height = 72;
-  ws4.columns = [{width:30},{width:55},{width:8},{width:6},{width:12},{width:65},{width:35},{width:45},{width:14}];
-
   // ===============================================
-  //  TAB 5 — FACULTY ACTION LOG
+  //  TAB 4 — FOR REWRITE (RETIRE items, red)
   // ===============================================
-  const ws5 = wb.addWorksheet('Faculty Action Log');
-  ws5.views = [{ showGridLines: false }];
+  const ws4 = wb.addWorksheet('For Rewrite');
+  ws4.properties = { tabColor: { argb: 'FFB71C1C' } };
+  ws4.views = [{ showGridLines: false }];
 
-  ws5.mergeCells('A1:H1');
-  ws5.getCell('A1').value = 'FACULTY ACTION LOG — ' + meta.examName + ' | ' + meta.semester + ' ' + meta.year;
-  ws5.getCell('A1').style = { font:{ bold:true, color:{ argb:C.white }, size:13 }, fill: navFill, alignment:{ horizontal:'left', vertical:'middle' } };
-  ws5.getRow(1).height = 30;
+  ws4.mergeCells('A1:M1');
+  ws4.getCell('A1').value = 'FOR REWRITE — Items Flagged RETIRE | ' + meta.examName + ' | ' + meta.semester + ' ' + meta.year;
+  ws4.getCell('A1').style = { font:{ bold:true, color:{ argb:C.white }, size:13 }, fill: retireFill, alignment:{ horizontal:'left', vertical:'middle' } };
+  ws4.getRow(1).height = 30;
 
-  ws5.mergeCells('A2:H2');
-  ws5.getCell('A2').value = 'Designed for accreditation documentation (CCNE/ACEN). Complete Faculty Action and Comments before archiving. This log serves as evidence of systematic item analysis procedures.';
-  ws5.getCell('A2').style = { font:{ italic:true, size:8, color:{ argb:C.steel } }, fill: owFill, alignment:{ horizontal:'left', vertical:'middle', wrapText:true } };
-  ws5.getRow(2).height = 22;
-
-  const fa5Headers = ['POST-EXAM FLAG','PRE-GRADE FLAG','Question Title','Type','Module/Content Area','Faculty Action Taken','Comments / Notes','Date Reviewed'];
-  const fa5hRow = ws5.getRow(3);
-  fa5hRow.height = 28;
-  fa5Headers.forEach((h,i) => { fa5hRow.getCell(i+1).value = h; fa5hRow.getCell(i+1).style = colHdrStyle(); });
-  ws5.autoFilter = { from:'A3', to:'H3' };
-
-  sortedItems.forEach((item, idx) => {
-    const f = item.flag || { flag:'KEEP', reason:'' };
-    const pg = item.preGradeFlags || {};
-    let pgLabel = pg.vak&&pg.aac?'🔑 VERIFY KEY + ⚠ ADD CREDIT':pg.vak?'🔑 VERIFY ANSWER KEY':pg.aac?'⚠ AWARD ADDITIONAL CREDIT':'';
-    const displayTitle = item.qtype==='FIB'
-      ? (item.fibCategory?'['+item.fibCategory+'] ':'')+( item.qtext||item.qtitle||'').substring(0,120)
-      : (item.qtitle||'');
-    const r = idx + 4;
-    const bg = r%2===0 ? C.offwhite : C.white;
-    const row = ws5.getRow(r);
-    row.height = 20;
-    const vals = [f.flag, pgLabel, displayTitle, item.qtype, item.section||'Uncategorized', 'No Action Taken', '', ''];
-    vals.forEach((v,ci) => {
-      row.getCell(ci+1).value = v;
-      row.getCell(ci+1).style = { font:{ size:9 }, fill: wf(bg), alignment:{ vertical:'middle' } };
-    });
-    if (flagFillMap[f.flag]) row.getCell(1).style = flagStyle(flagFillMap[f.flag]);
-    if (pgLabel) row.getCell(2).style = flagStyle(pgLabel.includes('VERIFY') ? vakFill : aacFill);
-    ws5.getCell(r,6).dataValidation = { type:'list', allowBlank:false, formulae:['"'+FACULTY_ACTIONS+'"'], showDropDown:false };
-    ws5.getCell(r,6).style = { font:{ size:9 }, fill: wf(C.yellow), alignment:{ horizontal:'center', vertical:'middle' } };
-    ws5.getCell(r,7).style = { font:{ size:9 }, fill: wf(C.blue), alignment:{ vertical:'middle' } };
-    ws5.getCell(r,8).style = { font:{ size:9 }, fill: wf(C.lgray), alignment:{ horizontal:'center', vertical:'middle' } };
+  const retireInstructions = [
+    'WHAT IS THIS SHEET: Items flagged RETIRE are too psychometrically flawed to revise effectively. Remove from the item bank before the next administration.',
+    'WHAT TO DO: Review each item. Select Faculty Action in column H. Document rationale in column M for accreditation records (CCNE/ACEN). Items may still be rewritten from scratch if the content is needed.',
+    'COLUMN GUIDE: A=Type | B=Question Title | C=N | D=Difficulty% | E=Pt-Biserial | F=Disc.Index | G=Module | H=Faculty Action (dropdown) | K=NIARA Note | L=Proposed Wording | M=Faculty Comments',
+    'FACULTY ACTION (col H): Choose from: No Action Taken / Revise Stem / Revise Answer Choice(s) / Rekey / Retire from Bank / Insufficient Data — Monitor Next Semester',
+    'COLOR GUIDE: Dark red header = item title row | Gray = NIARA notes | Green bg = correct answer | Yellow = write-in fields',
+  ];
+  retireInstructions.forEach((txt, i) => {
+    const rn = i+2;
+    ws4.mergeCells(rn, 1, rn, 13);
+    ws4.getCell(rn, 1).value = txt;
+    ws4.getCell(rn, 1).style = { font:{ italic:true, size:8, color:{ argb:C.steel } }, fill: wf(C.offwhite), alignment:{ vertical:'middle', wrapText:true, indent:1 } };
+    ws4.getRow(rn).height = 18;
+    ws4.getRow(rn).outlineLevel = 1;
+    ws4.getRow(rn).hidden = true;
   });
 
-  ws5.columns = [{width:12},{width:28},{width:55},{width:8},{width:24},{width:42},{width:45},{width:14}];
+  ws4.getRow(7).height = 28;
+  ['Type','Question Title','N','Difficulty%','Pt-Biserial','Disc. Index','Module/Content Area','Faculty Action','','','NIARA Automated Note','Proposed Wording','Faculty Comments'].forEach((h,i) => {
+    ws4.getCell(7, i+1).value = h;
+    ws4.getCell(7, i+1).style = colHdrStyle(retireFill);
+  });
+
+  ws4.columns = [{width:8},{width:40},{width:10},{width:11},{width:11},{width:10},{width:22},{width:20},{width:8},{width:8},{width:38},{width:30},{width:30}];
+
+  const retireItems = Object.values(items)
+    .filter(i => i.flag && i.flag.flag === 'RETIRE')
+    .sort((a,b) => (a.section||'').localeCompare(b.section||''));
+
+  const rewriteTheme = { headerArgb: C.retire, choiceHdrArgb: 'FF7b1a2a' };
+  let rewRow = 8;
+  if (retireItems.length === 0) {
+    ws4.mergeCells(rewRow, 1, rewRow, 13);
+    ws4.getCell(rewRow, 1).value = 'No items flagged RETIRE on this exam.';
+    ws4.getCell(rewRow, 1).style = { font:{ italic:true, size:10, color:{ argb:C.steel } }, fill: wf(C.offwhite), alignment:{ horizontal:'left', vertical:'middle' } };
+    ws4.getRow(rewRow).height = 28;
+  } else {
+    retireItems.forEach(item => {
+      rewRow = buildQuestionBlock(ws4, rewRow, item, rewriteTheme, topSet, botSet);
+    });
+  }
 
   return wb;
 }
@@ -4413,7 +5017,8 @@ async function buildLongitudinalWorkbook(current, previousArr) {
   const prevBySignature = {};
   previousArr.forEach(prev => {
     for (const item of Object.values(prev.items)) {
-      const sig = itemSignature(item);
+      // Use stored fingerprint (from Excel re-import) when available, else compute
+      const sig = item._fingerprint || itemSignature(item);
       if (!prevBySignature[sig]) prevBySignature[sig] = [];
       prevBySignature[sig].push({ ...item, semYear: prev.meta.semester + ' ' + prev.meta.year });
     }
@@ -4497,33 +5102,38 @@ async function buildLongitudinalWorkbook(current, previousArr) {
 
   ws1.columns = [{width:30},{width:14},{width:35},{width:12},{width:12},{width:12},{width:12},{width:12},{width:12}];
 
-  // TAB 2 — ITEM TREND REPORT
-  const ws2 = wb.addWorksheet('Item Trend Report');
+  // TAB 2 — ACTIVE ITEM STATUS
+  const ws2 = wb.addWorksheet('Active Item Status');
   ws2.views = [{ showGridLines: false }];
 
-  ws2.mergeCells('A1:K1');
-  ws2.getCell('A1').value = 'ITEM TREND REPORT — ' + meta.examName + ' | Semesters: ' + semLabels.join(', ');
+  ws2.mergeCells('A1:M1');
+  ws2.getCell('A1').value = 'ACTIVE ITEM STATUS — ' + meta.examName + ' | Semesters: ' + semLabels.join(', ');
   ws2.getCell('A1').style = { font:{ bold:true, color:{ argb:C.white }, size:13 }, fill: wf(C.nav), alignment:{ horizontal:'left', vertical:'middle' } };
   ws2.getRow(1).height = 30;
 
-  ws2.mergeCells('A2:K2');
+  ws2.mergeCells('A2:M2');
   ws2.getCell('A2').value = 'Items matched using case-insensitive stem + answer choice comparison. Modified or new items show current semester data only.';
   ws2.getCell('A2').style = { font:{ italic:true, size:8, color:{ argb:C.steel } }, fill: wf(C.offwhite), alignment:{ horizontal:'left', vertical:'middle' } };
   ws2.getRow(2).height = 18;
 
-  const trendHeaders = ['FLAG','Question Title','Type','Module/Content Area','Confidence','Current %','Current PB','Prev %','Prev PB','Trend','Semesters Seen'];
+  const trendHeaders = ['FLAG','Question Title','Type','Module/Content Area','Confidence','Current %','Current PB','Prev %','Prev PB','Trend','Semesters Seen','Faculty Action','Comments'];
   const t2hRow = ws2.getRow(3);
   t2hRow.height = 28;
   trendHeaders.forEach((h,i) => { t2hRow.getCell(i+1).value = h; t2hRow.getCell(i+1).style = colHdrStyle(); });
-  ws2.autoFilter = { from:'A3', to:'K3' };
+  ws2.autoFilter = { from:'A3', to:'M3' };
 
   function confidenceTier(n) {
     if (n<10) return 'n<10 Unstable'; if (n<25) return 'n 10-24 Low';
     if (n<50) return 'n 25-49 Moderate'; return 'n>=50 High';
   }
 
+  const FA_LONG = 'No Action Taken,Revised Stem,Revised Answer Choices,Rekeyed,Retired from Bank,Insufficient Data — Monitor Next Semester';
+
   let t2Row = 4;
-  Object.values(curItems).forEach(item => {
+  Object.values(curItems).sort((a,b)=>{
+    const o={RETIRE:0,REVISE:1,KEEP:2};
+    return (o[a.flag?.flag]||9)-(o[b.flag?.flag]||9) || (a.section||'').localeCompare(b.section||'');
+  }).forEach(item => {
     const sig = itemSignature(item);
     const prevVersions = prevBySignature[sig] || [];
     const latestPrev = prevVersions[prevVersions.length-1];
@@ -4543,268 +5153,155 @@ async function buildLongitudinalWorkbook(current, previousArr) {
       latestPrev ? (latestPrev.pointBiserial!==null?fmt2(latestPrev.pointBiserial):'n/a') : '—',
       trend,
       prevVersions.length>0 ? (prevVersions.length+1)+' ('+prevVersions.map(p=>p.semYear).join(', ')+' + current)' : '1 (current only)',
+      'No Action Taken', '',
     ];
     vals.forEach((v,ci) => {
       row.getCell(ci+1).value = v;
       row.getCell(ci+1).style = { font:{ size:9 }, fill: wf(bg), alignment:{ vertical:'middle', wrapText:ci===10 } };
     });
     if (flagFill[f]) row.getCell(1).style = flagStyle(flagFill[f]);
+    ws2.getCell(t2Row,12).dataValidation = { type:'list', allowBlank:false, formulae:['"'+FA_LONG+'"'], showDropDown:false };
+    ws2.getCell(t2Row,12).style = { font:{ size:9 }, fill: wf(C.yellow), alignment:{ horizontal:'center', vertical:'middle' } };
+    ws2.getCell(t2Row,13).style = { font:{ size:9 }, fill: wf(C.blue), alignment:{ vertical:'middle' } };
     t2Row++;
   });
-  ws2.columns = [{width:10},{width:50},{width:8},{width:22},{width:22},{width:11},{width:11},{width:11},{width:11},{width:30},{width:40}];
+  ws2.columns = [{width:10},{width:50},{width:8},{width:22},{width:18},{width:11},{width:11},{width:11},{width:11},{width:22},{width:35},{width:38},{width:40}];
 
-  // TAB 3 — ITEMS NEEDING ATTENTION
-  const ws3 = wb.addWorksheet('Items Needing Attention');
+  // TAB 3 — ACTIVE — FOR REVIEW (REVISE, orange)
+  const ws3 = wb.addWorksheet('Active — For Review');
+  ws3.properties = { tabColor: { argb: 'FFE65100' } };
   ws3.views = [{ showGridLines: false }];
 
-  ws3.mergeCells('A1:J1');
-  ws3.getCell('A1').value = 'ITEMS NEEDING ATTENTION — REVISE or RETIRE | ' + meta.semester + ' ' + meta.year;
-  ws3.getCell('A1').style = { font:{ bold:true, color:{ argb:C.white }, size:13 }, fill: wf(C.retire), alignment:{ horizontal:'left', vertical:'middle' } };
+  ws3.mergeCells('A1:M1');
+  ws3.getCell('A1').value = 'ACTIVE — FOR REVIEW: Items Flagged REVISE | ' + meta.semester + ' ' + meta.year + ' | Longitudinal';
+  ws3.getCell('A1').style = { font:{ bold:true, color:{ argb:C.white }, size:13 }, fill: wf(C.revise), alignment:{ horizontal:'left', vertical:'middle' } };
   ws3.getRow(1).height = 30;
+  ws3.getRow(7).height = 28;
+  ['Type','Question Title','N','Difficulty%','Pt-Biserial','Disc. Index','Module/Content Area','Faculty Action','','','NIARA Automated Note','Proposed Revision','Faculty Comments'].forEach((h,i) => {
+    ws3.getCell(7, i+1).value = h;
+    ws3.getCell(7, i+1).style = colHdrStyle(wf(C.revise));
+  });
+  ws3.columns = [{width:8},{width:40},{width:10},{width:11},{width:11},{width:10},{width:22},{width:20},{width:8},{width:8},{width:38},{width:30},{width:30}];
 
-  ws3.mergeCells('A2:J2');
-  ws3.getCell('A2').value = 'For program leadership. Items flagged across multiple semesters are prioritized. Document decisions in Faculty Action Log for accreditation records.';
-  ws3.getCell('A2').style = { font:{ italic:true, size:8, color:{ argb:C.steel } }, fill: wf(C.offwhite), alignment:{ horizontal:'left', vertical:'middle', wrapText:true } };
-  ws3.getRow(2).height = 22;
-
-  const attnHeaders = ['FLAG','Times Flagged','Question Title','Type','Module/Content Area','Current %','Current PB','Recommendation','Pre-Grade Flag','Faculty Action Taken'];
-  const a3hRow = ws3.getRow(3);
-  a3hRow.height = 28;
-  attnHeaders.forEach((h,i) => { a3hRow.getCell(i+1).value = h; a3hRow.getCell(i+1).style = colHdrStyle(wf(C.retire)); });
-  ws3.autoFilter = { from:'A3', to:'J3' };
-
-  const attentionItems = Object.values(curItems)
-    .filter(i => i.flag && (i.flag.flag==='REVISE'||i.flag.flag==='RETIRE'))
+  const longReviseItems = Object.values(curItems)
+    .filter(i => i.flag && i.flag.flag === 'REVISE')
     .map(item => {
       const sig = itemSignature(item);
       const prevV = prevBySignature[sig]||[];
       const timesFlagged = prevV.filter(p=>p.flag&&(p.flag.flag==='REVISE'||p.flag.flag==='RETIRE')).length + 1;
       return { item, timesFlagged };
     })
-    .sort((a,b) => b.timesFlagged-a.timesFlagged || (a.item.flag.flag==='RETIRE'?-1:1));
+    .sort((a,b) => b.timesFlagged-a.timesFlagged);
 
-  const FA_LONG = 'No Action Taken,Revised Stem,Revised Answer Choices,Rekeyed,Retired from Bank,Insufficient Data — Monitor Next Semester';
-  let a3Row = 4;
-  attentionItems.forEach(({ item, timesFlagged }) => {
-    const f = item.flag?.flag || 'REVISE';
-    const pg = item.preGradeFlags||{};
-    const pgLabel = pg.vak&&pg.aac?'🔑+⚠':pg.vak?'🔑 VERIFY KEY':pg.aac?'⚠ ADD CREDIT':'';
-    const displayTitle = item.qtype==='FIB'
-      ? (item.fibCategory?'['+item.fibCategory+'] ':'')+( item.qtext||item.qtitle||'').substring(0,80)
-      : (item.qtitle||'');
-    const bg = a3Row%2===0 ? C.offwhite : C.white;
-    const row = ws3.getRow(a3Row);
-    row.height = 20;
-    const vals = [f, timesFlagged+(timesFlagged>1?' ⚠':''), displayTitle, item.qtype, item.section||'Uncategorized',
-      item.difficulty!==null?pct(item.difficulty):'n/a', item.pointBiserial!==null?fmt2(item.pointBiserial):'n/a',
-      item.flag.reason||'', pgLabel, 'No Action Taken'];
-    vals.forEach((v,ci) => {
-      row.getCell(ci+1).value = v;
-      row.getCell(ci+1).style = { font:{ size:9 }, fill: wf(bg), alignment:{ vertical:'middle', wrapText:ci===7 } };
+  let lRevRow = 8;
+  if (longReviseItems.length === 0) {
+    ws3.mergeCells(lRevRow,1,lRevRow,13);
+    ws3.getCell(lRevRow,1).value = 'No items flagged REVISE this semester.';
+    ws3.getCell(lRevRow,1).style = { font:{ italic:true, size:10, color:{ argb:C.steel } }, fill: wf(C.offwhite), alignment:{ horizontal:'left', vertical:'middle' } };
+    ws3.getRow(lRevRow).height = 28;
+  } else {
+    longReviseItems.forEach(({ item }) => {
+      lRevRow = buildQuestionBlock(ws3, lRevRow, item, { headerArgb: C.revise, choiceHdrArgb: 'FFa04500' }, null, null);
     });
-    if (flagFill[f]) row.getCell(1).style = flagStyle(flagFill[f]);
-    if (timesFlagged>1) row.getCell(2).style = { font:{ bold:true, size:9, color:{ argb:C.retire } }, fill: wf(bg), alignment:{ horizontal:'center', vertical:'middle' } };
-    ws3.getCell(a3Row,10).dataValidation = { type:'list', allowBlank:false, formulae:['"'+FA_LONG+'"'], showDropDown:false };
-    ws3.getCell(a3Row,10).style = { font:{ size:9 }, fill: wf(C.yellow), alignment:{ horizontal:'center', vertical:'middle' } };
-    a3Row++;
-  });
-
-  if (attentionItems.length===0) {
-    ws3.mergeCells('A4:J4');
-    ws3.getCell('A4').value = 'No items flagged REVISE or RETIRE this semester.';
-    ws3.getCell('A4').style = { font:{ italic:true, size:10, color:{ argb:C.steel } }, fill: wf(C.offwhite), alignment:{ horizontal:'left', vertical:'middle' } };
-    ws3.getRow(4).height = 22;
   }
-  ws3.columns = [{width:10},{width:14},{width:50},{width:8},{width:22},{width:11},{width:11},{width:65},{width:20},{width:42}];
 
-  // TAB 4 — RETIRED ITEMS
-  const ws4 = wb.addWorksheet('Retired Items');
+  // TAB 4 — ACTIVE — FOR REWRITE (RETIRE, red)
+  const ws4 = wb.addWorksheet('Active — For Rewrite');
+  ws4.properties = { tabColor: { argb: 'FFB71C1C' } };
   ws4.views = [{ showGridLines: false }];
 
-  ws4.mergeCells('A1:H1');
-  ws4.getCell('A1').value = 'RETIRED ITEMS — No longer in current exam | As of ' + meta.semester + ' ' + meta.year;
-  ws4.getCell('A1').style = { font:{ bold:true, color:{ argb:C.white }, size:13 }, fill: wf(C.nav), alignment:{ horizontal:'left', vertical:'middle' } };
+  ws4.mergeCells('A1:M1');
+  ws4.getCell('A1').value = 'ACTIVE — FOR REWRITE: Items Flagged RETIRE | ' + meta.semester + ' ' + meta.year + ' | Longitudinal';
+  ws4.getCell('A1').style = { font:{ bold:true, color:{ argb:C.white }, size:13 }, fill: wf(C.retire), alignment:{ horizontal:'left', vertical:'middle' } };
   ws4.getRow(1).height = 30;
-
-  const r4Headers = ['Question Title','Type','Module/Content Area','Last Semester Seen','Last % Correct','Last Pt-Biserial','Last Flag','Notes'];
-  const r4hRow = ws4.getRow(2);
-  r4hRow.height = 28;
-  r4Headers.forEach((h,i) => { r4hRow.getCell(i+1).value = h; r4hRow.getCell(i+1).style = colHdrStyle(); });
-  ws4.autoFilter = { from:'A2', to:'H2' };
-
-  const curSignatures = new Set(Object.values(curItems).map(i => itemSignature(i)));
-  const retiredItems = [];
-  for (const [sig, versions] of Object.entries(prevBySignature)) {
-    if (!curSignatures.has(sig)) {
-      const latest = versions[versions.length-1];
-      retiredItems.push({ ...latest, lastSeen: latest.semYear });
-    }
-  }
-
-  let r4Row = 3;
-  retiredItems.sort((a,b)=>(a.qtitle||'').localeCompare(b.qtitle||'')).forEach(item => {
-    const bg = r4Row%2===0 ? C.offwhite : C.white;
-    const row = ws4.getRow(r4Row);
-    row.height = 20;
-    const f = item.flag?.flag || 'Unknown';
-    const vals = [item.qtitle||'', item.qtype||'', item.section||'Uncategorized', item.lastSeen||'',
-      item.difficulty!==null?pct(item.difficulty):'n/a',
-      item.pointBiserial!==null?fmt2(item.pointBiserial):'n/a', f, ''];
-    vals.forEach((v,ci) => {
-      row.getCell(ci+1).value = v;
-      row.getCell(ci+1).style = { font:{ size:9 }, fill: wf(bg), alignment:{ vertical:'middle' } };
-    });
-    if (flagFill[f]) row.getCell(7).style = flagStyle(flagFill[f]);
-    r4Row++;
+  ws4.getRow(7).height = 28;
+  ['Type','Question Title','N','Difficulty%','Pt-Biserial','Disc. Index','Module/Content Area','Faculty Action','','','NIARA Automated Note','Proposed Wording','Faculty Comments'].forEach((h,i) => {
+    ws4.getCell(7, i+1).value = h;
+    ws4.getCell(7, i+1).style = colHdrStyle(wf(C.retire));
   });
+  ws4.columns = [{width:8},{width:40},{width:10},{width:11},{width:11},{width:10},{width:22},{width:20},{width:8},{width:8},{width:38},{width:30},{width:30}];
 
-  if (retiredItems.length===0) {
-    ws4.mergeCells('A3:H3');
-    ws4.getCell('A3').value = 'No retired items — all previous items appear in current exam, or this is the first semester.';
-    ws4.getCell('A3').style = { font:{ italic:true, size:10, color:{ argb:C.steel } }, fill: wf(C.offwhite), alignment:{ horizontal:'left', vertical:'middle' } };
-    ws4.getRow(3).height = 22;
+  const longRetireItems = Object.values(curItems)
+    .filter(i => i.flag && i.flag.flag === 'RETIRE')
+    .sort((a,b) => (a.section||'').localeCompare(b.section||''));
+
+  let lRetRow = 8;
+  if (longRetireItems.length === 0) {
+    ws4.mergeCells(lRetRow,1,lRetRow,13);
+    ws4.getCell(lRetRow,1).value = 'No items flagged RETIRE this semester.';
+    ws4.getCell(lRetRow,1).style = { font:{ italic:true, size:10, color:{ argb:C.steel } }, fill: wf(C.offwhite), alignment:{ horizontal:'left', vertical:'middle' } };
+    ws4.getRow(lRetRow).height = 28;
+  } else {
+    longRetireItems.forEach(item => {
+      lRetRow = buildQuestionBlock(ws4, lRetRow, item, { headerArgb: C.retire, choiceHdrArgb: 'FF7b1a2a' }, null, null);
+    });
   }
-  ws4.columns = [{width:55},{width:8},{width:24},{width:20},{width:14},{width:14},{width:10},{width:45}];
 
-  // TAB 5 — FACULTY ACTION LOG
-  const ws5 = wb.addWorksheet('Faculty Action Log');
+  // TAB 5 — ARCHIVED ITEMS (prior semesters, not in current exam)
+  const ws5 = wb.addWorksheet('Archived Items');
   ws5.views = [{ showGridLines: false }];
 
   ws5.mergeCells('A1:I1');
-  ws5.getCell('A1').value = 'LONGITUDINAL FACULTY ACTION LOG — ' + meta.courseLabel + ' | Semesters: ' + semLabels.join(', ');
+  ws5.getCell('A1').value = 'ARCHIVED ITEMS — From previous semesters, not in current exam | As of ' + meta.semester + ' ' + meta.year;
   ws5.getCell('A1').style = { font:{ bold:true, color:{ argb:C.white }, size:13 }, fill: wf(C.nav), alignment:{ horizontal:'left', vertical:'middle' } };
   ws5.getRow(1).height = 30;
 
   ws5.mergeCells('A2:I2');
-  ws5.getCell('A2').value = 'Designed for CCNE/ACEN accreditation submission. Documents faculty item analysis decisions. Complete Faculty Action and Decision Rationale before archiving.';
+  ws5.getCell('A2').value = 'Items from prior semesters that do not appear in the current exam. Sorted by last flag (RETIRE first), then by last semester seen. Use for accreditation documentation.';
   ws5.getCell('A2').style = { font:{ italic:true, size:8, color:{ argb:C.steel } }, fill: wf(C.offwhite), alignment:{ horizontal:'left', vertical:'middle', wrapText:true } };
   ws5.getRow(2).height = 22;
 
-  const fa5lHeaders = ['Semester','FLAG','Question Title','Type','Module/Content Area','Times Seen','Faculty Action Taken','Decision Rationale','Date Resolved'];
-  const fa5lhRow = ws5.getRow(3);
-  fa5lhRow.height = 28;
-  fa5lHeaders.forEach((h,i) => { fa5lhRow.getCell(i+1).value = h; fa5lhRow.getCell(i+1).style = colHdrStyle(); });
+  const archHeaders = ['Question Title','Type','Module/Content Area','Last Semester Seen','Last % Correct','Last Pt-Biserial','Last Flag','Faculty Notes','Date'];
+  const archHrow = ws5.getRow(3);
+  archHrow.height = 28;
+  archHeaders.forEach((h,i) => { archHrow.getCell(i+1).value = h; archHrow.getCell(i+1).style = colHdrStyle(); });
   ws5.autoFilter = { from:'A3', to:'I3' };
 
-  const FA_LONG2 = 'No Action Taken,Revised Stem,Revised Answer Choices,Rekeyed,Retired from Bank,Insufficient Data — Monitor Next Semester,Award Credit — Both Answers,Award Credit — Distractor Only,No Action — Key Confirmed Correct';
-  let l5Row = 4;
-  Object.values(curItems).sort((a,b)=>{const o={RETIRE:0,REVISE:1,KEEP:2};return(o[a.flag?.flag]||9)-(o[b.flag?.flag]||9);}).forEach(item => {
-    const sig = itemSignature(item);
-    const prevCount = (prevBySignature[sig]||[]).length;
-    const f = item.flag?.flag || 'KEEP';
-    const displayTitle = item.qtype==='FIB'
-      ? (item.fibCategory?'['+item.fibCategory+'] ':'')+( item.qtext||item.qtitle||'').substring(0,100)
-      : (item.qtitle||'');
-    const bg = l5Row%2===0 ? C.offwhite : C.white;
-    const row = ws5.getRow(l5Row);
-    row.height = 20;
-    const vals = [meta.semester+' '+meta.year, f, displayTitle, item.qtype, item.section||'Uncategorized', prevCount+1, 'No Action Taken', '', ''];
-    vals.forEach((v,ci) => {
-      row.getCell(ci+1).value = v;
-      row.getCell(ci+1).style = { font:{ size:9 }, fill: wf(bg), alignment:{ vertical:'middle' } };
-    });
-    if (flagFill[f]) row.getCell(2).style = flagStyle(flagFill[f]);
-    ws5.getCell(l5Row,7).dataValidation = { type:'list', allowBlank:false, formulae:['"'+FA_LONG2+'"'], showDropDown:false };
-    ws5.getCell(l5Row,7).style = { font:{ size:9 }, fill: wf(C.yellow), alignment:{ horizontal:'center', vertical:'middle' } };
-    ws5.getCell(l5Row,8).style = { font:{ size:9 }, fill: wf(C.blue), alignment:{ vertical:'middle', wrapText:true } };
-    ws5.getCell(l5Row,9).style = { font:{ size:9 }, fill: wf(C.lgray), alignment:{ horizontal:'center', vertical:'middle' } };
-    l5Row++;
+  const curSignatures = new Set(Object.values(curItems).map(i => itemSignature(i)));
+  const archivedItems = [];
+  for (const [sig, versions] of Object.entries(prevBySignature)) {
+    if (!curSignatures.has(sig)) {
+      const latest = versions[versions.length-1];
+      archivedItems.push({ ...latest, lastSeen: latest.semYear });
+    }
+  }
+  // Sort: RETIRE first, then by last semester seen (most recent first)
+  const flagOrder = { RETIRE:0, REVISE:1, KEEP:2 };
+  archivedItems.sort((a,b) => {
+    const fa = flagOrder[a.flag?.flag]??9, fb = flagOrder[b.flag?.flag]??9;
+    if (fa !== fb) return fa-fb;
+    return (b.lastSeen||'').localeCompare(a.lastSeen||'');
   });
-  ws5.columns = [{width:18},{width:10},{width:55},{width:8},{width:24},{width:14},{width:42},{width:55},{width:16}];
 
-  // TAB 6 — PSYCHOMETRIC REFERENCE
-  const ws6 = wb.addWorksheet('Psychometric Reference');
-  ws6.views = [{ showGridLines: false }];
-
-  ws6.mergeCells('A1:E1');
-  ws6.getCell('A1').value = 'PSYCHOMETRIC REFERENCE — Item Analysis Standards';
-  ws6.getCell('A1').style = { font:{ bold:true, color:{ argb:C.white }, size:14 }, fill: wf(C.nav), alignment:{ horizontal:'left', vertical:'middle' } };
-  ws6.getRow(1).height = 36;
-
-  ws6.mergeCells('A2:E2');
-  ws6.getCell('A2').value = 'NIARA · GrangeRN · For faculty reference, new faculty onboarding, and accreditation documentation (CCNE/ACEN)';
-  ws6.getCell('A2').style = { font:{ italic:true, size:9, color:{ argb:C.steel } }, fill: wf(C.offwhite), alignment:{ horizontal:'left', vertical:'middle' } };
-  ws6.getRow(2).height = 22;
-
-  const refSections = [
-    { heading:'ITEM DIFFICULTY (p-value)', rows:[
-      ['Statistic','Threshold','Interpretation','Flag'],
-      ['% Correct > 95%','Near-ceiling','Item contributes little variance. Review if content coverage requires it.','REVISE'],
-      ['% Correct < 40%','Difficult','Fewer than 40% correct — verify cognitive level and clarity.','REVISE'],
-      ['% Correct < 50%','Moderately difficult','May be appropriate; verify alignment with course outcomes.','REVISE'],
-      ['Acceptable range: 40-80% for most classroom exams. (Billings & Halstead, 2020)','','',''],
-    ]},
-    { heading:'POINT-BISERIAL CORRELATION (r_pb)', rows:[
-      ['Statistic','Threshold','Interpretation','Flag'],
-      ['r_pb < 0 (diff < 85%)','Negative','High performers avoided keyed answer — possible key error or item flaw.','RETIRE / VERIFY KEY'],
-      ['r_pb < 0.15','Very low','Item barely discriminates between performers.','REVISE'],
-      ['r_pb 0.15-0.19','Marginal','Borderline discrimination.','REVISE'],
-      ['r_pb >= 0.20','Acceptable','Item discriminates adequately.','KEEP'],
-      ['r_pb >= 0.30','Good','Strong discrimination.','KEEP'],
-      ['NOTE: Near-ceiling items (>=85% correct) produce unreliable r_pb. NIARA suppresses RETIRE/VERIFY KEY flags for these items.','','',''],
-      ['Oermann & Gaberson (2021); Haladyna & Rodriguez (2013).','','',''],
-    ]},
-    { heading:'DISCRIMINATION INDEX (D)', rows:[
-      ['Statistic','Threshold','Interpretation','Flag'],
-      ['D < 0 (non-SATA/MAT)','Negative','Lower group outperformed upper group — structural item flaw.','RETIRE'],
-      ['D 0.00-0.19','Low','Weak discrimination.','REVISE (contextual)'],
-      ['D >= 0.20','Acceptable','Adequate.','KEEP'],
-      ['D >= 0.30','Good','Strong discrimination.','KEEP'],
-    ]},
-    { heading:'KR-20 EXAM RELIABILITY', rows:[
-      ['Value','Interpretation','Action Recommended'],
-      ['< 0.70','Low reliability','Review item quality before next administration.'],
-      ['0.70-0.79','Acceptable','Within acceptable range. Monitor.'],
-      ['>= 0.80','Good reliability','Exam is internally consistent.'],
-      ['N/A — Pooled exam','Cannot compute','Use item-level statistics. KR-20 requires identical items for all students.'],
-      ['Formula: KR-20 = (k/k-1) x (1 - Sum(p*q)/sigma-squared). Non-bonus MC items only.','',''],
-      ['Billings & Halstead (2020); Kuder & Richardson (1937).','',''],
-    ]},
-    { heading:'CONFIDENCE TIERS', rows:[
-      ['n','Confidence','Interpretation'],
-      ['< 10','Unstable','Do not retire based on this data. Statistics unreliable.'],
-      ['10-24','Low','Use with caution. Monitor across semesters.'],
-      ['25-49','Moderate','Reasonable confidence. Apply standard thresholds.'],
-      ['>= 50','High','High confidence in statistics.'],
-    ]},
-    { heading:'REFERENCES', rows:[
-      ['Billings, D. M., & Halstead, J. A. (2020). Teaching in nursing: A guide for faculty (6th ed.). Elsevier.'],
-      ['Oermann, M. H., & Gaberson, K. B. (2021). Evaluation and testing in nursing education (6th ed.). Springer.'],
-      ['Haladyna, T. M., & Rodriguez, M. C. (2013). Developing and validating test items. Routledge.'],
-      ['Kuder, G. F., & Richardson, M. W. (1937). The theory of estimation of test reliability. Psychometrika, 2(3), 151-160.'],
-      ['National Council of State Boards of Nursing. (2023). NCLEX-RN examination: Test plan. NCSBN.'],
-    ]},
-  ];
-
-  let refRow = 4;
-  refSections.forEach(section => {
-    ws6.mergeCells('A'+refRow+':E'+refRow);
-    ws6.getCell('A'+refRow).value = section.heading;
-    ws6.getCell('A'+refRow).style = colHdrStyle();
-    ws6.getRow(refRow).height = 24; refRow++;
-    section.rows.forEach((row, ri) => {
-      const isHeader = ri===0 && ['Statistic','Value','n','Billings'].indexOf(row[0]) === -1 && row.length > 1;
-      const firstIsHeader = ri===0 && ['Statistic','Value','n'].includes(row[0]);
-      const bg = firstIsHeader ? C.navDark : (refRow%2===0 ? C.offwhite : C.white);
-      row.forEach((v,ci) => {
-        const cell = ws6.getCell(refRow, ci+1);
-        cell.value = v;
-        cell.style = {
-          font:{ bold:firstIsHeader, color:{ argb:firstIsHeader?C.white:C.nav }, size:9 },
-          fill: wf(bg),
-          alignment:{ vertical:'middle', wrapText:ci>0 }
-        };
-        if (ci===3 && v) {
-          const fc = v.includes('RETIRE')?C.retire:v.includes('REVISE')?C.revise:v.includes('KEEP')?C.keep:C.steel;
-          cell.style = { font:{ bold:true, size:9, color:{ argb:fc } }, fill: wf(bg), alignment:{ horizontal:'center', vertical:'middle' } };
-        }
+  let archRow = 4;
+  if (archivedItems.length === 0) {
+    ws5.mergeCells('A4:I4');
+    ws5.getCell('A4').value = 'No archived items — all previous items appear in current exam, or this is the first semester.';
+    ws5.getCell('A4').style = { font:{ italic:true, size:10, color:{ argb:C.steel } }, fill: wf(C.offwhite), alignment:{ horizontal:'left', vertical:'middle' } };
+    ws5.getRow(4).height = 22;
+  } else {
+    archivedItems.forEach(item => {
+      const bg = archRow%2===0 ? C.offwhite : C.white;
+      const row = ws5.getRow(archRow);
+      row.height = 20;
+      const f = item.flag?.flag || 'Unknown';
+      const displayTitle = item.qtype==='FIB'
+        ? (item.fibCategory?'['+item.fibCategory+'] ':'')+( item.qtext||item.qtitle||'').substring(0,100)
+        : (item.qtitle||'');
+      const vals = [displayTitle, item.qtype||'', item.section||'Uncategorized', item.lastSeen||'',
+        item.difficulty!==null?pct(item.difficulty):'n/a',
+        item.pointBiserial!==null?fmt2(item.pointBiserial):'n/a', f, '', ''];
+      vals.forEach((v,ci) => {
+        row.getCell(ci+1).value = v;
+        row.getCell(ci+1).style = { font:{ size:9 }, fill: wf(bg), alignment:{ vertical:'middle' } };
       });
-      ws6.getRow(refRow).height = 20; refRow++;
+      if (flagFill[f]) row.getCell(7).style = flagStyle(flagFill[f]);
+      ws5.getCell(archRow,8).style = { font:{ size:9 }, fill: wf(C.blue), alignment:{ vertical:'middle' } };
+      ws5.getCell(archRow,9).style = { font:{ size:9 }, fill: wf(C.lgray), alignment:{ horizontal:'center', vertical:'middle' } };
+      archRow++;
     });
-    ws6.getRow(refRow).height = 8; refRow++;
-  });
-
-  ws6.columns = [{width:45},{width:22},{width:55},{width:22},{width:12}];
+  }
+  ws5.columns = [{width:55},{width:8},{width:24},{width:20},{width:14},{width:14},{width:10},{width:45},{width:14}];
 
   return wb;
 }
