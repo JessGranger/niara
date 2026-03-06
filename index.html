@@ -980,13 +980,35 @@ https://github.com/nodeca/pako/blob/main/LICENSE
   .clear-btn:hover { background: rgba(255,255,255,0.1); border-color: rgba(255,255,255,0.5); }
 
   /* ── FLAG CARD FILTER ── */
-  .flag-card { cursor: pointer; transition: all 0.2s; position: relative; }
-  .flag-card:hover { transform: translateY(-2px); box-shadow: 0 4px 16px rgba(30,58,110,0.2); }
-  .flag-card.active-filter { box-shadow: 0 0 0 3px white, 0 0 0 5px var(--navy); transform: translateY(-2px); }
-  .flag-card.flag-active-keep.active-filter   { box-shadow: 0 0 0 3px white, 0 0 0 5px var(--flag-keep-bg); }
-  .flag-card.flag-active-revise.active-filter { box-shadow: 0 0 0 3px white, 0 0 0 5px var(--flag-revise-bg); }
-  .flag-card.flag-active-retire.active-filter { box-shadow: 0 0 0 3px white, 0 0 0 5px var(--flag-retire-bg); }
-  .flag-filter-hint { font-size: 0.7rem; text-align: center; color: var(--text-light); margin-top: -16px; margin-bottom: 16px; opacity: 0.7; }
+  .flag-card { position: relative; }
+  .flag-filter-hint { display: none; }
+
+  /* Flag filter buttons for Item Analysis tab */
+  .flag-filter-row {
+    display: flex;
+    gap: 10px;
+    margin-top: 12px;
+    margin-bottom: 16px;
+  }
+  .flag-filter-btn {
+    flex: 1;
+    padding: 10px 12px;
+    border: none;
+    border-radius: 8px;
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 0.82rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-align: center;
+  }
+  .flag-filter-btn:hover { transform: translateY(-1px); box-shadow: 0 3px 10px rgba(30,58,110,0.15); }
+  .flag-filter-btn.active-filter { box-shadow: 0 0 0 3px white, 0 0 0 5px var(--navy); transform: translateY(-1px); }
+  .flag-filter-btn.ffb-keep   { background: var(--flag-keep-bg);   color: var(--flag-keep-tx); }
+  .flag-filter-btn.ffb-revise { background: var(--flag-revise-bg); color: var(--flag-revise-tx); }
+  .flag-filter-btn.ffb-retire { background: var(--flag-retire-bg); color: var(--flag-retire-tx); }
 
   /* ── STUDENT DOWNLOAD BTN ── */
   .student-dl-btn {
@@ -1809,6 +1831,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         <button class="section-close-btn" onclick="switchDashTab('overview')">Back to Overview</button>
       </div>
       <div class="module-tabs" id="moduleTabs"></div>
+      <div class="flag-filter-row" id="flagFilterRow"></div>
       <div class="section-title" id="itemTableTitle">All Items</div>
       <div class="scroll-top-bar" id="scrollTopBar"><div class="scroll-top-bar-inner" id="scrollTopInner"></div></div>
       <div class="table-wrap" id="tableWrap">
@@ -2972,18 +2995,16 @@ function renderResults() {
   // Flag grid — 3 post-exam flags, clickable filters
   const f = classStats.flags;
   document.getElementById('flagGrid').innerHTML = `
-    <div class="flag-card flag-keep" id="fc-keep" onclick="toggleFlagFilter('KEEP')" title="Click to filter by Keep">
+    <div class="flag-card flag-keep">
       <div class="flag-count">${f.KEEP}</div><div class="flag-label">Keep</div>
     </div>
-    <div class="flag-card flag-revise" id="fc-revise" onclick="toggleFlagFilter('REVISE')" title="Click to filter by Revise">
+    <div class="flag-card flag-revise">
       <div class="flag-count">${f.REVISE}</div><div class="flag-label">Revise</div>
     </div>
-    <div class="flag-card flag-retire" id="fc-retire" onclick="toggleFlagFilter('RETIRE')" title="Click to filter by Retire">
+    <div class="flag-card flag-retire">
       <div class="flag-count">${f.RETIRE}</div><div class="flag-label">Retire</div>
     </div>
   `;
-  const hintEl = document.getElementById('flagFilterHint');
-  if (hintEl) hintEl.textContent = 'Click a flag card to filter the item table · Click again to clear filter';
 
   // ── Overview Charts ──
   const chartsGrid = document.getElementById('dashChartsGrid');
@@ -3070,6 +3091,16 @@ function renderResults() {
     tabsEl.appendChild(btn);
   });
 
+  // Flag filter buttons in Item Analysis tab
+  const flagFilterRow = document.getElementById('flagFilterRow');
+  if (flagFilterRow) {
+    flagFilterRow.innerHTML = `
+      <button class="flag-filter-btn ffb-keep" id="ffb-keep" onclick="toggleFlagFilter('KEEP')">Keep (${f.KEEP})</button>
+      <button class="flag-filter-btn ffb-revise" id="ffb-revise" onclick="toggleFlagFilter('REVISE')">Revise (${f.REVISE})</button>
+      <button class="flag-filter-btn ffb-retire" id="ffb-retire" onclick="toggleFlagFilter('RETIRE')">Retire (${f.RETIRE})</button>
+    `;
+  }
+
   renderItemTable(null);
   renderStudentSelect();
   buildPreGradePanel();
@@ -3085,9 +3116,11 @@ function toggleFlagFilter(flag) {
     activeFlagFilter = flag;
   }
   ['KEEP','REVISE','RETIRE'].forEach(f => {
-    const el = document.getElementById('fc-' + f.toLowerCase());
+    const el = document.getElementById('ffb-' + f.toLowerCase());
     if (el) el.classList.toggle('active-filter', activeFlagFilter === f);
   });
+  // Switch to Item Analysis tab if not already there
+  switchDashTab('items');
   renderItemTable(activeModuleFilter);
 }
 
