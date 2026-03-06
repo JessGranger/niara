@@ -1529,36 +1529,34 @@ https://github.com/nodeca/pako/blob/main/LICENSE
   /* ── DASHBOARD TABS ── */
   .dash-tabs {
     display: flex;
-    gap: 0;
+    gap: 4px;
     margin-bottom: 0;
-    border-bottom: 2px solid var(--border);
+    border-bottom: 2px solid var(--navy);
+    padding: 0 4px;
   }
   .dash-tab {
-    padding: 12px 28px;
+    padding: 10px 26px;
     font-family: 'Source Sans 3', sans-serif;
-    font-size: 0.92rem;
-    font-weight: 700;
+    font-size: 0.9rem;
+    font-weight: 600;
     color: var(--text-light);
-    background: transparent;
-    border: none;
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-bottom: none;
+    border-radius: 8px 8px 0 0;
     cursor: pointer;
     position: relative;
     transition: all 0.2s;
     letter-spacing: 0.02em;
+    margin-bottom: -2px;
   }
-  .dash-tab:hover { color: var(--navy); background: var(--offwhite); }
+  .dash-tab:hover { color: var(--navy); background: #e8f0fa; }
   .dash-tab.active {
     color: var(--navy);
-    background: var(--white);
-  }
-  .dash-tab.active::after {
-    content: '';
-    position: absolute;
-    bottom: -2px;
-    left: 0; right: 0;
-    height: 3px;
-    background: var(--navy);
-    border-radius: 3px 3px 0 0;
+    font-weight: 700;
+    background: #d0e2f4;
+    border-color: var(--navy);
+    border-bottom: 2px solid #d0e2f4;
   }
   .dash-panel {
     display: none;
@@ -3314,8 +3312,7 @@ function openCartModal() {
       <label><input type="checkbox" id="cartOptTags"> Pre-Grade Tags (AAC/VAK)</label>
       <div class="cart-modal-actions">
         <button class="btn-cancel" onclick="closeCartModal()">Cancel</button>
-        <button class="btn-print" onclick="generateCartReport('print')">Print</button>
-        <button class="btn-download" onclick="generateCartReport('download')">Download Excel</button>
+        <button class="btn-print" onclick="generateCartReport('print')">Print / Save as PDF</button>
       </div>
     </div>
   `;
@@ -3351,24 +3348,28 @@ function generatePrintReport(opts) {
   const selectedArr = Object.values(items).filter(i => selectedItems.has(i.qtitle || i.qtext));
   selectedArr.sort((a,b) => (a.section||'').localeCompare(b.section||''));
 
-  let html = `<!DOCTYPE html><html><head><title>NIARA Item Report</title>
+  const reportTitle = 'NIARA — Item Review Report — ' + (meta.examName||'');
+  let html = `<!DOCTYPE html><html><head><title>${esc(reportTitle)}</title>
 <style>
-  @page { size: portrait; margin: 0.5in; }
+  @page { size: portrait; margin: 0.5in 0.5in 0.8in; @bottom-center { content: ""; } }
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body { font-family: 'Segoe UI', Arial, sans-serif; font-size: 9pt; color: #222; line-height: 1.35; }
-  .report-header { text-align: center; padding: 12px 16px 8px; margin-bottom: 10px; border-bottom: 2px solid #1e3a6e; }
-  .report-header h1 { font-size: 14pt; font-weight: 700; color: #1e3a6e; }
-  .report-header p { font-size: 8.5pt; color: #333; margin-top: 2px; }
+  .report-header { text-align: center; padding: 8px 16px 6px; margin-bottom: 8px; border-bottom: 2px solid #1e3a6e; }
+  .rh-title { font-size: 18pt; font-weight: 800; color: #1e3a6e; letter-spacing: 3px; text-transform: uppercase; margin: 0; }
+  .rh-subtitle { font-size: 9pt; font-weight: 700; color: #2c5282; margin: 1px 0; }
+  .rh-tagline { font-size: 7pt; color: #4a7ab5; letter-spacing: 1px; text-transform: uppercase; }
+  .rh-product { font-size: 6.5pt; color: #999; margin-top: 1px; }
+  .rh-exam { font-size: 8.5pt; color: #222; margin-top: 4px; }
   .q-block { border: 1.5px solid #2c5282; border-radius: 4px; margin-bottom: 8px; page-break-inside: avoid; overflow: hidden; }
   .q-title { padding: 5px 10px; font-weight: 700; font-size: 9pt; color: #000; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #c8d8ec; background: #f4f7fb; }
   .q-flag { font-size: 8pt; font-weight: 700; text-transform: uppercase; }
   .flag-KEEP { color: #1b7a3e; } .flag-REVISE { color: #d4620a; } .flag-RETIRE { color: #7b1a2a; }
   .q-body { padding: 6px 10px; }
   .q-stem { background: #fafafa; padding: 5px 8px; border-radius: 3px; margin-bottom: 5px; font-size: 8.5pt; color: #222; }
-  .q-stats { display: flex; gap: 12px; font-size: 8pt; color: #333; margin-bottom: 5px; flex-wrap: wrap; }
+  .q-stats { display: flex; gap: 12px; font-size: 8pt; color: #222; margin-bottom: 5px; flex-wrap: wrap; }
   .q-stats span { white-space: nowrap; }
   .q-stats strong { color: #000; }
-  .q-rec { font-style: italic; font-size: 8pt; color: #555; margin-bottom: 5px; border-left: 3px solid #c8d8ec; padding-left: 6px; }
+  .q-rec { font-style: italic; font-size: 8pt; color: #333; margin-bottom: 5px; border-left: 3px solid #c8d8ec; padding-left: 6px; }
   .q-tags { display: flex; gap: 6px; margin-bottom: 5px; }
   .q-tag { font-size: 7pt; font-weight: 700; padding: 2px 6px; border-radius: 3px; color: white; }
   .tag-vak { background: #c0392b; } .tag-aac { background: #8b0000; }
@@ -3376,14 +3377,21 @@ function generatePrintReport(opts) {
   .choice-table th { background: #e8edf4; color: #1e3a6e; padding: 3px 6px; text-align: left; font-size: 7.5pt; }
   .choice-table td { padding: 3px 6px; border-bottom: 1px solid #e8edf4; }
   .choice-correct td { color: #15603a; font-weight: 600; }
-  .report-footer { margin-top: 16px; text-align: center; font-size: 7.5pt; color: #666; border-top: 1.5px solid #1e3a6e; padding-top: 8px; }
-  .report-footer .security { margin-bottom: 4px; }
-  .report-footer .branding { color: #1e3a6e; font-weight: 600; }
-  @media print { .no-print { display: none; } }
+  .page-footer { position: fixed; bottom: 0; left: 0; right: 0; text-align: center; font-size: 6.5pt; color: #888; padding: 4px 16px; border-top: 1px solid #ccc; background: white; }
+  .page-footer .sec-line { margin-bottom: 1px; }
+  .page-footer .brand-line { color: #1e3a6e; font-weight: 600; }
+  @media print { .no-print { display: none; } body { margin-bottom: 40px; } }
 </style></head><body>
 <div class="report-header">
-  <h1>NIARA &mdash; Item Review Report</h1>
-  <p>${esc(meta.examName||'')} &ensp;|&ensp; ${esc(meta.courseLabel||'')} &ensp;|&ensp; ${esc((meta.semester||'')+' '+(meta.year||''))} &ensp;|&ensp; ${selectedArr.length} items</p>
+  <div class="rh-title">NIARA</div>
+  <div class="rh-subtitle">Item Review Report</div>
+  <div class="rh-tagline">Nursing Item Analysis &amp; Reporting Assistant</div>
+  <div class="rh-product">A GrangeRN Product</div>
+  <div class="rh-exam">${esc(meta.examName||'')} &ensp;&middot;&ensp; ${esc(meta.courseLabel||'')} &ensp;&middot;&ensp; ${esc((meta.semester||'')+' '+(meta.year||''))} &ensp;&middot;&ensp; ${selectedArr.length} items</div>
+</div>
+<div class="page-footer">
+  <div class="sec-line">This document contains secure examination content. Store in a password-protected, access-controlled location. Do not distribute to students. Dispose of printed copies by shredding.</div>
+  <div class="brand-line">Generated by NIARA &middot; Nursing Item Analysis &amp; Reporting Assistant &middot; GrangeRN</div>
 </div>`;
 
   selectedArr.forEach(item => {
@@ -3465,10 +3473,7 @@ function generatePrintReport(opts) {
     html += '</div></div>';
   });
 
-  html += `<div class="report-footer">
-    <div class="security">This document contains secure examination content. Store in a password-protected, access-controlled location and do not distribute to students or unauthorized individuals. Dispose of printed copies by shredding.</div>
-    <div class="branding">Generated by NIARA &middot; Nursing Item Analysis &amp; Reporting Assistant &middot; GrangeRN</div>
-  </div>`;
+  // Footer is fixed-position, repeats on every page
   html += '</body></html>';
 
   const win = window.open('', '_blank');
@@ -4385,8 +4390,7 @@ function openStudentReportModal(sid) {
       ${topicsHtml}
       <div class="cart-modal-actions">
         <button class="btn-cancel" onclick="closeStuModal()">Cancel</button>
-        <button class="btn-print" onclick="generateStudentOutput('${sid}','print')">Print</button>
-        <button class="btn-download" onclick="generateStudentOutput('${sid}','excel')">Download Excel</button>
+        <button class="btn-print" onclick="generateStudentOutput('${sid}','print')">Print / Save as PDF</button>
       </div>
     </div>
   `;
@@ -4451,34 +4455,42 @@ function generateStudentPrint(sid, opts) {
   const perfBg = (p) => p > 0.90 ? '#e8f5e9' : p >= 0.80 ? '#dce8f8' : '#fce4ec';
   const perfLbl = (p) => p > 0.90 ? 'Strong' : p >= 0.80 ? 'Acceptable' : 'Needs Improvement';
 
-  let html = `<!DOCTYPE html><html><head><title>Student Report - ${esc(student.lname)}, ${esc(student.fname)}</title>
+  const reportTitle = 'NIARA — Student Exam Performance Report — ' + (student.lname||'') + ', ' + (student.fname||'');
+  let html = `<!DOCTYPE html><html><head><title>${esc(reportTitle)}</title>
 <style>
-  @page { size: portrait; margin: 0.5in; }
+  @page { size: portrait; margin: 0.5in 0.5in 0.8in; @bottom-center { content: ""; } }
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body { font-family: 'Segoe UI', Arial, sans-serif; font-size: 10pt; color: #222; line-height: 1.4; }
-  .header { text-align: center; padding: 14px; border-bottom: 2px solid #1e3a6e; margin-bottom: 12px; }
-  .header h1 { font-size: 14pt; color: #1e3a6e; }
-  .header p { font-size: 9pt; color: #333; }
-  .info-row { display: flex; justify-content: space-between; padding: 4px 8px; font-size: 9pt; }
-  .info-row:nth-child(even) { background: #f4f7fb; }
+  .report-header { text-align: center; padding: 8px 16px 6px; margin-bottom: 8px; border-bottom: 2px solid #1e3a6e; }
+  .rh-title { font-size: 18pt; font-weight: 800; color: #1e3a6e; letter-spacing: 3px; text-transform: uppercase; margin: 0; }
+  .rh-subtitle { font-size: 9pt; font-weight: 700; color: #2c5282; margin: 1px 0; }
+  .rh-tagline { font-size: 7pt; color: #4a7ab5; letter-spacing: 1px; text-transform: uppercase; }
+  .rh-product { font-size: 6.5pt; color: #999; margin-top: 1px; }
+  .rh-exam { font-size: 8.5pt; color: #222; margin-top: 4px; }
   .section-hdr { background: #1e3a6e; color: white; padding: 6px 12px; font-weight: 700; font-size: 10pt; margin-top: 12px; border-radius: 3px 3px 0 0; }
   table { width: 100%; border-collapse: collapse; font-size: 9pt; }
   th { background: #4a7ab5; color: white; padding: 5px 8px; text-align: left; font-size: 8.5pt; }
   td { padding: 5px 8px; border-bottom: 1px solid #e8edf4; }
   .perf-row { font-weight: 600; }
-  .topic-item { padding: 3px 8px 3px 20px; font-size: 9pt; border-bottom: 1px solid #f0f0f0; }
-  .topic-section { font-weight: 700; padding: 6px 8px; background: #f4f7fb; color: #1e3a6e; font-size: 9pt; }
+  .topic-item { padding: 3px 8px 3px 20px; font-size: 9pt; border-bottom: 1px solid #f0f0f0; color: #222; }
   .score-box { text-align: center; padding: 10px; margin: 8px 0; border-radius: 6px; font-size: 13pt; font-weight: 700; }
-  .disclaimer { font-size: 7.5pt; color: #666; font-style: italic; padding: 4px 8px; background: #fffde7; margin-bottom: 8px; }
-  .note { font-size: 8pt; color: #555; font-style: italic; padding: 6px 8px; background: #f4f7fb; margin-top: 4px; }
-  .footer { margin-top: 20px; text-align: center; border-top: 1.5px solid #1e3a6e; padding-top: 10px; }
-  .footer .encourage { font-size: 9pt; color: #1e3a6e; font-style: italic; margin-bottom: 6px; }
-  .footer .branding { font-size: 7.5pt; color: #1e3a6e; font-weight: 600; }
-  @media print { .no-print { display: none; } }
+  .disclaimer { font-size: 7.5pt; color: #333; font-style: italic; padding: 4px 8px; background: #fffde7; margin-bottom: 8px; }
+  .note { font-size: 8pt; color: #333; font-style: italic; padding: 6px 8px; background: #f4f7fb; margin-top: 4px; }
+  .page-footer { position: fixed; bottom: 0; left: 0; right: 0; text-align: center; font-size: 6.5pt; color: #333; padding: 4px 16px; border-top: 1px solid #ccc; background: white; }
+  .page-footer .encourage { font-size: 7.5pt; color: #1e3a6e; font-style: italic; margin-bottom: 1px; }
+  .page-footer .brand-line { color: #1e3a6e; font-weight: 600; }
+  @media print { .no-print { display: none; } body { margin-bottom: 50px; } }
 </style></head><body>
-<div class="header">
-  <h1>NIARA &mdash; Student Exam Performance Report</h1>
-  <p>${esc(student.lname)}, ${esc(student.fname)} &ensp;|&ensp; ${esc(meta.courseLabel)} &ensp;|&ensp; ${esc(meta.examName)} &ensp;|&ensp; ${esc(meta.semester)} ${esc(meta.year)}</p>
+<div class="report-header">
+  <div class="rh-title">NIARA</div>
+  <div class="rh-subtitle">Student Exam Performance Report</div>
+  <div class="rh-tagline">Nursing Item Analysis &amp; Reporting Assistant</div>
+  <div class="rh-product">A GrangeRN Product</div>
+  <div class="rh-exam">${esc(student.lname)}, ${esc(student.fname)} &ensp;&middot;&ensp; ${esc(meta.courseLabel)} &ensp;&middot;&ensp; ${esc(meta.examName)} &ensp;&middot;&ensp; ${esc(meta.semester)} ${esc(meta.year)}</div>
+</div>
+<div class="page-footer">
+  <div class="encourage">Every step forward in your education brings you closer to the nurse you are meant to be. Stay committed, keep learning, and trust the process.</div>
+  <div class="brand-line">Generated by NIARA &middot; Nursing Item Analysis &amp; Reporting Assistant &middot; GrangeRN</div>
 </div>`;
 
   if (opts.score) {
@@ -4519,27 +4531,12 @@ function generateStudentPrint(sid, opts) {
     if (opts.selectedTopics.length === 0) {
       html += '<div style="padding:8px;color:#1b7a3e;font-style:italic;">All topics addressed successfully — no areas identified for review.</div>';
     } else {
-      // Group selected topics by section
-      const missedItems = Object.values(student.items).filter(si => !si.isBonus && !(si.outOf>0 && (si.score/si.outOf)>=0.99));
-      const byS = {};
-      missedItems.forEach(si => {
-        const label = si.qtitle || ('Question ' + si.qnum);
-        if (opts.selectedTopics.includes(label)) {
-          if (!byS[si.section]) byS[si.section] = [];
-          byS[si.section].push(label);
-        }
-      });
-      for (const [sec, topics] of Object.entries(byS).sort((a,b) => a[0].localeCompare(b[0]))) {
-        html += '<div class="topic-section">' + esc(sec) + '</div>';
-        topics.forEach(t => { html += '<div class="topic-item">&bull; ' + esc(t) + '</div>'; });
-      }
+      // Flat alphabetized list of selected topics (no section headers)
+      const sortedTopics = [...opts.selectedTopics].sort((a,b) => a.localeCompare(b));
+      sortedTopics.forEach(t => { html += '<div class="topic-item">&bull; ' + esc(t) + '</div>'; });
     }
   }
 
-  html += `<div class="footer">
-    <div class="encourage">Every step forward in your education brings you closer to the nurse you are meant to be. Stay committed, keep learning, and trust the process &mdash; your dedication today is shaping the compassionate, skilled professional you will become.</div>
-    <div class="branding">Generated by NIARA &middot; Nursing Item Analysis &amp; Reporting Assistant &middot; GrangeRN</div>
-  </div>`;
   html += '</body></html>';
 
   const win = window.open('', '_blank');
