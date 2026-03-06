@@ -4601,13 +4601,9 @@ function buildQuestionBlock(ws, startRow, item, theme, topSet, botSet) {
   ws.getRow(R).height = noteH;
   R++;
 
-  // ── SPACER ──
-  ws.getRow(R).height = 6;
-  for (let c = 1; c <= COLS; c++) ws.getCell(R, c).style = { fill: whiteFill };
-  R++;
-
   // ── STEM HEADER ROW ──
-  const stemHdrStyle = { font:{ bold:true, color:{ argb:C_white }, size:9 }, fill: goldFill, alignment:{ horizontal:'center', vertical:'middle' } };
+  const blueHdrFill = wf('FF2c5282');
+  const stemHdrStyle = { font:{ bold:true, color:{ argb:C_white }, size:9 }, fill: blueHdrFill, alignment:{ horizontal:'center', vertical:'middle' } };
   ws.mergeCells(R, 1, R, 6);
   ws.getCell(R, 1).value = 'Question Stem'; ws.getCell(R, 1).style = stemHdrStyle;
   ws.mergeCells(R, 7, R, 11);
@@ -4632,15 +4628,10 @@ function buildQuestionBlock(ws, startRow, item, theme, topSet, botSet) {
   ws.getRow(R).height = stemH;
   R++;
 
-  // ── SPACER ──
-  ws.getRow(R).height = 6;
-  for (let c = 1; c <= COLS; c++) ws.getCell(R, c).style = { fill: whiteFill };
-  R++;
-
   // ── CHOICE / DETAIL SECTION (varies by question type) ──
   if (item.qtype === 'MC' || item.qtype === 'M-S' || item.qtype === 'T-F') {
     // Choice header row
-    const chHdrStyle = { font:{ bold:true, color:{ argb:C_white }, size:8 }, fill: goldFill, alignment:{ horizontal:'center', vertical:'middle', wrapText:true } };
+    const chHdrStyle = { font:{ bold:true, color:{ argb:C_white }, size:8 }, fill: blueHdrFill, alignment:{ horizontal:'center', vertical:'middle', wrapText:true } };
     ws.getCell(R, 1).value = 'Choice Type'; ws.getCell(R, 1).style = chHdrStyle;
     ws.mergeCells(R, 2, R, 3);
     ws.getCell(R, 2).value = 'Answer Choice Text'; ws.getCell(R, 2).style = chHdrStyle;
@@ -4744,7 +4735,7 @@ function buildQuestionBlock(ws, startRow, item, theme, topSet, botSet) {
   } else if (item.qtype === 'MAT') {
     // Matching: pair-level detail
     const matData = item.matData || {};
-    const chHdrStyle = { font:{ bold:true, color:{ argb:C_white }, size:8 }, fill: goldFill, alignment:{ horizontal:'center', vertical:'middle', wrapText:true } };
+    const chHdrStyle = { font:{ bold:true, color:{ argb:C_white }, size:8 }, fill: blueHdrFill, alignment:{ horizontal:'center', vertical:'middle', wrapText:true } };
     ws.getCell(R, 1).value = 'Pair'; ws.getCell(R, 1).style = chHdrStyle;
     ws.mergeCells(R, 2, R, 3);
     ws.getCell(R, 2).value = 'Prompt'; ws.getCell(R, 2).style = chHdrStyle;
@@ -4802,7 +4793,7 @@ function buildQuestionBlock(ws, startRow, item, theme, topSet, botSet) {
     });
     const sortedResps = Object.entries(respCounts).sort((a,b)=>b[1]-a[1]);
 
-    const chHdrStyle = { font:{ bold:true, color:{ argb:C_white }, size:8 }, fill: goldFill, alignment:{ horizontal:'center', vertical:'middle', wrapText:true } };
+    const chHdrStyle = { font:{ bold:true, color:{ argb:C_white }, size:8 }, fill: blueHdrFill, alignment:{ horizontal:'center', vertical:'middle', wrapText:true } };
     ws.getCell(R, 1).value = 'Response Type'; ws.getCell(R, 1).style = chHdrStyle;
     ws.mergeCells(R, 2, R, 3);
     ws.getCell(R, 2).value = 'Student Response'; ws.getCell(R, 2).style = chHdrStyle;
@@ -4850,7 +4841,7 @@ function buildQuestionBlock(ws, startRow, item, theme, topSet, botSet) {
   } else if (item.qtype === 'ORD') {
     // Ordering: step-level detail
     const ordData = item.ordData || [];
-    const chHdrStyle = { font:{ bold:true, color:{ argb:C_white }, size:8 }, fill: goldFill, alignment:{ horizontal:'center', vertical:'middle', wrapText:true } };
+    const chHdrStyle = { font:{ bold:true, color:{ argb:C_white }, size:8 }, fill: blueHdrFill, alignment:{ horizontal:'center', vertical:'middle', wrapText:true } };
     ws.getCell(R, 1).value = 'Step'; ws.getCell(R, 1).style = chHdrStyle;
     ws.mergeCells(R, 2, R, 5);
     ws.getCell(R, 2).value = 'Correct Step Text'; ws.getCell(R, 2).style = chHdrStyle;
@@ -4903,8 +4894,8 @@ function buildQuestionBlock(ws, startRow, item, theme, topSet, botSet) {
     R++;
   }
 
-  // ── SPACER ROW ──
-  ws.getRow(R).height = 10;
+  // ── SPACER ROW (large gap between question blocks) ──
+  ws.getRow(R).height = 50;
   for (let c = 1; c <= COLS; c++) ws.getCell(R, c).style = { fill: whiteFill };
   R++;
 
@@ -5345,7 +5336,7 @@ async function buildWorkbook(data) {
   // ===============================================
   //  TAB 4 — FOR REWRITE (RETIRE items, red)
   // ===============================================
-  const ws4 = wb.addWorksheet('For Rewrite', { properties: { tabColor: { argb: 'FFB71C1C' } } });
+  const ws4 = wb.addWorksheet('Retire', { properties: { tabColor: { argb: 'FFB71C1C' } } });
   ws4.views = [{ showGridLines: false }];
   // Set columns BEFORE writing any data to prevent XML errors
   ws4.columns = [{width:14},{width:22},{width:14},{width:10},{width:12},{width:12},{width:12},{width:10},{width:16},{width:16},{width:16},{width:18},{width:18},{width:16}];
