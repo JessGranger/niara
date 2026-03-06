@@ -260,6 +260,13 @@ https://github.com/nodeca/pako/blob/main/LICENSE
     border-color: var(--steel);
     box-shadow: 0 0 0 3px rgba(74,122,181,0.12);
   }
+  *:focus-visible {
+    outline: 2px solid var(--steel);
+    outline-offset: 2px;
+  }
+  select:focus-visible, input[type="text"]:focus-visible {
+    outline: none;
+  }
 
   /* ── FILE UPLOAD ── */
   .upload-zone {
@@ -496,7 +503,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
   /* ── STATS CARDS ── */
   .stats-grid {
     display: grid;
-    grid-template-columns: repeat(5, 1fr);
+    grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
     gap: 16px;
     margin-bottom: 24px;
   }
@@ -1497,7 +1504,6 @@ https://github.com/nodeca/pako/blob/main/LICENSE
     display: flex;
     align-items: center;
     justify-content: space-between;
-    cursor: pointer;
     margin-bottom: 20px;
     transition: all 0.2s;
   }
@@ -1535,28 +1541,28 @@ https://github.com/nodeca/pako/blob/main/LICENSE
     padding: 0 4px;
   }
   .dash-tab {
-    padding: 10px 26px;
+    padding: 14px 32px;
     font-family: 'Source Sans 3', sans-serif;
-    font-size: 0.9rem;
-    font-weight: 600;
-    color: var(--text-light);
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--navy);
     background: var(--white);
-    border: 1px solid var(--border);
+    border: 2px solid var(--border);
     border-bottom: none;
-    border-radius: 8px 8px 0 0;
+    border-radius: 10px 10px 0 0;
     cursor: pointer;
     position: relative;
     transition: all 0.2s;
     letter-spacing: 0.02em;
     margin-bottom: -2px;
   }
-  .dash-tab:hover { color: var(--navy); background: #e8f0fa; }
+  .dash-tab:hover { color: var(--white); background: var(--steel); border-color: var(--steel); }
   .dash-tab.active {
-    color: var(--navy);
-    font-weight: 700;
-    background: #d0e2f4;
+    color: var(--white);
+    font-weight: 800;
+    background: var(--navy);
     border-color: var(--navy);
-    border-bottom: 2px solid #d0e2f4;
+    border-bottom: 2px solid var(--navy);
   }
   .dash-panel {
     display: none;
@@ -1568,11 +1574,15 @@ https://github.com/nodeca/pako/blob/main/LICENSE
   .dash-header {
     background: linear-gradient(135deg, var(--navy-deep) 0%, var(--navy) 60%, var(--steel) 100%);
     border-radius: 12px;
-    padding: 28px 36px;
+    padding: 18px 28px;
     margin-bottom: 24px;
     color: var(--white);
     position: relative;
     overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
   }
   .dash-header::before {
     content: '';
@@ -1582,42 +1592,40 @@ https://github.com/nodeca/pako/blob/main/LICENSE
     border-radius: 50%;
     background: rgba(138,175,212,0.1);
   }
+  .dash-header-left {
+    position: relative;
+    z-index: 1;
+    flex: 1;
+  }
   .dash-header-title {
     font-family: 'Playfair Display', serif;
-    font-size: 1.5rem;
+    font-size: 1.3rem;
     font-weight: 700;
     margin-bottom: 2px;
-    position: relative;
-    z-index: 1;
   }
   .dash-header-subtitle {
-    font-size: 0.82rem;
+    font-size: 0.78rem;
     opacity: 0.7;
-    margin-bottom: 12px;
-    position: relative;
-    z-index: 1;
+    margin-bottom: 6px;
   }
   .dash-header-exam {
     font-family: 'Playfair Display', serif;
-    font-size: 1.2rem;
+    font-size: 1.1rem;
     font-weight: 700;
-    margin-bottom: 4px;
-    position: relative;
-    z-index: 1;
+    margin-bottom: 2px;
   }
   .dash-header-meta {
-    font-size: 0.88rem;
+    font-size: 0.82rem;
     opacity: 0.75;
     letter-spacing: 0.04em;
-    position: relative;
-    z-index: 1;
   }
   .dash-download-row {
     display: flex;
-    gap: 12px;
-    margin-top: 16px;
+    flex-direction: column;
+    gap: 8px;
     position: relative;
     z-index: 1;
+    flex-shrink: 0;
   }
 
   /* ── CHART CARD ── */
@@ -1675,6 +1683,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
 </style>
 </head>
 <body>
+<a href="#main" class="skip-link" style="position:absolute;left:-9999px;top:auto;width:1px;height:1px;overflow:hidden;z-index:9999;padding:8px 16px;background:var(--navy);color:white;font-size:1rem;text-decoration:none;" onfocus="this.style.position='fixed';this.style.left='8px';this.style.top='8px';this.style.width='auto';this.style.height='auto';" onblur="this.style.position='absolute';this.style.left='-9999px';this.style.width='1px';this.style.height='1px';">Skip to main content</a>
 
 <!-- ══ HEADER ══ -->
 <header class="site-header">
@@ -1687,35 +1696,33 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       <div class="tool-identity">
         <div class="tool-name">NIAR<span>A</span></div>
         <div class="tool-tagline">Nursing Item Analysis &amp; Reporting Assistant</div>
+        <div style="font-size:0.65rem;color:rgba(255,255,255,0.5);letter-spacing:0.1em;margin-top:2px;">A GrangeRN Product</div>
       </div>
     </div>
     <div style="display:flex;align-items:center;gap:12px;">
-      <button class="clear-btn" onclick="clearAndRestart()" title="Clear all data and start over">
-        ↺ Clear &amp; Start Over
-      </button>
       <div class="version-badge">v2.0.0 &nbsp;·&nbsp; GrangeRN</div>
     </div>
   </div>
 </header>
 <div class="brand-strip">
-  <span>A <strong>GrangeRN</strong> Tool</span>
-  <span style="opacity:0.4;">|</span>
-  <a href="https://www.grangeRN.com" target="_blank">GrangeRN.com</a>
-  <span style="opacity:0.4;">|</span>
-  <span>FERPA Compliant · All data processed locally</span>
+  <span>FERPA Compliant &middot; All data processed locally</span>
 </div>
 
-<main class="main">
+<main class="main" id="main">
 
   <!-- ══ ALERT AREA ══ -->
-  <div id="alertBox" class="alert"></div>
+  <h1 class="sr-only" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;">NIARA — Nursing Item Analysis &amp; Reporting Assistant</h1>
+  <div id="alertBox" class="alert" role="alert" aria-live="polite" aria-atomic="true"></div>
 
   <!-- ══ NEW REPORT COLLAPSIBLE BAR ══ -->
-  <div class="new-report-bar" id="newReportBar" onclick="toggleNewReportBar()">
-    <div class="new-report-bar-title">
+  <div class="new-report-bar" id="newReportBar">
+    <div class="new-report-bar-title" onclick="toggleNewReportBar()" style="cursor:pointer;flex:1;display:flex;align-items:center;gap:10px;">
       <span>&#x2795;</span> New Report
+      <span class="new-report-bar-arrow open" id="newReportArrow">&#x25BC;</span>
     </div>
-    <span class="new-report-bar-arrow open" id="newReportArrow">&#x25BC;</span>
+    <button class="clear-btn" onclick="event.stopPropagation();clearAndRestart()" title="Clear all data and start over" style="margin-left:auto;">
+      ↺ Clear &amp; Start Over
+    </button>
   </div>
   <div class="new-report-content open" id="newReportContent">
 
@@ -1791,7 +1798,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         Export the <strong>Attempt Details</strong> CSV from your Brightspace quiz. Navigate to your quiz &rarr; Grade &rarr; Attempts &rarr; click <strong>Export to CSV</strong>. Wait for the report to generate, then go to your <strong>Notifications (Bell icon)</strong> and click to download. This is the only file you need.
       </p>
       <div class="upload-zone" id="mainUploadZone">
-        <input type="file" id="mainFileInput" accept=".csv">
+        <input type="file" id="mainFileInput" accept=".csv" aria-label="Upload Brightspace CSV file">
         <span class="upload-icon">📋</span>
         <h3>Drop your Attempt Details CSV here</h3>
         <p>or click to browse</p>
@@ -1807,7 +1814,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       <h2>Longitudinal Report <span style="font-family:'Source Sans 3';font-weight:400;font-size:0.85rem;opacity:0.7;">(Optional)</span></h2>
     </div>
     <div class="card-body">
-      <div class="toggle-row" id="longitudinalToggle" onclick="toggleLongitudinal()">
+      <div class="toggle-row" id="longitudinalToggle" role="switch" aria-checked="false" tabindex="0" onclick="toggleLongitudinal()" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();toggleLongitudinal();}">
         <div class="toggle-switch" id="toggleSwitch"></div>
         <div>
           <div class="toggle-label">Generate Longitudinal Item Bank Report</div>
@@ -1849,10 +1856,12 @@ https://github.com/nodeca/pako/blob/main/LICENSE
 
     <!-- ══ DASHBOARD HEADER ══ -->
     <div class="dash-header">
-      <div class="dash-header-title">NIARA Report</div>
-      <div class="dash-header-subtitle">Nursing Item Analysis &amp; Reporting Assistant &mdash; GrangeRN</div>
-      <div class="dash-header-exam" id="dashExamName">Assessment Dashboard</div>
-      <div class="dash-header-meta" id="dashMeta"></div>
+      <div class="dash-header-left">
+        <div class="dash-header-title">NIARA Report</div>
+        <div class="dash-header-subtitle">Nursing Item Analysis &amp; Reporting Assistant &mdash; GrangeRN</div>
+        <div class="dash-header-exam" id="dashExamName">Assessment Dashboard</div>
+        <div class="dash-header-meta" id="dashMeta"></div>
+      </div>
       <div class="dash-download-row">
         <button class="download-btn download-primary" onclick="downloadExcel()">
           ⬇ Download Single Exam Report
@@ -1871,7 +1880,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
     </div>
 
     <!-- ══ TAB 1: OVERVIEW ══ -->
-    <div class="dash-panel active" id="dashOverview">
+    <div class="dash-panel active" id="dashOverview" aria-hidden="false">
 
       <!-- Class Stats -->
       <div class="stats-grid" id="statsGrid"></div>
@@ -1938,7 +1947,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
     </div><!-- /dashOverview -->
 
     <!-- ══ TAB 2: ITEM ANALYSIS ══ -->
-    <div class="dash-panel" id="dashItems">
+    <div class="dash-panel" id="dashItems" aria-hidden="true">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
         <h2 style="font-family:'Playfair Display',serif;color:var(--navy);font-size:1.2rem;">Item Analysis</h2>
         <button class="section-close-btn" onclick="switchDashTab('overview')">Back to Overview</button>
@@ -1960,14 +1969,14 @@ https://github.com/nodeca/pako/blob/main/LICENSE
           <thead>
             <tr>
               <th style="width:30px;text-align:center;"><input type="checkbox" class="item-select-cb" id="selectAllCb" onclick="toggleSelectAll(this)" title="Select all"></th>
-              <th class="sortable" data-col="flag" onclick="sortTable('flag')">Flag <em class="sort-icon">⇅</em></th>
-              <th class="sortable" data-col="qtitle" onclick="sortTable('qtitle')">Q Title <em class="sort-icon">⇅</em></th>
+              <th class="sortable" data-col="flag" aria-sort="none" onclick="sortTable('flag')">Flag <em class="sort-icon">⇅</em></th>
+              <th class="sortable" data-col="qtitle" aria-sort="none" onclick="sortTable('qtitle')">Q Title <em class="sort-icon">⇅</em></th>
               <th>Type</th>
-              <th class="sortable" data-col="section" onclick="sortTable('section')" style="max-width:140px;">Module <em class="sort-icon">⇅</em></th>
-              <th class="sortable" data-col="difficulty" onclick="sortTable('difficulty')">% Correct <em class="sort-icon">⇅</em></th>
-              <th class="sortable" data-col="pointBiserial" onclick="sortTable('pointBiserial')">Pt-Bis <em class="sort-icon">⇅</em></th>
-              <th class="sortable" data-col="discriminationIndex" onclick="sortTable('discriminationIndex')">Disc. Idx <em class="sort-icon">⇅</em></th>
-              <th class="sortable" data-col="n" onclick="sortTable('n')">N <em class="sort-icon">⇅</em></th>
+              <th class="sortable" data-col="section" aria-sort="none" onclick="sortTable('section')" style="max-width:140px;">Module <em class="sort-icon">⇅</em></th>
+              <th class="sortable" data-col="difficulty" aria-sort="none" onclick="sortTable('difficulty')">% Correct <em class="sort-icon">⇅</em></th>
+              <th class="sortable" data-col="pointBiserial" aria-sort="none" onclick="sortTable('pointBiserial')">Pt-Bis <em class="sort-icon">⇅</em></th>
+              <th class="sortable" data-col="discriminationIndex" aria-sort="none" onclick="sortTable('discriminationIndex')">Disc. Idx <em class="sort-icon">⇅</em></th>
+              <th class="sortable" data-col="n" aria-sort="none" onclick="sortTable('n')">N <em class="sort-icon">⇅</em></th>
               <th>Top Wrong</th>
               <th>Recommendation</th>
             </tr>
@@ -1978,7 +1987,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
     </div><!-- /dashItems -->
 
     <!-- ══ TAB 3: STUDENT DIAGNOSTIC ══ -->
-    <div class="dash-panel" id="dashStudents">
+    <div class="dash-panel" id="dashStudents" aria-hidden="true">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
         <h2 style="font-family:'Playfair Display',serif;color:var(--navy);font-size:1.2rem;">Student Diagnostic Report</h2>
         <button class="section-close-btn" onclick="switchDashTab('overview')">Back to Overview</button>
@@ -2002,14 +2011,14 @@ https://github.com/nodeca/pako/blob/main/LICENSE
 </main>
 
 <!-- ══ QUESTION DETAIL MODAL ══ -->
-<div class="modal-overlay" id="questionModal" onclick="closeModal(event)">
+<div class="modal-overlay" id="questionModal" role="dialog" aria-modal="true" aria-labelledby="modalTitle" onclick="closeModal(event)" onkeydown="if(event.key==='Escape'){document.getElementById('questionModal').classList.remove('open');}">
   <div class="modal-box">
     <div class="modal-header">
       <div>
         <h3 id="modalTitle"></h3>
         <div class="modal-flag" id="modalFlag"></div>
       </div>
-      <button class="modal-close" onclick="document.getElementById('questionModal').classList.remove('open')">✕</button>
+      <button class="modal-close" aria-label="Close dialog" onclick="document.getElementById('questionModal').classList.remove('open')">✕</button>
     </div>
     <div class="modal-body">
       <div class="modal-stem" id="modalStem"></div>
@@ -2021,9 +2030,9 @@ https://github.com/nodeca/pako/blob/main/LICENSE
 <!-- ══ PSYCHOMETRIC LEGEND ══ -->
 <div style="max-width:1100px;margin:0 auto;padding:0 24px 60px;" id="legendArea">
   <div class="legend-section">
-    <div class="legend-header" onclick="toggleLegend()">
-      <h3>📐 Psychometric Threshold Reference — How NIARA Categorizes Items</h3>
-      <button class="collapse-toggle" id="legendToggleBtn">▼ Expand</button>
+    <div class="legend-header" role="button" tabindex="0" onclick="toggleLegend()" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();toggleLegend();}">
+      <h3>Psychometric Threshold Reference — How NIARA Categorizes Items</h3>
+      <button class="collapse-toggle" id="legendToggleBtn" aria-expanded="false" aria-controls="legendBody">▼ Expand</button>
     </div>
     <div class="collapsible-body collapsed" id="legendBody" style="max-height:0;">
       <div class="legend-body">
@@ -2155,7 +2164,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
 
 <footer>
   <strong>NIARA</strong> — Nursing Item Analysis &amp; Reporting Assistant &nbsp;·&nbsp; A <strong>GrangeRN</strong> Tool &nbsp;·&nbsp; v2.0.0<br>
-  <span style="font-size:0.72rem;opacity:0.7;">All data is processed locally in your browser. No student information is transmitted or stored. &nbsp;|&nbsp; <a href="https://www.grangeRN.com" style="color:var(--steel);">GrangeRN.com</a></span>
+  <span style="font-size:0.72rem;opacity:0.7;">All data is processed locally in your browser. No student information is transmitted or stored.</span>
 </footer>
 
 <script>
@@ -2198,9 +2207,9 @@ function switchDashTab(tabId) {
     const keys = ['overview', 'items', 'students'];
     t.classList.toggle('active', keys[i] === tabId);
   });
-  document.querySelectorAll('.dash-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.dash-panel').forEach(p => { p.classList.remove('active'); p.setAttribute('aria-hidden', 'true'); });
   const panel = document.getElementById(map[tabId]);
-  if (panel) panel.classList.add('active');
+  if (panel) { panel.classList.add('active'); panel.setAttribute('aria-hidden', 'false'); }
   // Scroll to top of results
   document.getElementById('resultsSection').scrollIntoView({ behavior: 'smooth' });
 }
@@ -2248,6 +2257,7 @@ mainZone.addEventListener('drop', function(ev) {
 function toggleLongitudinal() {
   longitudinalOn = !longitudinalOn;
   document.getElementById('toggleSwitch').classList.toggle('on', longitudinalOn);
+  document.getElementById('longitudinalToggle').setAttribute('aria-checked', longitudinalOn);
   const sec = document.getElementById('longitudinalSection');
   if (longitudinalOn) { sec.classList.add('visible'); if (prevFileCount === 0) addPrevFileBlock(); }
   else sec.classList.remove('visible');
@@ -2278,7 +2288,7 @@ function addPrevFileBlock() {
       </div>
     </div>
     <div class="upload-zone" id="prevZone_${id}" style="padding:20px;">
-      <input type="file" accept=".csv,.xlsx" id="prevInput_${id}" onchange="prevFileSelected(${id})">
+      <input type="file" accept=".csv,.xlsx" id="prevInput_${id}" onchange="prevFileSelected(${id})" aria-label="Upload previous NIARA report or CSV file">
       <span class="upload-icon" style="font-size:1.6rem;">📋</span>
       <h3 style="font-size:0.9rem;">Previous NIARA Excel Report (.xlsx) or Attempt Details (.csv)</h3>
       <div class="file-name-display" id="prevFileName_${id}"></div>
@@ -2337,21 +2347,29 @@ async function parseNiaraExcel(arrayBuffer, metaOverrides) {
     }
   }
 
-  // Parse Item Status rows (data starts at row 3)
+  // Parse Item Status rows — auto-detect header row (row 2 for old format, row 4 for new with branding)
   const items = {};
-  let hasFingerprint = false;
-  // Check if col 15 (O) header is fingerprint
-  const hdrRow = itemSheet.getRow(2);
-  const hdr15 = String(hdrRow.getCell(15).value || '').toLowerCase();
-  if (hdr15.includes('fingerprint')) hasFingerprint = true;
+  let headerRowNum = 2;
+  const r2val = String(itemSheet.getRow(2).getCell(2).value || '').toLowerCase();
+  const r4val = String(itemSheet.getRow(4).getCell(2).value || '').toLowerCase();
+  if (r4val.includes('flag') || r4val.includes('post-exam')) headerRowNum = 4;
+  else if (!r2val.includes('flag') && !r2val.includes('post-exam')) headerRowNum = 2; // fallback
 
-  // Check for hidden data columns (P=16, Q=17, R=18, S=19)
-  let hasHiddenData = false;
-  const hdr16 = String(hdrRow.getCell(16).value || '').toLowerCase();
-  if (hdr16.includes('stem') || hdr16.includes('_stem')) hasHiddenData = true;
+  const hdrRow = itemSheet.getRow(headerRowNum);
+  // Auto-detect fingerprint and hidden data columns by scanning headers
+  let fingerprintCol = 0, stemCol = 0, correctCol = 0, choicesCol = 0, countsCol = 0;
+  let hasFingerprint = false, hasHiddenData = false;
+  for (let c = 1; c <= 20; c++) {
+    const h = String(hdrRow.getCell(c).value || '').toLowerCase();
+    if (h.includes('fingerprint')) { fingerprintCol = c; hasFingerprint = true; }
+    if (h.includes('_stem') || h === 'stem') { stemCol = c; hasHiddenData = true; }
+    if (h.includes('_correctanswer')) correctCol = c;
+    if (h.includes('_choices')) choicesCol = c;
+    if (h.includes('_distractorcounts')) countsCol = c;
+  }
 
   itemSheet.eachRow((row, rowNum) => {
-    if (rowNum <= 2) return; // skip header rows
+    if (rowNum <= headerRowNum) return; // skip header rows
     function cellStr(col) { const v = row.getCell(col).value; return v === null || v === undefined ? '' : String(v).trim(); }
     function cellNum(col) { const v = row.getCell(col).value; return parseFloat(String(v||'').replace('%',''))/100 || null; }
 
@@ -2366,23 +2384,22 @@ async function parseNiaraExcel(arrayBuffer, metaOverrides) {
     const topWrong   = cellStr(10) || '';
     const reason     = cellStr(11) || '';
     const pgLabel    = cellStr(1);
-    const fingerprint = hasFingerprint ? cellStr(15) : null;
+    const fingerprint = hasFingerprint ? cellStr(fingerprintCol) : null;
 
     // Read hidden data columns if available
     let stemText = '';
     let correctAnswer = null;
     let correctAnswers = [];
     let distractorCounts = {};
-    if (hasHiddenData) {
-      stemText = cellStr(16);
-      const correctRaw = cellStr(17);
+    if (hasHiddenData && stemCol) {
+      stemText = cellStr(stemCol);
+      const correctRaw = correctCol ? cellStr(correctCol) : '';
       if (qtype === 'M-S' && correctRaw.startsWith('[')) {
         try { correctAnswers = JSON.parse(correctRaw); } catch(e) { correctAnswers = []; }
       } else {
         correctAnswer = correctRaw || null;
       }
-      const choicesRaw = cellStr(18);
-      const countsRaw = cellStr(19);
+      const countsRaw = countsCol ? cellStr(countsCol) : '';
       if (countsRaw && countsRaw.startsWith('{')) {
         try { distractorCounts = JSON.parse(countsRaw); } catch(e) { distractorCounts = {}; }
       }
@@ -2681,6 +2698,15 @@ function parseAttemptDetails(csvText) {
   // Assign post-exam revision flags
   for (const item of Object.values(items)) {
     item.flag = assignFlag(item);
+    // Check for 2+ unselected distractors — indicates item may be too easy
+    if (item.qtype === 'MC' || item.qtype === 'M-S' || item.qtype === 'T-F') {
+      const correctSet = new Set(item.qtype === 'M-S' ? (item.correctAnswers||[]) : [item.correctAnswer]);
+      const distractors = Object.entries(item.distractorCounts || {}).filter(([ans]) => !correctSet.has(ans));
+      const unselected = distractors.filter(([, count]) => count === 0);
+      if (unselected.length >= 2) {
+        item.flag.reason += '\n\nNote: ' + unselected.length + ' distractor(s) received zero student selections. This item may be too easy \u2014 consider retiring it or editing the answer choices to create better distractors, unless it was intentionally written as a low-level Remember or Understand Bloom\'s taxonomy question.';
+      }
+    }
   }
 
   // Identify pre-grade action flags (VAK, AAC)
@@ -3112,13 +3138,30 @@ function renderResults() {
     kr20Title = 'Insufficient data to compute KR-20.';
   }
 
+  const dashScoreArr = totalScores ? Object.values(totalScores).map(s => tp > 0 ? s/tp : 0) : [];
+  const dashHighScore = dashScoreArr.length > 0 ? Math.round(Math.max(...dashScoreArr)*100) + '%' : 'N/A';
+
+  // SEM = SD × sqrt(1 - KR-20)
+  let semDisplay = '—';
+  let semTitle = 'Standard Error of Measurement could not be computed.';
+  if (!classStats.isPooled && classStats.kr20 !== null && classStats.sd > 0) {
+    const sem = classStats.sd * Math.sqrt(1 - classStats.kr20);
+    const semPct = tp > 0 ? sem / tp : 0;
+    semDisplay = semPct < 0.01 ? '<1%' : pct(semPct);
+    semTitle = 'Standard Error of Measurement (SEM). 95% CI: a student\'s true score is within \u00b1' + (Math.round(semPct*200)/1) + '% of the observed score. SEM = SD \u00d7 \u221a(1-KR20). Lower is better.';
+  } else if (classStats.isPooled) {
+    semTitle = 'SEM requires KR-20, which cannot be computed for pooled exams.';
+  }
+
   const statsGrid = document.getElementById('statsGrid');
   statsGrid.innerHTML = `
     <div class="stat-card"><div class="stat-value">${pct(classStats.avg / (tp||100))}</div><div class="stat-label">Class Mean</div></div>
+    <div class="stat-card"><div class="stat-value">${dashHighScore}</div><div class="stat-label">Highest Score</div></div>
     <div class="stat-card"><div class="stat-value">${pct(classStats.sd / (tp||100))}</div><div class="stat-label">Std Deviation</div></div>
     <div class="stat-card"><div class="stat-value">${classStats.n}</div><div class="stat-label">Students Tested</div></div>
     <div class="stat-card"><div class="stat-value">${Object.keys(items).length}</div><div class="stat-label">Unique Items</div></div>
     <div class="stat-card" title="${esc(kr20Title)}" style="cursor:help;"><div class="stat-value" style="${classStats.isPooled ? 'font-size:1.2rem;' : ''}">${kr20Display}</div><div class="stat-label">${kr20Label}</div></div>
+    <div class="stat-card" title="${esc(semTitle)}" style="cursor:help;"><div class="stat-value">${semDisplay}</div><div class="stat-label">SEM</div></div>
   `;
 
   // Flag grid — 3 post-exam flags, clickable filters
@@ -3148,7 +3191,54 @@ function renderResults() {
     const scoreArr = totalScores ? Object.values(totalScores).map(s => tp > 0 ? s/tp : 0) : [];
     if (scoreArr.length > 0) {
       const histB64 = generateChartImage('histogram', { scores: scoreArr }, 480, 180);
-      chartsGrid.innerHTML += `<div class="chart-card"><div class="chart-card-title">Score Distribution</div><img src="data:image/png;base64,${histB64}" style="max-width:100%;height:auto;border:1px solid var(--border);border-radius:6px;"></div>`;
+      // Score distribution with letter grade breakdown
+      const highScore = Math.max(...scoreArr);
+      const lowScore = Math.min(...scoreArr);
+      const gradeRanges = [
+        { label:'A (90-100%)', min:0.90, max:1.01, color:'var(--flag-keep-bg)' },
+        { label:'B (80-89%)', min:0.80, max:0.90, color:'var(--flag-revise-bg)' },
+        { label:'C (70-79%)', min:0.70, max:0.80, color:'var(--steel)' },
+        { label:'D (60-69%)', min:0.60, max:0.70, color:'var(--flag-retire-bg)' },
+        { label:'F (Below 60%)', min:0, max:0.60, color:'var(--flag-retire-bg)' },
+      ];
+      let gradeRows = '';
+      gradeRanges.forEach(gr => {
+        const cnt = scoreArr.filter(s => s >= gr.min && s < gr.max).length;
+        const gPct = scoreArr.length > 0 ? Math.round(cnt/scoreArr.length*100) : 0;
+        gradeRows += `<tr><td style="font-weight:600;">${gr.label}</td><td style="text-align:center;">${cnt}</td><td style="text-align:center;font-weight:700;color:${gr.color};">${gPct}%</td></tr>`;
+      });
+      chartsGrid.innerHTML += `<div class="chart-card">
+        <div class="chart-card-title">Score Distribution</div>
+        <div style="display:flex;gap:16px;align-items:center;margin-bottom:12px;flex-wrap:wrap;">
+          <div style="font-size:0.9rem;"><strong>Highest Score:</strong> ${Math.round(highScore*100)}%</div>
+          <div style="font-size:0.9rem;"><strong>Lowest Score:</strong> ${Math.round(lowScore*100)}%</div>
+          <div style="font-size:0.9rem;"><strong>Class Mean:</strong> ${pct(classStats.avg/tp)}</div>
+        </div>
+        <img src="data:image/png;base64,${histB64}" style="max-width:100%;height:auto;border:1px solid var(--border);border-radius:6px;">
+        <table style="width:100%;font-size:0.88rem;margin-top:12px;"><thead><tr><th style="text-align:left;">Letter Grade</th><th>Count</th><th>% of Class</th></tr></thead><tbody>${gradeRows}</tbody></table>
+      </div>`;
+    }
+  } catch(e) {}
+
+  // ── Cohort Areas for Improvement ──
+  try {
+    const nonBonusArr = Object.values(items).filter(i => !i.isBonus && i.difficulty !== null);
+    const sortedByDiff = [...nonBonusArr].sort((a,b) => (a.difficulty||0) - (b.difficulty||0));
+    const below50 = sortedByDiff.filter(i => i.difficulty < 0.50);
+    const top5Missed = sortedByDiff.slice(0, 5);
+    const cohortItems = [...new Map([...below50, ...top5Missed].map(i => [i.qtitle||i.qtext, i])).values()]
+      .sort((a,b) => (a.difficulty||0) - (b.difficulty||0));
+    if (cohortItems.length > 0) {
+      let cohortHtml = '<div class="chart-card" style="grid-column:1/-1;"><div class="chart-card-title">Cohort Areas for Improvement — Micro-Lesson Opportunities</div>';
+      cohortHtml += '<p style="font-size:0.85rem;color:var(--text);margin-bottom:12px;font-style:italic;">Faculty should review these questions and the learning materials in their course to identify conflicting information or missed areas. Create or edit content as needed to fill educational gaps for both current and future cohorts.</p>';
+      cohortHtml += '<table style="width:100%;font-size:0.88rem;"><thead><tr><th style="text-align:left;">Question Title</th><th>Module</th><th>% Correct</th><th>Flag</th></tr></thead><tbody>';
+      cohortItems.forEach(item => {
+        const title = item.qtype==='FIB' ? (item.fibCategory?'['+item.fibCategory+'] ':'')+(item.qtext||'').substring(0,80) : (item.qtitle||'');
+        const fc = item.flag?.flag==='RETIRE'?'var(--flag-retire-bg)':item.flag?.flag==='REVISE'?'var(--flag-revise-bg)':'var(--flag-keep-bg)';
+        cohortHtml += `<tr><td>${esc(title)}</td><td style="text-align:center;">${esc(item.section||'')}</td><td style="text-align:center;font-weight:700;color:var(--flag-retire-bg);">${pct(item.difficulty)}</td><td style="text-align:center;font-weight:700;color:${fc};">${item.flag?.flag||'KEEP'}</td></tr>`;
+      });
+      cohortHtml += '</tbody></table></div>';
+      chartsGrid.innerHTML += cohortHtml;
     }
   } catch(e) {}
 
@@ -3358,7 +3448,7 @@ function generatePrintReport(opts) {
   .rh-title { font-size: 18pt; font-weight: 800; color: #1e3a6e; letter-spacing: 3px; text-transform: uppercase; margin: 0; }
   .rh-subtitle { font-size: 9pt; font-weight: 700; color: #2c5282; margin: 1px 0; }
   .rh-tagline { font-size: 7pt; color: #4a7ab5; letter-spacing: 1px; text-transform: uppercase; }
-  .rh-product { font-size: 6.5pt; color: #999; margin-top: 1px; }
+  .rh-product { font-size: 6.5pt; color: #222; margin-top: 1px; }
   .rh-exam { font-size: 8.5pt; color: #222; margin-top: 4px; }
   .q-block { border: 1.5px solid #2c5282; border-radius: 4px; margin-bottom: 8px; page-break-inside: avoid; overflow: hidden; }
   .q-title { padding: 5px 10px; font-weight: 700; font-size: 9pt; color: #000; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #c8d8ec; background: #f4f7fb; }
@@ -3377,13 +3467,15 @@ function generatePrintReport(opts) {
   .choice-table th { background: #e8edf4; color: #1e3a6e; padding: 3px 6px; text-align: left; font-size: 7.5pt; }
   .choice-table td { padding: 3px 6px; border-bottom: 1px solid #e8edf4; }
   .choice-correct td { color: #15603a; font-weight: 600; }
-  .page-footer { position: fixed; bottom: 0; left: 0; right: 0; text-align: center; font-size: 6.5pt; color: #888; padding: 4px 16px; border-top: 1px solid #ccc; background: white; }
+  h1.rh-title { font-size: 18pt; font-weight: 800; color: #1e3a6e; letter-spacing: 3px; text-transform: uppercase; margin: 0; }
+  h2.section-hdr { background: #1e3a6e; color: white; padding: 6px 12px; font-weight: 700; font-size: 10pt; margin-top: 12px; border-radius: 3px 3px 0 0; }
+  .page-footer { position: fixed; bottom: 0; left: 0; right: 0; text-align: center; font-size: 6.5pt; color: #222; padding: 4px 16px; border-top: 1px solid #ccc; background: white; }
   .page-footer .sec-line { margin-bottom: 1px; }
   .page-footer .brand-line { color: #1e3a6e; font-weight: 600; }
   @media print { .no-print { display: none; } body { margin-bottom: 40px; } }
 </style></head><body>
 <div class="report-header">
-  <div class="rh-title">NIARA</div>
+  <h1 class="rh-title">NIARA</h1>
   <div class="rh-subtitle">Item Review Report</div>
   <div class="rh-tagline">Nursing Item Analysis &amp; Reporting Assistant</div>
   <div class="rh-product">A GrangeRN Product</div>
@@ -3433,7 +3525,7 @@ function generatePrintReport(opts) {
         const correctSet = new Set(item.correctAnswers || (item.correctAnswer ? [item.correctAnswer] : []));
         const choices = Object.entries(item.distractorCounts || {});
         if (choices.length > 0) {
-          html += '<table class="choice-table"><tr><th>Choice</th><th>n</th><th>%</th></tr>';
+          html += '<table class="choice-table"><tr><th scope="col">Choice</th><th scope="col">n</th><th scope="col">%</th></tr>';
           choices.forEach(([ans, count]) => {
             const isC = correctSet.has(ans);
             const rate = item.n > 0 ? Math.round(count/item.n*100) : 0;
@@ -3442,7 +3534,7 @@ function generatePrintReport(opts) {
           html += '</table>';
         }
       } else if (item.qtype === 'MAT' && item.matData) {
-        html += '<table class="choice-table"><tr><th>Prompt</th><th>Keyed Response</th><th>% Correct</th></tr>';
+        html += '<table class="choice-table"><tr><th scope="col">Prompt</th><th scope="col">Keyed Response</th><th scope="col">% Correct</th></tr>';
         Object.entries(item.matData).forEach(([prompt, data]) => {
           const correctAns = data.correctAnswer || prompt;
           const correctCount = data.responses[correctAns] || 0;
@@ -3456,7 +3548,7 @@ function generatePrintReport(opts) {
         resps.forEach(r => { const a = (r.student_answer||'').trim(); if (a) respCounts[a] = (respCounts[a]||0)+1; });
         const sorted = Object.entries(respCounts).sort((a,b) => b[1]-a[1]).slice(0,5);
         if (sorted.length > 0) {
-          html += '<table class="choice-table"><tr><th>Response</th><th>n</th><th>%</th></tr>';
+          html += '<table class="choice-table"><tr><th scope="col">Response</th><th scope="col">n</th><th scope="col">%</th></tr>';
           sorted.forEach(([ans,cnt]) => {
             const isKey = ans === item.correctAnswer;
             html += '<tr class="' + (isKey?'choice-correct':'') + '"><td>' + (isKey?'<strong>':'') + esc(ans) + (isKey?' ✓</strong>':'') + '</td><td>' + cnt + '</td><td>' + Math.round(cnt/item.n*100) + '%</td></tr>';
@@ -3640,8 +3732,10 @@ function sortTable(col) {
     if (th.dataset.col === col) {
       th.classList.add('sort-' + currentSort.dir);
       th.querySelector('.sort-icon').textContent = currentSort.dir === 'asc' ? '↑' : '↓';
+      th.setAttribute('aria-sort', currentSort.dir === 'asc' ? 'ascending' : 'descending');
     } else {
       th.querySelector('.sort-icon').textContent = '⇅';
+      th.setAttribute('aria-sort', 'none');
     }
   });
   renderItemTable(activeModuleFilter);
@@ -4165,6 +4259,7 @@ function openQuestionModal(itemKey) {
     });
 
     document.getElementById('questionModal').classList.add('open');
+    document.querySelector('.modal-close').focus();
     return;
   }
 
@@ -4215,6 +4310,7 @@ function openQuestionModal(itemKey) {
     });
 
     document.getElementById('questionModal').classList.add('open');
+    document.querySelector('.modal-close').focus();
     return;
   }
 
@@ -4233,6 +4329,7 @@ function openQuestionModal(itemKey) {
     note.textContent = 'Answer choice breakdown not available for this item.';
     choicesEl.appendChild(note);
     document.getElementById('questionModal').classList.add('open');
+    document.querySelector('.modal-close').focus();
     return;
   }
 
@@ -4274,9 +4371,18 @@ function closeModal(event) {
   }
 }
 
-// ── Close modal on Escape ──
+// ── Modal keyboard handling: Escape to close + focus trap ──
 document.addEventListener('keydown', e => {
-  if (e.key === 'Escape') document.getElementById('questionModal').classList.remove('open');
+  const modal = document.getElementById('questionModal');
+  if (!modal.classList.contains('open')) return;
+  if (e.key === 'Escape') { modal.classList.remove('open'); return; }
+  if (e.key === 'Tab') {
+    const focusable = modal.querySelectorAll('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])');
+    if (!focusable.length) return;
+    const first = focusable[0], last = focusable[focusable.length - 1];
+    if (e.shiftKey) { if (document.activeElement === first) { e.preventDefault(); last.focus(); } }
+    else { if (document.activeElement === last) { e.preventDefault(); first.focus(); } }
+  }
 });
 
 // ══════════════════════════════════════════════
@@ -4305,6 +4411,7 @@ function toggleLegend() {
   body.classList.toggle('collapsed', !isCollapsed);
   body.style.maxHeight = isCollapsed ? '9999px' : '0';
   btn.textContent = isCollapsed ? '▲ Collapse' : '▼ Expand';
+  btn.setAttribute('aria-expanded', isCollapsed);
 }
 
 // ══════════════════════════════════════════════
@@ -4465,9 +4572,9 @@ function generateStudentPrint(sid, opts) {
   .rh-title { font-size: 18pt; font-weight: 800; color: #1e3a6e; letter-spacing: 3px; text-transform: uppercase; margin: 0; }
   .rh-subtitle { font-size: 9pt; font-weight: 700; color: #2c5282; margin: 1px 0; }
   .rh-tagline { font-size: 7pt; color: #4a7ab5; letter-spacing: 1px; text-transform: uppercase; }
-  .rh-product { font-size: 6.5pt; color: #999; margin-top: 1px; }
+  .rh-product { font-size: 6.5pt; color: #222; margin-top: 1px; }
   .rh-exam { font-size: 8.5pt; color: #222; margin-top: 4px; }
-  .section-hdr { background: #1e3a6e; color: white; padding: 6px 12px; font-weight: 700; font-size: 10pt; margin-top: 12px; border-radius: 3px 3px 0 0; }
+  .section-hdr, h2.section-hdr { background: #1e3a6e; color: white; padding: 6px 12px; font-weight: 700; font-size: 10pt; margin-top: 12px; border-radius: 3px 3px 0 0; }
   table { width: 100%; border-collapse: collapse; font-size: 9pt; }
   th { background: #4a7ab5; color: white; padding: 5px 8px; text-align: left; font-size: 8.5pt; }
   td { padding: 5px 8px; border-bottom: 1px solid #e8edf4; }
@@ -4482,7 +4589,7 @@ function generateStudentPrint(sid, opts) {
   @media print { .no-print { display: none; } body { margin-bottom: 50px; } }
 </style></head><body>
 <div class="report-header">
-  <div class="rh-title">NIARA</div>
+  <h1 class="rh-title" style="font-size:18pt;font-weight:800;color:#1e3a6e;letter-spacing:3px;text-transform:uppercase;margin:0;">NIARA</h1>
   <div class="rh-subtitle">Student Exam Performance Report</div>
   <div class="rh-tagline">Nursing Item Analysis &amp; Reporting Assistant</div>
   <div class="rh-product">A GrangeRN Product</div>
@@ -5169,7 +5276,7 @@ function generateChartImage(type, data, width, height) {
       ctx.fillStyle = '#4a7ab5';
       ctx.fillRect(x+2, y, bw-4, bh);
       // x-axis label
-      ctx.fillStyle = '#555';
+      ctx.fillStyle = '#222';
       ctx.font = '9px sans-serif';
       ctx.textAlign = 'center';
       ctx.fillText((i*10)+'–'+(i*10+10)+'%', x+bw/2, chartBottom+14);
@@ -5178,13 +5285,13 @@ function generateChartImage(type, data, width, height) {
     ctx.save();
     ctx.translate(borderPad + 14, chartTop+chartH/2);
     ctx.rotate(-Math.PI/2);
-    ctx.fillStyle = '#555';
+    ctx.fillStyle = '#222';
     ctx.font = '10px sans-serif';
     ctx.textAlign = 'center';
     ctx.fillText('# Students', 0, 0);
     ctx.restore();
     // x axis baseline
-    ctx.strokeStyle = '#ccc';
+    ctx.strokeStyle = '#999';
     ctx.beginPath(); ctx.moveTo(chartLeft, chartBottom); ctx.lineTo(chartRight, chartBottom); ctx.stroke();
 
   } else if (type === 'moduleBar' || type === 'ngenBar') {
@@ -5304,12 +5411,12 @@ function buildQuestionBlock(ws, startRow, item, theme, topSet, botSet) {
   // ── TITLE BAR ──
   ws.mergeCells(R, 1, R, COLS);
   ws.getCell(R, 1).value = 'Question Title: ' + displayTitle;
-  ws.getCell(R, 1).style = { font:{ bold:true, color:{ argb:C_white }, size:10 }, fill: headerFill, alignment:{ vertical:'middle', indent:1 } };
-  ws.getRow(R).height = 26;
+  ws.getCell(R, 1).style = { font:{ bold:true, color:{ argb:C_white }, size:11 }, fill: headerFill, alignment:{ vertical:'middle', indent:1 } };
+  ws.getRow(R).height = 28;
   R++;
 
   // ── STATS HEADER ROW ──
-  const statsHdrStyle = { font:{ bold:true, color:{ argb:C_white }, size:8 }, fill: wf('FF2c5282'), alignment:{ horizontal:'center', vertical:'middle', wrapText:true } };
+  const statsHdrStyle = { font:{ bold:true, color:{ argb:C_white }, size:9 }, fill: wf('FF2c5282'), alignment:{ horizontal:'center', vertical:'middle', wrapText:true } };
   ws.getCell(R, 1).value = 'Question Type'; ws.getCell(R, 1).style = statsHdrStyle;
   ws.mergeCells(R, 2, R, 3);
   ws.getCell(R, 2).value = 'Module / Content Area'; ws.getCell(R, 2).style = statsHdrStyle;
@@ -5342,7 +5449,7 @@ function buildQuestionBlock(ws, startRow, item, theme, topSet, botSet) {
   ws.getCell(R, 7).style = { font:{ size:9 }, fill: whiteFill, alignment:{ horizontal:'center', vertical:'middle' } };
   ws.mergeCells(R, 8, R, 11);
   ws.getCell(R, 8).value = niaraNote;
-  ws.getCell(R, 8).style = { font:{ italic:true, size:8, color:{ argb:C_steel } }, fill: whiteFill, alignment:{ vertical:'middle', wrapText:true } };
+  ws.getCell(R, 8).style = { font:{ italic:true, size:9, color:{ argb:C_navy } }, fill: whiteFill, alignment:{ vertical:'middle', wrapText:true } };
   ws.mergeCells(R, 12, R, COLS);
   ws.getCell(R, 12).value = 'Faculty Action\n(Click Here for Drop Down Menu)';
   ws.getCell(R, 12).style = { font:{ bold:true, size:9, color:{ argb:'FFE65100' } }, fill: wf('FFFFF8E1'), alignment:{ horizontal:'center', vertical:'middle', wrapText:true } };
@@ -5368,7 +5475,7 @@ function buildQuestionBlock(ws, startRow, item, theme, topSet, botSet) {
   const stemH = Math.min(80, Math.max(30, Math.ceil(stemLen/60)*14));
   ws.mergeCells(R, 1, R, 6);
   ws.getCell(R, 1).value = stemText;
-  ws.getCell(R, 1).style = { font:{ size:9 }, fill: whiteFill, alignment:{ vertical:'top', wrapText:true } };
+  ws.getCell(R, 1).style = { font:{ size:10 }, fill: whiteFill, alignment:{ vertical:'top', wrapText:true } };
   ws.mergeCells(R, 7, R, 11);
   ws.getCell(R, 7).value = '';
   ws.getCell(R, 7).style = { fill: yellowFill, alignment:{ vertical:'top', wrapText:true } };
@@ -5381,7 +5488,7 @@ function buildQuestionBlock(ws, startRow, item, theme, topSet, botSet) {
   // ── CHOICE / DETAIL SECTION (varies by question type) ──
   if (item.qtype === 'MC' || item.qtype === 'M-S' || item.qtype === 'T-F') {
     // Choice header row
-    const chHdrStyle = { font:{ bold:true, color:{ argb:C_white }, size:8 }, fill: blueHdrFill, alignment:{ horizontal:'center', vertical:'middle', wrapText:true } };
+    const chHdrStyle = { font:{ bold:true, color:{ argb:C_white }, size:9 }, fill: blueHdrFill, alignment:{ horizontal:'center', vertical:'middle', wrapText:true } };
     ws.getCell(R, 1).value = 'Choice Type'; ws.getCell(R, 1).style = chHdrStyle;
     ws.mergeCells(R, 2, R, 3);
     ws.getCell(R, 2).value = 'Answer Choice Text'; ws.getCell(R, 2).style = chHdrStyle;
@@ -5444,11 +5551,11 @@ function buildQuestionBlock(ws, startRow, item, theme, topSet, botSet) {
       rh.getCell(1).style = { font:typeFont, fill:typeFillC, alignment:{ horizontal:'center', vertical:'middle', wrapText:true } };
       ws.mergeCells(R, 2, R, 3);
       rh.getCell(2).value = ans;
-      rh.getCell(2).style = { font:{ bold:isCorrect, size:9, color:{ argb:isCorrect?C_keep:C_navy } }, fill:rowFill, alignment:{ vertical:'middle', wrapText:true } };
+      rh.getCell(2).style = { font:{ bold:isCorrect, size:10, color:{ argb:isCorrect?C_keep:C_navy } }, fill:rowFill, alignment:{ vertical:'middle', wrapText:true } };
       rh.getCell(4).value = count + ' / ' + n;
-      rh.getCell(4).style = { font:{ size:9 }, fill:rowFill, alignment:{ horizontal:'center', vertical:'middle' } };
+      rh.getCell(4).style = { font:{ size:10 }, fill:rowFill, alignment:{ horizontal:'center', vertical:'middle' } };
       rh.getCell(5).value = Math.round(rate*100)+'%';
-      rh.getCell(5).style = { font:{ bold:!isCorrect&&rate>0.35, size:9, color:{ argb:!isCorrect&&rate>0.35?'FF7b1a2a':C_navy } }, fill:rowFill, alignment:{ horizontal:'center', vertical:'middle' } };
+      rh.getCell(5).style = { font:{ bold:!isCorrect&&rate>0.35, size:10, color:{ argb:!isCorrect&&rate>0.35?'FF7b1a2a':C_navy } }, fill:rowFill, alignment:{ horizontal:'center', vertical:'middle' } };
       rh.getCell(6).value = distPB !== null ? (distPB >= 0 ? '+' : '') + distPB.toFixed(2) : '—';
       rh.getCell(6).style = { font:{ size:9, color:{ argb: distPB !== null && distPB > 0 && !isCorrect ? 'FFC62828' : C_navy } }, fill:rowFill, alignment:{ horizontal:'center', vertical:'middle' } };
       rh.getCell(7).value = topSet ? topCount : '—';
@@ -5727,10 +5834,10 @@ async function buildWorkbook(data) {
     return { font:{ bold:true, color:{ argb:C.white }, size:9 }, fill: fillArg, alignment:{ horizontal:'center', vertical:'middle', wrapText:true } };
   }
   function kpiLabelStyle() {
-    return { font:{ bold:true, color:{ argb:C.steel }, size:8 }, fill: owFill, alignment:{ horizontal:'center', vertical:'middle' } };
+    return { font:{ bold:true, color:{ argb:C.steel }, size:10 }, fill: owFill, alignment:{ horizontal:'center', vertical:'middle' } };
   }
   function kpiValueStyle(sz) {
-    return { font:{ bold:true, color:{ argb:C.nav }, size: sz||18 }, fill: owFill, alignment:{ horizontal:'center', vertical:'middle' } };
+    return { font:{ bold:true, color:{ argb:C.nav }, size: sz||20 }, fill: owFill, alignment:{ horizontal:'center', vertical:'middle' } };
   }
   const flagFillMap = { KEEP: keepFill, REVISE: reviseFill, RETIRE: retireFill };
 
@@ -5772,13 +5879,27 @@ async function buildWorkbook(data) {
   ws1.getRow(3).height = 18;
   ws1.getRow(4).height = 12;
 
-  // KPI cards
+  // SEM = SD × sqrt(1 - KR-20)
+  let semText = '—';
+  let semInterp = 'SEM could not be computed.';
+  if (!classStats.isPooled && classStats.kr20 !== null && classStats.sd > 0) {
+    const sem = classStats.sd * Math.sqrt(1 - classStats.kr20);
+    const semPctVal = tp > 0 ? sem / tp : 0;
+    semText = pct(semPctVal);
+    semInterp = 'SEM = ' + semText + '. 95% CI: observed score \u00b1' + Math.round(semPctVal*200) + '%. Lower SEM indicates more precise measurement.';
+  }
+
+  // Highest score
+  const examScoreArr = totalScores ? Object.values(totalScores).map(s => tp > 0 ? s/tp : 0) : [];
+  const highScoreVal = examScoreArr.length > 0 ? Math.round(Math.max(...examScoreArr)*100) + '%' : 'N/A';
+
+  // KPI cards — row 1: 5 cards, row 2: 2 cards
   const kpis = [
     { label:'Class Mean',        value: pct(classStats.avg/tp),              cols:'A:B' },
-    { label:'Std Deviation',     value: pct(classStats.sd/tp),                cols:'C:D' },
-    { label:'Students Tested',   value: String(classStats.n),                 cols:'E:F' },
-    { label:'Unique Items',      value: String(Object.keys(items).length),    cols:'G:H' },
-    { label:'KR-20 Reliability', value: kr20Text,                             cols:'I:J' },
+    { label:'Highest Score',     value: highScoreVal,                         cols:'C:D' },
+    { label:'Std Deviation',     value: pct(classStats.sd/tp),                cols:'E:F' },
+    { label:'Students Tested',   value: String(classStats.n),                 cols:'G:H' },
+    { label:'Unique Items',      value: String(Object.keys(items).length),    cols:'I:J' },
   ];
   kpis.forEach(k => {
     const [c1, c2] = k.cols.split(':');
@@ -5788,39 +5909,58 @@ async function buildWorkbook(data) {
     ws1.getCell(c1+'5').value = k.label;
     ws1.getCell(c1+'5').style = kpiLabelStyle();
     ws1.getCell(c1+'6').value = k.value;
-    ws1.getCell(c1+'6').style = kpiValueStyle(k.label==='KR-20 Reliability' ? 13 : 18);
+    ws1.getCell(c1+'6').style = kpiValueStyle(20);
     ws1.getCell(c1+'7').style = { fill: owFill };
   });
   ws1.getRow(5).height = 20;
   ws1.getRow(6).height = 42;
   ws1.getRow(7).height = 8;
-  ws1.getRow(8).height = 8;
 
-  ws1.mergeCells('A9:J9');
-  ws1.getCell('A9').value = 'KR-20: ' + kr20Interp;
-  ws1.getCell('A9').style = { font:{ italic:true, color:{ argb:C.steel }, size:8 }, fill: owFill, alignment:{ horizontal:'left', vertical:'middle', wrapText:true } };
-  ws1.getRow(9).height = classStats.isPooled ? 36 : 22;
-  ws1.getRow(10).height = 10;
+  // Row 2 KPIs: KR-20 and SEM
+  const kpis2 = [
+    { label:'KR-20 Reliability', value: kr20Text, cols:'A:C' },
+    { label:'SEM (\u00b1 Margin)', value: semText, cols:'D:F' },
+  ];
+  kpis2.forEach(k => {
+    const [c1, c2] = k.cols.split(':');
+    ws1.mergeCells(c1+'8:'+c2+'8');
+    ws1.mergeCells(c1+'9:'+c2+'9');
+    ws1.getCell(c1+'8').value = k.label;
+    ws1.getCell(c1+'8').style = kpiLabelStyle();
+    ws1.getCell(c1+'9').value = k.value;
+    ws1.getCell(c1+'9').style = kpiValueStyle(16);
+  });
+  ws1.mergeCells('G8:J8'); ws1.getCell('G8').style = { fill: owFill };
+  ws1.mergeCells('G9:J9'); ws1.getCell('G9').style = { fill: owFill };
+  ws1.getRow(8).height = 18;
+  ws1.getRow(9).height = 36;
+  ws1.getRow(10).height = 4;
+
+  ws1.mergeCells('A11:J11');
+  ws1.getCell('A11').value = 'KR-20: ' + kr20Interp + (semInterp !== 'SEM could not be computed.' ? '  |  ' + semInterp : '');
+  ws1.getCell('A11').style = { font:{ italic:true, color:{ argb:C.nav }, size:9 }, fill: owFill, alignment:{ horizontal:'left', vertical:'middle', wrapText:true } };
+  ws1.getRow(11).height = classStats.isPooled ? 36 : 28;
+  ws1.getRow(12).height = 10;
 
   // ── Chart 1: Flag Summary ──
-  let chartRow = 11;
+  let chartRow = 13;
   try {
     const flagChartB64 = generateChartImage('flagBar', {
       KEEP: classStats.flags.KEEP||0,
       REVISE: classStats.flags.REVISE||0,
       RETIRE: classStats.flags.RETIRE||0,
-    }, 520, 180);
+    }, 800, 200);
     const flagImgId = wb.addImage({ base64: flagChartB64, extension: 'png' });
-    ws1.addImage(flagImgId, { tl:{ col:0, row: chartRow-1 }, ext:{ width:520, height:180 } });
+    ws1.addImage(flagImgId, { tl:{ col:0, row: chartRow-1 }, ext:{ width:800, height:200 } });
     chartRow += 12; // ~12 rows for 180px image
   } catch(e) { chartRow += 2; }
 
   // ── Chart 2: Score Distribution (below flag chart) ──
   try {
     const scoreArr = totalScores ? Object.values(totalScores).map(s => tp > 0 ? s/tp : 0) : [];
-    const scoreChartB64 = generateChartImage('histogram', { scores: scoreArr }, 520, 180);
+    const scoreChartB64 = generateChartImage('histogram', { scores: scoreArr }, 800, 200);
     const scoreImgId = wb.addImage({ base64: scoreChartB64, extension: 'png' });
-    ws1.addImage(scoreImgId, { tl:{ col:0, row: chartRow-1 }, ext:{ width:520, height:180 } });
+    ws1.addImage(scoreImgId, { tl:{ col:0, row: chartRow-1 }, ext:{ width:800, height:200 } });
     chartRow += 12;
   } catch(e) {}
 
@@ -5863,15 +6003,15 @@ async function buildWorkbook(data) {
     const row = ws1.getRow(chartRow);
     row.height = 20;
     row.getCell(1).value = mod || 'Uncategorized';
-    row.getCell(1).style = { font:{ size:9 }, fill: wf(bg), alignment:{ vertical:'middle' } };
+    row.getCell(1).style = { font:{ size:10 }, fill: wf(bg), alignment:{ vertical:'middle' } };
     row.getCell(2).value = uniqueCount;
-    row.getCell(2).style = { font:{ size:9 }, fill: wf(bg), alignment:{ horizontal:'center', vertical:'middle' } };
+    row.getCell(2).style = { font:{ size:10 }, fill: wf(bg), alignment:{ horizontal:'center', vertical:'middle' } };
     const pctColor = modPct >= 0.90 ? C.keep : modPct >= 0.80 ? C.revise : C.retire;
     const perfLabel = modPct >= 0.90 ? 'Strong' : modPct >= 0.80 ? 'Acceptable' : 'Needs Improvement';
     row.getCell(3).value = pct(modPct);
-    row.getCell(3).style = { font:{ bold:true, size:9, color:{ argb:pctColor } }, fill: wf(bg), alignment:{ horizontal:'center', vertical:'middle' } };
+    row.getCell(3).style = { font:{ bold:true, size:10, color:{ argb:pctColor } }, fill: wf(bg), alignment:{ horizontal:'center', vertical:'middle' } };
     row.getCell(4).value = perfLabel;
-    row.getCell(4).style = { font:{ size:9, color:{ argb:pctColor } }, fill: wf(bg), alignment:{ horizontal:'center', vertical:'middle' } };
+    row.getCell(4).style = { font:{ size:10, color:{ argb:pctColor } }, fill: wf(bg), alignment:{ horizontal:'center', vertical:'middle' } };
     ws1.mergeCells(chartRow, 5, chartRow, 10);
     ws1.getCell(chartRow, 5).style = { fill: wf(bg) };
     chartRow++;
@@ -5882,9 +6022,9 @@ async function buildWorkbook(data) {
   if (modEntries.length > 0) {
     try {
       const modH = Math.min(300, Math.max(180, modEntries.length * 35 + 60));
-      const modChartB64 = generateChartImage('moduleBar', { entries: modEntries }, 600, modH);
+      const modChartB64 = generateChartImage('moduleBar', { entries: modEntries }, 800, modH);
       const modImgId = wb.addImage({ base64: modChartB64, extension: 'png' });
-      ws1.addImage(modImgId, { tl:{ col:0, row: chartRow }, ext:{ width:600, height: modH } });
+      ws1.addImage(modImgId, { tl:{ col:0, row: chartRow }, ext:{ width:800, height: modH } });
       chartRow += Math.ceil(modH/15) + 1;
     } catch(e) {}
   }
@@ -5921,60 +6061,150 @@ async function buildWorkbook(data) {
       const pctColor = p>=0.90?C.keep:p>=0.80?C.revise:C.retire;
       const perfLabel = p>=0.90?'Strong':p>=0.80?'Acceptable':'Needs Improvement';
       const row = ws1.getRow(chartRow); row.height = 20;
-      row.getCell(1).value = qt; row.getCell(1).style = { font:{size:9}, fill:wf(bg), alignment:{vertical:'middle'} };
+      row.getCell(1).value = qt; row.getCell(1).style = { font:{size:10}, fill:wf(bg), alignment:{vertical:'middle'} };
       row.getCell(2).value = ngenItems.filter(i=>i.qtype===qt).length;
-      row.getCell(2).style = { font:{size:9}, fill:wf(bg), alignment:{horizontal:'center',vertical:'middle'} };
+      row.getCell(2).style = { font:{size:10}, fill:wf(bg), alignment:{horizontal:'center',vertical:'middle'} };
       row.getCell(3).value = pct(p);
-      row.getCell(3).style = { font:{bold:true,size:9,color:{argb:pctColor}}, fill:wf(bg), alignment:{horizontal:'center',vertical:'middle'} };
+      row.getCell(3).style = { font:{bold:true,size:10,color:{argb:pctColor}}, fill:wf(bg), alignment:{horizontal:'center',vertical:'middle'} };
       row.getCell(4).value = perfLabel;
-      row.getCell(4).style = { font:{size:9,color:{argb:pctColor}}, fill:wf(bg), alignment:{horizontal:'center',vertical:'middle'} };
+      row.getCell(4).style = { font:{size:10,color:{argb:pctColor}}, fill:wf(bg), alignment:{horizontal:'center',vertical:'middle'} };
       ws1.mergeCells(chartRow,5,chartRow,10); ws1.getCell(chartRow,5).style={fill:wf(bg)};
       chartRow++;
     }
     // Chart 4: NGEN bar
     if (ngenEntries.length > 0) {
       try {
-        const ngenChartB64 = generateChartImage('ngenBar', { entries: ngenEntries }, 480, 180);
+        const ngenChartB64 = generateChartImage('ngenBar', { entries: ngenEntries }, 800, 200);
         const ngenImgId = wb.addImage({ base64: ngenChartB64, extension: 'png' });
-        ws1.addImage(ngenImgId, { tl:{ col:0, row: chartRow }, ext:{ width:480, height:180 } });
+        ws1.addImage(ngenImgId, { tl:{ col:0, row: chartRow }, ext:{ width:800, height:200 } });
         chartRow += 13;
       } catch(e) {}
     }
   }
 
-  // ===============================================
-  //  TAB 2 — ITEM STATUS
-  // ===============================================
-  const ws2 = wb.addWorksheet('Item Status');
-  ws2.views = [{ showGridLines: false }];
-  // Set columns BEFORE writing data
-  ws2.columns = [
-    {width:28},{width:12},{width:50},{width:8},{width:24},
-    {width:11},{width:11},{width:11},{width:7},{width:34},
-    {width:65},{width:42},{width:45},{width:14},{width:2},
-    {width:2},{width:2},{width:2},{width:2}
+  // ── Highest Score & Score Distribution by Letter Grade ──
+  chartRow += 1;
+  ws1.getRow(chartRow).height = 8; chartRow++;
+  ws1.mergeCells('A'+chartRow+':J'+chartRow);
+  ws1.getCell('A'+chartRow).value = '  SCORE DISTRIBUTION BY LETTER GRADE';
+  ws1.getCell('A'+chartRow).style = colHdrStyle();
+  ws1.getRow(chartRow).height = 22; chartRow++;
+
+  const scoreArr = totalScores ? Object.values(totalScores).map(s => tp > 0 ? s/tp : 0) : [];
+  const highestScore = scoreArr.length > 0 ? Math.max(...scoreArr) : 0;
+  const lowestScore = scoreArr.length > 0 ? Math.min(...scoreArr) : 0;
+  const totalStudents = scoreArr.length;
+
+  // Highest / Lowest score row
+  ws1.mergeCells('A'+chartRow+':E'+chartRow);
+  ws1.getCell('A'+chartRow).value = 'Highest Score: ' + Math.round(highestScore*100) + '%  |  Lowest Score: ' + Math.round(lowestScore*100) + '%  |  Class Mean: ' + pct(classStats.avg/tp);
+  ws1.getCell('A'+chartRow).style = { font:{ bold:true, size:11, color:{ argb:C.nav } }, fill: owFill, alignment:{ vertical:'middle' } };
+  ws1.mergeCells(chartRow, 6, chartRow, 10);
+  ws1.getCell(chartRow, 6).style = { fill: owFill };
+  ws1.getRow(chartRow).height = 24; chartRow++;
+
+  // Letter grade breakdown
+  const gradeRanges = [
+    { label: 'A (90-100%)', min: 0.90, max: 1.01 },
+    { label: 'B (80-89%)',  min: 0.80, max: 0.90 },
+    { label: 'C (70-79%)',  min: 0.70, max: 0.80 },
+    { label: 'D (60-69%)',  min: 0.60, max: 0.70 },
+    { label: 'F (Below 60%)', min: 0, max: 0.60 },
   ];
+  const gradeHdr = ws1.getRow(chartRow);
+  gradeHdr.height = 20;
+  ['Letter Grade','Count','% of Class','',''].forEach((h,i) => {
+    gradeHdr.getCell(i+1).value = h;
+    gradeHdr.getCell(i+1).style = colHdrStyle(wf(C.accent1));
+  });
+  ws1.mergeCells(chartRow, 4, chartRow, 10);
+  chartRow++;
 
-  ws2.mergeCells('A1:O1');
-  ws2.getCell('A1').value = 'ITEM STATUS REPORT — ' + meta.examName + ' | ' + meta.semester + ' ' + meta.year;
-  ws2.getCell('A1').style = { font:{ bold:true, color:{ argb:C.white }, size:13 }, fill: navFill, alignment:{ horizontal:'left', vertical:'middle' } };
-  ws2.getRow(1).height = 30;
+  gradeRanges.forEach(gr => {
+    const count = scoreArr.filter(s => s >= gr.min && s < gr.max).length;
+    const gradePct = totalStudents > 0 ? Math.round(count/totalStudents*100) : 0;
+    const bg = chartRow%2===0 ? C.offwhite : C.white;
+    const row = ws1.getRow(chartRow); row.height = 20;
+    row.getCell(1).value = gr.label;
+    row.getCell(1).style = { font:{ size:10, bold:true }, fill: wf(bg), alignment:{ vertical:'middle' } };
+    row.getCell(2).value = count;
+    row.getCell(2).style = { font:{ size:10 }, fill: wf(bg), alignment:{ horizontal:'center', vertical:'middle' } };
+    row.getCell(3).value = gradePct + '%';
+    row.getCell(3).style = { font:{ size:10 }, fill: wf(bg), alignment:{ horizontal:'center', vertical:'middle' } };
+    ws1.mergeCells(chartRow, 4, chartRow, 10);
+    ws1.getCell(chartRow, 4).style = { fill: wf(bg) };
+    chartRow++;
+  });
 
-  const is2Headers = ['PRE-GRADE','POST-EXAM FLAG','Question Title','Type','Module/Content Area','% Correct','Pt-Biserial','Disc. Index','N','Top Wrong Answer','NIARA Recommendation','Faculty Action Taken','Comments / Notes','Date Reviewed','Item Fingerprint','_Stem','_CorrectAnswer','_Choices','_DistractorCounts'];
-  const hrow2 = ws2.getRow(2);
-  hrow2.height = 36;
-  is2Headers.forEach((h, i) => { hrow2.getCell(i+1).value = h; hrow2.getCell(i+1).style = colHdrStyle(); });
-  ws2.autoFilter = { from:'A2', to:'O2' };
+  // ── Cohort Areas for Improvement ──
+  chartRow++;
+  ws1.mergeCells('A'+chartRow+':J'+chartRow);
+  ws1.getCell('A'+chartRow).value = '  COHORT AREAS FOR IMPROVEMENT — Micro-Lesson Opportunities';
+  ws1.getCell('A'+chartRow).style = colHdrStyle();
+  ws1.getRow(chartRow).height = 22; chartRow++;
 
+  ws1.mergeCells('A'+chartRow+':J'+chartRow);
+  ws1.getCell('A'+chartRow).value = 'Faculty should review these questions and the learning materials in their course to identify conflicting information or missed areas. Create or edit content as needed to fill educational gaps for both current and future cohorts.';
+  ws1.getCell('A'+chartRow).style = { font:{ italic:true, size:9, color:{ argb:C.nav } }, fill: owFill, alignment:{ vertical:'middle', wrapText:true } };
+  ws1.getRow(chartRow).height = 36; chartRow++;
+
+  // Find top 5 most missed + any below 50%
+  const nonBonusItems = Object.values(items).filter(i => !i.isBonus && i.difficulty !== null);
+  const sortedByDiff = [...nonBonusItems].sort((a,b) => (a.difficulty||0) - (b.difficulty||0));
+  const below50 = sortedByDiff.filter(i => i.difficulty < 0.50);
+  const top5Missed = sortedByDiff.slice(0, 5);
+  const cohortItems = [...new Map([...below50, ...top5Missed].map(i => [i.qtitle||i.qtext, i])).values()]
+    .sort((a,b) => (a.difficulty||0) - (b.difficulty||0));
+
+  if (cohortItems.length > 0) {
+    const cohortHdr = ws1.getRow(chartRow);
+    cohortHdr.height = 20;
+    ['Question Title','Module','% Correct','Flag',''].forEach((h,i) => {
+      cohortHdr.getCell(i+1).value = h;
+      cohortHdr.getCell(i+1).style = colHdrStyle(wf('FF8B0000'));
+    });
+    ws1.mergeCells(chartRow, 5, chartRow, 10);
+    chartRow++;
+
+    cohortItems.forEach(item => {
+      const bg = chartRow%2===0 ? C.offwhite : C.white;
+      const row = ws1.getRow(chartRow); row.height = 20;
+      const title = item.qtype==='FIB' ? (item.fibCategory?'['+item.fibCategory+'] ':'')+(item.qtext||'').substring(0,80) : (item.qtitle||'');
+      row.getCell(1).value = title;
+      row.getCell(1).style = { font:{ size:10 }, fill: wf(bg), alignment:{ vertical:'middle', wrapText:true } };
+      row.getCell(2).value = item.section || 'Uncategorized';
+      row.getCell(2).style = { font:{ size:10 }, fill: wf(bg), alignment:{ vertical:'middle' } };
+      row.getCell(3).value = pct(item.difficulty);
+      row.getCell(3).style = { font:{ bold:true, size:10, color:{ argb:C.retire } }, fill: wf(bg), alignment:{ horizontal:'center', vertical:'middle' } };
+      row.getCell(4).value = item.flag?.flag || 'KEEP';
+      const fFill = item.flag?.flag==='RETIRE'?retireFill:item.flag?.flag==='REVISE'?reviseFill:keepFill;
+      row.getCell(4).style = flagStyle(fFill);
+      ws1.mergeCells(chartRow, 5, chartRow, 10);
+      ws1.getCell(chartRow, 5).style = { fill: wf(bg) };
+      chartRow++;
+    });
+  } else {
+    ws1.mergeCells('A'+chartRow+':J'+chartRow);
+    ws1.getCell('A'+chartRow).value = 'No items below 50% correct identified.';
+    ws1.getCell('A'+chartRow).style = { font:{ italic:true, size:10, color:{ argb:C.steel } }, fill: owFill, alignment:{ vertical:'middle' } };
+    ws1.getRow(chartRow).height = 22; chartRow++;
+  }
+
+  // Exam Summary disclaimer
+  chartRow += 2;
+  ws1.mergeCells('A'+chartRow+':J'+chartRow);
+  ws1.getCell('A'+chartRow).value = 'CONFIDENTIAL \u2014 For authorized faculty use only. Maintain test security. Do not distribute to students. NIARA \u00b7 GrangeRN';
+  ws1.getCell('A'+chartRow).style = { font:{ italic:true, size:9, color:{ argb:C.nav } }, fill: owFill, alignment:{ horizontal:'center', vertical:'middle' } };
+  ws1.getRow(chartRow).height = 20;
+
+  // ── Shared helpers ──
   const FACULTY_ACTIONS = 'No Action Taken,Revised Stem,Revised Answer Choices,Rekeyed,Retired from Bank,Insufficient Data — Monitor Next Semester';
-
   function normalizeText(t) { return (t||'').toLowerCase().trim().replace(/\s+/g,' '); }
   function itemSignatureLocal(item) {
     const stem = normalizeText(item.qtext || item.qtitle || '');
     const choices = Object.keys(item.distractorCounts || {}).map(normalizeText).sort().join('||');
     return stem + '###' + choices;
   }
-
   const sortedItems = Object.values(items).sort((a,b) => {
     const order = { RETIRE:0, REVISE:1, KEEP:2 };
     const pgOrder = it => { const pg=it.preGradeFlags||{}; return pg.vak&&pg.aac?0:pg.vak?1:pg.aac?2:3; };
@@ -5982,11 +6212,158 @@ async function buildWorkbook(data) {
     if (pgA !== pgB) return pgA - pgB;
     return (order[a.flag?.flag]||9)-(order[b.flag?.flag]||9);
   });
+  const itemDropdownMap = {}; // signature -> { sheet, row }
+
+  function addTabBranding(ws, tabTitle, tabFill, cols) {
+    const NC = cols || 14;
+    ws.mergeCells(1, 1, 1, NC);
+    ws.getCell('A1').value = 'NIARA \u2014 Nursing Item Analysis & Reporting Assistant';
+    ws.getCell('A1').style = { font:{ bold:true, color:{ argb:C.white }, size:14 }, fill: navFill, alignment:{ horizontal:'left', vertical:'middle' } };
+    ws.getRow(1).height = 30;
+    ws.mergeCells(2, 1, 2, NC);
+    ws.getCell('A2').value = meta.courseLabel + '  \u00b7  ' + meta.examName + '  \u00b7  ' + meta.semester + ' ' + meta.year;
+    ws.getCell('A2').style = { font:{ color:{ argb:C.white }, size:11 }, fill: navDFill, alignment:{ horizontal:'left', vertical:'middle' } };
+    ws.getRow(2).height = 24;
+    ws.mergeCells(3, 1, 3, NC);
+    ws.getCell('A3').value = tabTitle;
+    ws.getCell('A3').style = { font:{ bold:true, color:{ argb:C.white }, size:12 }, fill: tabFill, alignment:{ horizontal:'left', vertical:'middle' } };
+    ws.getRow(3).height = 26;
+  }
+  function addTabDisclaimer(ws, row, cols) {
+    ws.mergeCells(row, 1, row, cols);
+    ws.getCell(row, 1).value = 'CONFIDENTIAL \u2014 For authorized faculty use only. Maintain test security. Do not distribute to students. NIARA \u00b7 GrangeRN';
+    ws.getCell(row, 1).style = { font:{ italic:true, size:9, color:{ argb:C.nav } }, fill: owFill, alignment:{ horizontal:'center', vertical:'middle' } };
+    ws.getRow(row).height = 20;
+  }
+
+  // ===============================================
+  //  TAB 2 — FOR REVIEW (REVISE items, orange)
+  // ===============================================
+  const ws2 = wb.addWorksheet('For Review', { properties: { tabColor: { argb: 'FFE65100' } } });
+  ws2.views = [{ showGridLines: false }];
+  ws2.columns = [{width:14},{width:22},{width:14},{width:10},{width:12},{width:12},{width:12},{width:10},{width:16},{width:16},{width:16},{width:18},{width:18},{width:16}];
+
+  addTabBranding(ws2, 'REVISE ITEMS \u2014 For Faculty Review', reviseFill, 14);
+
+  ws2.mergeCells('A4:N4');
+  ws2.getCell('A4').value = 'Click [+] on left margin to expand instructions';
+  ws2.getCell('A4').style = { font:{ italic:true, size:9, color:{ argb:C.steel } }, fill: owFill, alignment:{ horizontal:'left', vertical:'middle' } };
+  ws2.getRow(4).height = 20;
+
+  const reviseInstructions = [
+    'WHAT IS THIS SHEET: Items flagged REVISE showed psychometric weakness this semester. Not urgent \u2014 no grade change needed \u2014 but revise before the next administration.',
+    'WHAT TO DO: Review each item\'s stem, answer choices, and NIARA findings. Select a Faculty Action from the dropdown. Use the yellow write-in fields to document proposed wording changes and comments.',
+    'COLOR GUIDE: Dark header = question title/stats | Gold header = stem & choice sections | Green highlight = correct answer | Orange highlight = high-selection distractor | Yellow = faculty write-in fields',
+    'FACULTY ACTIONS: No Action Taken / Revise Stem / Revise Answer Choice(s) / Rekey \u2014 Correct Answer Changed / Retire from Bank / Insufficient Data \u2014 Monitor Next Semester',
+  ];
+  reviseInstructions.forEach((txt, i) => {
+    const rn = i + 5;
+    ws2.mergeCells(rn, 1, rn, 14);
+    ws2.getCell(rn, 1).value = txt;
+    ws2.getCell(rn, 1).style = { font:{ italic:true, size:9, color:{ argb:C.nav } }, fill: owFill, alignment:{ vertical:'middle', wrapText:true, indent:1 } };
+    ws2.getRow(rn).height = 20;
+    ws2.getRow(rn).outlineLevel = 1;
+  });
+  ws2.getRow(9).height = 8;
+  ws2.properties.outlineLevelRow = 1;
+
+  const reviseItems = Object.values(items)
+    .filter(i => i.flag && i.flag.flag === 'REVISE')
+    .sort((a,b) => (a.section||'').localeCompare(b.section||''));
+
+  const reviewTheme = { headerArgb: C.revise, choiceHdrArgb: 'FFa04500' };
+  let revRow = 10;
+  if (reviseItems.length === 0) {
+    ws2.mergeCells(revRow, 1, revRow, 14);
+    ws2.getCell(revRow, 1).value = 'No items flagged REVISE on this exam.';
+    ws2.getCell(revRow, 1).style = { font:{ italic:true, size:11, color:{ argb:C.steel } }, fill: owFill, alignment:{ horizontal:'left', vertical:'middle' } };
+    ws2.getRow(revRow).height = 28;
+    revRow++;
+  } else {
+    reviseItems.forEach(item => {
+      const sig = itemSignatureLocal(item);
+      itemDropdownMap[sig] = { sheet: "'For Review'", row: revRow + 2 };
+      revRow = buildQuestionBlock(ws2, revRow, item, reviewTheme, topSet, botSet);
+    });
+  }
+  addTabDisclaimer(ws2, revRow + 1, 14);
+
+  // ===============================================
+  //  TAB 3 — RETIRE (RETIRE items, red)
+  // ===============================================
+  const ws3 = wb.addWorksheet('Retire', { properties: { tabColor: { argb: 'FFB71C1C' } } });
+  ws3.views = [{ showGridLines: false }];
+  ws3.columns = [{width:14},{width:22},{width:14},{width:10},{width:12},{width:12},{width:12},{width:10},{width:16},{width:16},{width:16},{width:18},{width:18},{width:16}];
+
+  addTabBranding(ws3, 'RETIRE ITEMS \u2014 Remove from Item Bank', retireFill, 14);
+
+  ws3.mergeCells('A4:N4');
+  ws3.getCell('A4').value = 'Click [+] on left margin to expand instructions';
+  ws3.getCell('A4').style = { font:{ italic:true, size:9, color:{ argb:C.steel } }, fill: owFill, alignment:{ horizontal:'left', vertical:'middle' } };
+  ws3.getRow(4).height = 20;
+
+  const retireInstructions = [
+    'WHAT IS THIS SHEET: Items flagged RETIRE are too psychometrically flawed to revise effectively. Remove from the item bank before the next administration.',
+    'WHAT TO DO: Review each item. Select a Faculty Action from the dropdown. Document rationale in the Faculty Comments field for accreditation records (CCNE/ACEN). Items may still be rewritten from scratch if the content is needed.',
+    'COLOR GUIDE: Dark red header = question title/stats | Gold header = stem & choice sections | Green highlight = correct answer | Orange highlight = high-selection distractor | Yellow = faculty write-in fields',
+    'FACULTY ACTIONS: No Action Taken / Revise Stem / Revise Answer Choice(s) / Rekey \u2014 Correct Answer Changed / Retire from Bank / Insufficient Data \u2014 Monitor Next Semester',
+  ];
+  retireInstructions.forEach((txt, i) => {
+    const rn = i + 5;
+    ws3.mergeCells(rn, 1, rn, 14);
+    ws3.getCell(rn, 1).value = txt;
+    ws3.getCell(rn, 1).style = { font:{ italic:true, size:9, color:{ argb:C.nav } }, fill: owFill, alignment:{ vertical:'middle', wrapText:true, indent:1 } };
+    ws3.getRow(rn).height = 20;
+    ws3.getRow(rn).outlineLevel = 1;
+  });
+  ws3.getRow(9).height = 8;
+  ws3.properties.outlineLevelRow = 1;
+
+  const retireItems = Object.values(items)
+    .filter(i => i.flag && i.flag.flag === 'RETIRE')
+    .sort((a,b) => (a.section||'').localeCompare(b.section||''));
+
+  const rewriteTheme = { headerArgb: C.retire, choiceHdrArgb: 'FF7b1a2a' };
+  let rewRow = 10;
+  if (retireItems.length === 0) {
+    ws3.mergeCells(rewRow, 1, rewRow, 14);
+    ws3.getCell(rewRow, 1).value = 'No items flagged RETIRE on this exam.';
+    ws3.getCell(rewRow, 1).style = { font:{ italic:true, size:11, color:{ argb:C.steel } }, fill: owFill, alignment:{ horizontal:'left', vertical:'middle' } };
+    ws3.getRow(rewRow).height = 28;
+    rewRow++;
+  } else {
+    retireItems.forEach(item => {
+      const sig = itemSignatureLocal(item);
+      itemDropdownMap[sig] = { sheet: "'Retire'", row: rewRow + 2 };
+      rewRow = buildQuestionBlock(ws3, rewRow, item, rewriteTheme, topSet, botSet);
+    });
+  }
+  addTabDisclaimer(ws3, rewRow + 1, 14);
+
+  // ===============================================
+  //  TAB 4 — ITEM STATUS
+  // ===============================================
+  const ws4 = wb.addWorksheet('Item Status');
+  ws4.views = [{ showGridLines: false }];
+  ws4.columns = [
+    {width:28},{width:12},{width:50},{width:8},{width:24},
+    {width:11},{width:11},{width:11},{width:7},{width:34},
+    {width:65},{width:42},{width:45},{width:2},
+    {width:2},{width:2},{width:2},{width:2}
+  ];
+
+  addTabBranding(ws4, 'ITEM STATUS \u2014 Quick Reference', navFill, 13);
+
+  const is4Headers = ['PRE-GRADE','POST-EXAM FLAG','Question Title','Type','Module/Content Area','% Correct','Pt-Biserial','Disc. Index','N','Top Wrong Answer','NIARA Recommendation','Faculty Action Taken','Comments / Notes','Item Fingerprint','_Stem','_CorrectAnswer','_Choices','_DistractorCounts'];
+  const hrow4 = ws4.getRow(4);
+  hrow4.height = 36;
+  is4Headers.forEach((h, i) => { hrow4.getCell(i+1).value = h; hrow4.getCell(i+1).style = colHdrStyle(); });
+  ws4.autoFilter = { from:'A4', to:'N4' };
 
   sortedItems.forEach((item, idx) => {
     const f   = item.flag || { flag:'KEEP', reason:'' };
     const pg  = item.preGradeFlags || {};
-    let pgLabel = pg.vak&&pg.aac ? '🔑 VERIFY KEY + ⚠ ADD CREDIT' : pg.vak ? '🔑 VERIFY ANSWER KEY' : pg.aac ? '⚠ AWARD ADDITIONAL CREDIT' : '';
+    let pgLabel = pg.vak&&pg.aac ? '\ud83d\udd11 VERIFY KEY + \u26a0 ADD CREDIT' : pg.vak ? '\ud83d\udd11 VERIFY ANSWER KEY' : pg.aac ? '\u26a0 AWARD ADDITIONAL CREDIT' : '';
     let pgDetail = '';
     if (pg.vak && pg.vakDetails) pgDetail += 'VERIFY KEY: ' + (pg.vakDetails.message||'') + ' ';
     if (pg.aac && pg.aacDetails) pgDetail += 'ADD CREDIT: ' + (pg.aacDetails.message||'');
@@ -5994,142 +6371,51 @@ async function buildWorkbook(data) {
     const displayTitle = item.qtype === 'FIB'
       ? (item.fibCategory ? '['+item.fibCategory+'] ' : '') + (item.qtext||item.qtitle||'').substring(0,120)
       : (item.qtitle || '');
-    const r = idx + 3;
+    const r = idx + 5;
     const bg = r % 2 === 0 ? C.offwhite : C.white;
-    const row = ws2.getRow(r);
-    row.height = 20;
+    const row = ws4.getRow(r);
+    row.height = 22;
+    const sig = itemSignatureLocal(item);
+    const dropdownRef = itemDropdownMap[sig];
     const vals = [pgLabel, f.flag, displayTitle, item.qtype, item.section||'Uncategorized',
       item.difficulty!==null?pct(item.difficulty):'n/a',
       item.pointBiserial!==null?fmt2(item.pointBiserial):'n/a',
       item.discriminationIndex!==null?fmt2(item.discriminationIndex):'n/a',
       item.n,
       item.topWrongAnswer?item.topWrongAnswer+' ('+pct(item.topWrongRate)+')':'—',
-      rec, 'No Action Taken', '', '', itemSignatureLocal(item)];
+      rec, '', '', itemSignatureLocal(item)];
     vals.forEach((v, ci) => {
       row.getCell(ci+1).value = v;
-      row.getCell(ci+1).style = { font:{ size:9 }, fill: wf(bg), alignment:{ vertical:'middle', wrapText: ci===10 } };
+      row.getCell(ci+1).style = { font:{ size:10 }, fill: wf(bg), alignment:{ vertical:'middle', wrapText: ci===10 } };
     });
     if (pgLabel) row.getCell(1).style = flagStyle(pgLabel.includes('VERIFY')&&pgLabel.includes('ADD') ? aacFill : pgLabel.includes('VERIFY') ? vakFill : aacFill);
     if (flagFillMap[f.flag]) row.getCell(2).style = flagStyle(flagFillMap[f.flag]);
-    ws2.getCell(r,12).dataValidation = { type:'list', allowBlank:false, formulae:['"'+FACULTY_ACTIONS+'"'], showDropDown:false };
-    ws2.getCell(r,12).style = { font:{ size:9 }, fill: wf(C.yellow), alignment:{ horizontal:'center', vertical:'middle' } };
-    ws2.getCell(r,13).style = { font:{ size:9 }, fill: wf(C.blue), alignment:{ vertical:'middle' } };
-    ws2.getCell(r,14).style = { font:{ size:9 }, fill: wf(C.lgray), alignment:{ horizontal:'center', vertical:'middle' } };
-    // Col O: fingerprint — hidden column for re-import matching
-    ws2.getCell(r,15).style = { font:{ size:8, color:{ argb:'FFBDBDBD' } }, fill: wf(C.lgray), alignment:{ vertical:'middle' } };
-    // Hidden data columns P-S for longitudinal re-import
+    // Faculty Action: formula ref for REVISE/RETIRE items, dropdown for KEEP
+    if (dropdownRef) {
+      ws4.getCell(r, 12).value = { formula: dropdownRef.sheet + '!L' + dropdownRef.row };
+      ws4.getCell(r, 12).style = { font:{ size:10 }, fill: wf(C.yellow), alignment:{ horizontal:'center', vertical:'middle' } };
+    } else {
+      ws4.getCell(r, 12).value = 'No Action Taken';
+      ws4.getCell(r, 12).dataValidation = { type:'list', allowBlank:false, formulae:['"'+FACULTY_ACTIONS+'"'], showDropDown:false };
+      ws4.getCell(r, 12).style = { font:{ size:10 }, fill: wf(C.yellow), alignment:{ horizontal:'center', vertical:'middle' } };
+    }
+    ws4.getCell(r, 13).style = { font:{ size:10 }, fill: wf(C.blue), alignment:{ vertical:'middle' } };
+    // Col N: fingerprint — hidden column for re-import matching
+    ws4.getCell(r, 14).style = { font:{ size:8, color:{ argb:'FFBDBDBD' } }, fill: wf(C.lgray), alignment:{ vertical:'middle' } };
+    // Hidden data columns O-R for longitudinal re-import
     const hiddenStyle = { font:{ size:7, color:{ argb:'FFBDBDBD' } }, fill: wf(C.lgray), alignment:{ vertical:'middle', wrapText:false } };
-    // P: _Stem (full question stem text)
-    ws2.getCell(r,16).value = item.qtext || item.qtitle || '';
-    ws2.getCell(r,16).style = hiddenStyle;
-    // Q: _CorrectAnswer (correct answer text, or JSON array for M-S)
+    ws4.getCell(r, 15).value = item.qtext || item.qtitle || '';
+    ws4.getCell(r, 15).style = hiddenStyle;
     const correctAns = item.qtype === 'M-S' ? JSON.stringify(item.correctAnswers||[]) : (item.correctAnswer || '');
-    ws2.getCell(r,17).value = correctAns;
-    ws2.getCell(r,17).style = hiddenStyle;
-    // R: _Choices (all answer choice texts as JSON array)
-    ws2.getCell(r,18).value = JSON.stringify(Object.keys(item.distractorCounts || {}));
-    ws2.getCell(r,18).style = hiddenStyle;
-    // S: _DistractorCounts (JSON object { choiceText: count })
-    ws2.getCell(r,19).value = JSON.stringify(item.distractorCounts || {});
-    ws2.getCell(r,19).style = hiddenStyle;
+    ws4.getCell(r, 16).value = correctAns;
+    ws4.getCell(r, 16).style = hiddenStyle;
+    ws4.getCell(r, 17).value = JSON.stringify(Object.keys(item.distractorCounts || {}));
+    ws4.getCell(r, 17).style = hiddenStyle;
+    ws4.getCell(r, 18).value = JSON.stringify(item.distractorCounts || {});
+    ws4.getCell(r, 18).style = hiddenStyle;
   });
 
-  // ===============================================
-  //  TAB 3 — FOR REVIEW (REVISE items, orange)
-  // ===============================================
-  const ws3 = wb.addWorksheet('For Review', { properties: { tabColor: { argb: 'FFE65100' } } });
-  ws3.views = [{ showGridLines: false }];
-  // Set columns BEFORE writing any data to prevent XML errors
-  ws3.columns = [{width:14},{width:22},{width:14},{width:10},{width:12},{width:12},{width:12},{width:10},{width:16},{width:16},{width:16},{width:18},{width:18},{width:16}];
-
-  ws3.mergeCells('A1:N1');
-  ws3.getCell('A1').value = 'NIARA -- REVISE ITEMS | ' + meta.examName + ' | ' + meta.semester + ' ' + meta.year + ' | Click [+] on left margin to expand instructions';
-  ws3.getCell('A1').style = { font:{ bold:true, color:{ argb:C.white }, size:13 }, fill: reviseFill, alignment:{ horizontal:'left', vertical:'middle' } };
-  ws3.getRow(1).height = 30;
-
-  // Instruction block (rows 2-5)
-  const reviseInstructions = [
-    'WHAT IS THIS SHEET: Items flagged REVISE showed psychometric weakness this semester. Not urgent — no grade change needed — but revise before the next administration.',
-    'WHAT TO DO: Review each item\'s stem, answer choices, and NIARA findings. Select a Faculty Action from the dropdown. Use the yellow write-in fields to document proposed wording changes and comments.',
-    'COLOR GUIDE: Dark header = question title/stats | Gold header = stem & choice sections | Green highlight = correct answer | Orange highlight = high-selection distractor | Yellow = faculty write-in fields',
-    'FACULTY ACTIONS: No Action Taken / Revise Stem / Revise Answer Choice(s) / Rekey — Correct Answer Changed / Retire from Bank / Insufficient Data — Monitor Next Semester',
-  ];
-  reviseInstructions.forEach((txt, i) => {
-    const rn = i+2;
-    ws3.mergeCells(rn, 1, rn, 14);
-    ws3.getCell(rn, 1).value = txt;
-    ws3.getCell(rn, 1).style = { font:{ italic:true, size:8, color:{ argb:C.steel } }, fill: wf(C.offwhite), alignment:{ vertical:'middle', wrapText:true, indent:1 } };
-    ws3.getRow(rn).height = 18;
-    ws3.getRow(rn).outlineLevel = 1;
-  });
-  ws3.getRow(6).height = 8; // spacer
-  // Collapse instruction rows by default
-  ws3.properties.outlineLevelRow = 1;
-
-  const reviseItems = Object.values(items)
-    .filter(i => i.flag && i.flag.flag === 'REVISE')
-    .sort((a,b) => (a.section||'').localeCompare(b.section||''));
-
-  const reviewTheme = { headerArgb: C.revise, choiceHdrArgb: 'FFa04500' };
-  let revRow = 7;
-  if (reviseItems.length === 0) {
-    ws3.mergeCells(revRow, 1, revRow, 14);
-    ws3.getCell(revRow, 1).value = 'No items flagged REVISE on this exam.';
-    ws3.getCell(revRow, 1).style = { font:{ italic:true, size:10, color:{ argb:C.steel } }, fill: wf(C.offwhite), alignment:{ horizontal:'left', vertical:'middle' } };
-    ws3.getRow(revRow).height = 28;
-  } else {
-    reviseItems.forEach(item => {
-      revRow = buildQuestionBlock(ws3, revRow, item, reviewTheme, topSet, botSet);
-    });
-  }
-
-  // ===============================================
-  //  TAB 4 — FOR REWRITE (RETIRE items, red)
-  // ===============================================
-  const ws4 = wb.addWorksheet('Retire', { properties: { tabColor: { argb: 'FFB71C1C' } } });
-  ws4.views = [{ showGridLines: false }];
-  // Set columns BEFORE writing any data to prevent XML errors
-  ws4.columns = [{width:14},{width:22},{width:14},{width:10},{width:12},{width:12},{width:12},{width:10},{width:16},{width:16},{width:16},{width:18},{width:18},{width:16}];
-
-  ws4.mergeCells('A1:N1');
-  ws4.getCell('A1').value = 'NIARA -- RETIRE ITEMS | ' + meta.examName + ' | ' + meta.semester + ' ' + meta.year + ' | Click [+] on left margin to expand instructions';
-  ws4.getCell('A1').style = { font:{ bold:true, color:{ argb:C.white }, size:13 }, fill: retireFill, alignment:{ horizontal:'left', vertical:'middle' } };
-  ws4.getRow(1).height = 30;
-
-  const retireInstructions = [
-    'WHAT IS THIS SHEET: Items flagged RETIRE are too psychometrically flawed to revise effectively. Remove from the item bank before the next administration.',
-    'WHAT TO DO: Review each item. Select a Faculty Action from the dropdown. Document rationale in the Faculty Comments field for accreditation records (CCNE/ACEN). Items may still be rewritten from scratch if the content is needed.',
-    'COLOR GUIDE: Dark red header = question title/stats | Gold header = stem & choice sections | Green highlight = correct answer | Orange highlight = high-selection distractor | Yellow = faculty write-in fields',
-    'FACULTY ACTIONS: No Action Taken / Revise Stem / Revise Answer Choice(s) / Rekey — Correct Answer Changed / Retire from Bank / Insufficient Data — Monitor Next Semester',
-  ];
-  retireInstructions.forEach((txt, i) => {
-    const rn = i+2;
-    ws4.mergeCells(rn, 1, rn, 14);
-    ws4.getCell(rn, 1).value = txt;
-    ws4.getCell(rn, 1).style = { font:{ italic:true, size:8, color:{ argb:C.steel } }, fill: wf(C.offwhite), alignment:{ vertical:'middle', wrapText:true, indent:1 } };
-    ws4.getRow(rn).height = 18;
-    ws4.getRow(rn).outlineLevel = 1;
-  });
-  ws4.getRow(6).height = 8; // spacer
-  // Collapse instruction rows by default
-  ws4.properties.outlineLevelRow = 1;
-
-  const retireItems = Object.values(items)
-    .filter(i => i.flag && i.flag.flag === 'RETIRE')
-    .sort((a,b) => (a.section||'').localeCompare(b.section||''));
-
-  const rewriteTheme = { headerArgb: C.retire, choiceHdrArgb: 'FF7b1a2a' };
-  let rewRow = 7;
-  if (retireItems.length === 0) {
-    ws4.mergeCells(rewRow, 1, rewRow, 14);
-    ws4.getCell(rewRow, 1).value = 'No items flagged RETIRE on this exam.';
-    ws4.getCell(rewRow, 1).style = { font:{ italic:true, size:10, color:{ argb:C.steel } }, fill: wf(C.offwhite), alignment:{ horizontal:'left', vertical:'middle' } };
-    ws4.getRow(rewRow).height = 28;
-  } else {
-    retireItems.forEach(item => {
-      rewRow = buildQuestionBlock(ws4, rewRow, item, rewriteTheme, topSet, botSet);
-    });
-  }
+  addTabDisclaimer(ws4, sortedItems.length + 6, 13);
 
   return wb;
 }
