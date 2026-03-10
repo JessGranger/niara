@@ -1680,6 +1680,129 @@ https://github.com/nodeca/pako/blob/main/LICENSE
     .charts-grid { grid-template-columns: 1fr; }
     .dash-tabs { flex-wrap: wrap; }
   }
+
+  /* ── NURSING SUCCESS CENTER STYLES ── */
+  .filter-btn {
+    background: var(--white);
+    border: 1px solid var(--border);
+    color: var(--navy);
+    padding: 6px 12px;
+    font-size: 0.82rem;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-weight: 500;
+  }
+  .filter-btn:hover {
+    background: var(--offwhite);
+    border-color: var(--steel);
+  }
+  .filter-btn:active {
+    background: var(--powder-lt);
+  }
+
+  .primary-btn {
+    background: var(--navy);
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    font-size: 0.9rem;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-weight: 600;
+  }
+  .primary-btn:hover {
+    background: var(--navy-deep);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(30,58,110,0.2);
+  }
+  .primary-btn:active {
+    transform: translateY(0);
+  }
+
+  .nsc-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.85rem;
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+  .nsc-table th {
+    background: var(--navy);
+    color: white;
+    padding: 12px 10px;
+    text-align: left;
+    font-weight: 700;
+    font-size: 0.8rem;
+    letter-spacing: 0.03em;
+  }
+  .nsc-table td {
+    padding: 12px 10px;
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+  }
+  .nsc-table tr:last-child td {
+    border-bottom: none;
+  }
+  .nsc-table tr:nth-child(even) {
+    background: var(--offwhite);
+  }
+
+  .nsc-intervention-checkboxes {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 4px 8px;
+    font-size: 0.75rem;
+  }
+  .nsc-intervention-checkboxes label {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    white-space: nowrap;
+  }
+  .nsc-intervention-checkboxes input[type="checkbox"] {
+    width: 14px;
+    height: 14px;
+    cursor: pointer;
+  }
+
+  .nsc-comment-textarea {
+    width: 100%;
+    min-height: 60px;
+    padding: 6px 8px;
+    font-size: 0.8rem;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    font-family: 'Source Sans 3', sans-serif;
+    resize: vertical;
+  }
+  .nsc-comment-textarea:focus {
+    outline: none;
+    border-color: var(--steel);
+  }
+
+  .nsc-grade-badge {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 4px;
+    font-weight: 700;
+    font-size: 0.85rem;
+  }
+  .nsc-grade-low {
+    background: var(--incorrect-bg);
+    color: var(--incorrect-tx);
+  }
+  .nsc-grade-atrisk {
+    background: var(--partial-bg);
+    color: var(--partial-tx);
+  }
+  .nsc-grade-good {
+    background: var(--correct-bg);
+    color: var(--correct-tx);
+  }
 </style>
 
 <!-- Libraries for Bulk Download: jsPDF, html2canvas, JSZip -->
@@ -2028,12 +2151,42 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       <div style="font-size:0.78rem;color:#8b0000;background:#fff8e1;border-left:3px solid #d4620a;padding:10px 14px;border-radius:4px;margin-bottom:16px;line-height:1.6;">
         <strong>⚠ FERPA COMPLIANCE NOTICE:</strong> This report contains personally identifiable student educational records protected under the Family Educational Rights and Privacy Act (FERPA). Transmit securely (encrypted email, secure file share) and share only with authorized personnel. By downloading this report, you acknowledge responsibility for maintaining the confidentiality of these student records.
       </div>
-      <div style="text-align:center;padding:60px 20px;color:var(--text-light);">
-        <div style="font-size:3rem;margin-bottom:16px;">🚧</div>
-        <h3 style="color:var(--navy);margin-bottom:12px;">Coming Soon</h3>
-        <p style="font-size:0.9rem;max-width:500px;margin:0 auto;">
-          The Nursing Success Center reporting feature is currently under development. This tool will allow faculty to select at-risk students, identify intervention areas, and generate a comprehensive Excel report for the success coach.
-        </p>
+      <!-- Student Selection Controls -->
+      <div style="background:var(--offwhite);padding:16px;border-radius:8px;margin-bottom:16px;">
+        <h3 style="font-size:0.95rem;color:var(--navy);margin-bottom:12px;font-weight:700;">SELECT STUDENTS TO INCLUDE</h3>
+
+        <div style="display:flex;gap:16px;align-items:center;flex-wrap:wrap;margin-bottom:12px;">
+          <div>
+            <strong style="font-size:0.82rem;color:var(--text);margin-right:8px;">Quick Select:</strong>
+            <button class="filter-btn" onclick="nscSelectAll()">All</button>
+            <button class="filter-btn" onclick="nscSelectNone()">None</button>
+            <button class="filter-btn" onclick="nscSelectByGrade(0, 75)">&lt;75%</button>
+            <button class="filter-btn" onclick="nscSelectByGrade(75, 80)">75-79%</button>
+            <button class="filter-btn" onclick="nscSelectByGrade(0, 80)">&lt;80%</button>
+          </div>
+
+          <div style="margin-left:auto;">
+            <strong style="font-size:0.82rem;color:var(--text);margin-right:8px;">Sort:</strong>
+            <select id="nscSort" onchange="renderNSCTable()" style="padding:4px 8px;font-size:0.82rem;border:1px solid var(--border);border-radius:4px;">
+              <option value="name-az">Name (A-Z)</option>
+              <option value="name-za">Name (Z-A)</option>
+              <option value="grade-asc">Grade (Low to High)</option>
+              <option value="grade-desc">Grade (High to Low)</option>
+            </select>
+          </div>
+        </div>
+
+        <input type="text" id="nscSearch" placeholder="Search by student name..." onkeyup="renderNSCTable()" style="width:100%;max-width:400px;padding:8px 12px;font-size:0.85rem;border:1px solid var(--border);border-radius:4px;">
+      </div>
+
+      <!-- Student Table -->
+      <div id="nscTableContainer" style="margin-bottom:20px;"></div>
+
+      <!-- Action Buttons -->
+      <div style="display:flex;gap:12px;justify-content:flex-end;">
+        <button class="primary-btn" onclick="downloadNSCReport()" style="background:var(--navy);padding:12px 24px;font-size:0.95rem;font-weight:700;">
+          📊 Download Excel Report
+        </button>
       </div>
     </div><!-- /dashSuccessCenter -->
 
@@ -3473,6 +3626,7 @@ function renderResults() {
 
   renderItemTable(null);
   renderStudentSelect();
+  initializeNSCData();
   buildPreGradePanel();
 
   // Reset to overview tab
@@ -7360,6 +7514,691 @@ function readFile(file) {
 }
 
 function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+// ══════════════════════════════════════════════════════════════════════════════
+// NURSING SUCCESS CENTER REPORT FUNCTIONS
+// ══════════════════════════════════════════════════════════════════════════════
+
+// Store NSC data (student selection + interventions + comments)
+let nscData = {};
+
+function initializeNSCData() {
+  if (!parsedData || !parsedData.students) return;
+  const { students, totalScores, classStats } = parsedData;
+
+  nscData = {};
+  Object.values(students).forEach(s => {
+    const total = totalScores[s.id] || 0;
+    const tp = classStats.totalPossible || 100;
+    const pctScore = tp > 0 ? Math.round((total/tp)*1000)/10 : 0;
+
+    nscData[s.id] = {
+      selected: false,
+      pctScore: pctScore,
+      interventions: {
+        study: false,
+        timemgmt: false,
+        testtaking: false,
+        calculations: false,
+        criticalthinking: false,
+        testanxiety: false,
+        other: false
+      },
+      comment: ''
+    };
+  });
+
+  renderNSCTable();
+}
+
+function nscSelectAll() {
+  Object.keys(nscData).forEach(sid => { nscData[sid].selected = true; });
+  renderNSCTable();
+}
+
+function nscSelectNone() {
+  Object.keys(nscData).forEach(sid => { nscData[sid].selected = false; });
+  renderNSCTable();
+}
+
+function nscSelectByGrade(minGrade, maxGrade) {
+  Object.keys(nscData).forEach(sid => {
+    const pct = nscData[sid].pctScore;
+    nscData[sid].selected = (pct >= minGrade && pct < maxGrade);
+  });
+  renderNSCTable();
+}
+
+function toggleNSCStudent(sid) {
+  if (nscData[sid]) {
+    nscData[sid].selected = !nscData[sid].selected;
+  }
+}
+
+function toggleNSCIntervention(sid, type) {
+  if (nscData[sid]) {
+    nscData[sid].interventions[type] = !nscData[sid].interventions[type];
+  }
+}
+
+function updateNSCComment(sid, comment) {
+  if (nscData[sid]) {
+    nscData[sid].comment = comment;
+  }
+}
+
+function renderNSCTable() {
+  if (!parsedData || !parsedData.students) return;
+
+  const { students } = parsedData;
+  const searchTerm = (document.getElementById('nscSearch')?.value || '').toLowerCase();
+  const sortOrder = document.getElementById('nscSort')?.value || 'name-az';
+
+  // Get student list
+  let studentList = Object.values(students).map(s => ({
+    id: s.id,
+    fname: s.fname,
+    lname: s.lname,
+    fullName: `${s.lname}, ${s.fname}`,
+    pctScore: nscData[s.id]?.pctScore || 0
+  }));
+
+  // Filter by search
+  if (searchTerm) {
+    studentList = studentList.filter(s =>
+      s.fullName.toLowerCase().includes(searchTerm)
+    );
+  }
+
+  // Sort
+  studentList.sort((a, b) => {
+    if (sortOrder === 'name-az') return a.lname.localeCompare(b.lname);
+    if (sortOrder === 'name-za') return b.lname.localeCompare(a.lname);
+    if (sortOrder === 'grade-asc') return a.pctScore - b.pctScore;
+    if (sortOrder === 'grade-desc') return b.pctScore - a.pctScore;
+    return 0;
+  });
+
+  // Build table HTML
+  let html = '<table class="nsc-table">';
+  html += '<thead><tr>';
+  html += '<th style="width:50px;text-align:center;">Select</th>';
+  html += '<th style="width:200px;">Student Name</th>';
+  html += '<th style="width:80px;text-align:center;">Grade</th>';
+  html += '<th>Intervention Areas</th>';
+  html += '<th style="width:200px;">Faculty Comments</th>';
+  html += '</tr></thead><tbody>';
+
+  if (studentList.length === 0) {
+    html += '<tr><td colspan="5" style="text-align:center;padding:40px;color:var(--text-light);font-style:italic;">No students found</td></tr>';
+  } else {
+    studentList.forEach(s => {
+      const data = nscData[s.id];
+      if (!data) return;
+
+      const gradeClass = data.pctScore < 75 ? 'nsc-grade-low' : data.pctScore < 80 ? 'nsc-grade-atrisk' : 'nsc-grade-good';
+
+      html += '<tr>';
+      html += `<td style="text-align:center;"><input type="checkbox" ${data.selected ? 'checked' : ''} onchange="toggleNSCStudent('${s.id}')"></td>`;
+      html += `<td><strong>${esc(s.lname)}, ${esc(s.fname)}</strong></td>`;
+      html += `<td style="text-align:center;"><span class="nsc-grade-badge ${gradeClass}">${data.pctScore.toFixed(0)}%</span></td>`;
+      html += '<td><div class="nsc-intervention-checkboxes">';
+
+      const interventions = [
+        { key: 'study', label: 'Study Skills' },
+        { key: 'timemgmt', label: 'Time Management' },
+        { key: 'testtaking', label: 'Test-Taking Strategies' },
+        { key: 'calculations', label: 'Calculations' },
+        { key: 'criticalthinking', label: 'Critical Thinking' },
+        { key: 'testanxiety', label: 'Test Anxiety' },
+        { key: 'other', label: 'Other/Referral' }
+      ];
+
+      interventions.forEach(int => {
+        html += `<label><input type="checkbox" ${data.interventions[int.key] ? 'checked' : ''} onchange="toggleNSCIntervention('${s.id}', '${int.key}')"> ${int.label}</label>`;
+      });
+
+      html += '</div></td>';
+      html += `<td><textarea class="nsc-comment-textarea" placeholder="Add notes..." oninput="updateNSCComment('${s.id}', this.value)">${esc(data.comment)}</textarea></td>`;
+      html += '</tr>';
+    });
+  }
+
+  html += '</tbody></table>';
+
+  document.getElementById('nscTableContainer').innerHTML = html;
+}
+
+// FERPA Confirmation Modal
+function downloadNSCReport() {
+  const selectedCount = Object.values(nscData).filter(d => d.selected).length;
+
+  if (selectedCount === 0) {
+    alert('Please select at least one student to include in the report.');
+    return;
+  }
+
+  // Show FERPA confirmation modal
+  showFERPAModal(selectedCount);
+}
+
+function showFERPAModal(count) {
+  const modalHtml = `
+    <div class="modal-overlay open" id="ferpaModal" onclick="closeFERPAModal(event)">
+      <div class="modal-box" style="max-width:550px;">
+        <div class="modal-header">
+          <div>
+            <h3>Confirm Nursing Success Center Report Download</h3>
+          </div>
+          <button class="modal-close" onclick="closeFERPAModal()" aria-label="Close">&times;</button>
+        </div>
+        <div class="modal-body">
+          <p style="margin-bottom:16px;font-size:0.9rem;line-height:1.6;">
+            You are about to download a report containing educational records for <strong>${count} student${count !== 1 ? 's' : ''}</strong>.
+          </p>
+
+          <div style="background:var(--offwhite);padding:12px 16px;border-radius:6px;margin-bottom:16px;">
+            <label style="display:flex;gap:10px;align-items:flex-start;font-size:0.85rem;cursor:pointer;">
+              <input type="checkbox" id="ferpaCheck1" style="margin-top:3px;">
+              <span>I confirm this report will be transmitted securely to authorized personnel only</span>
+            </label>
+          </div>
+
+          <div style="background:var(--offwhite);padding:12px 16px;border-radius:6px;margin-bottom:20px;">
+            <label style="display:flex;gap:10px;align-items:flex-start;font-size:0.85rem;cursor:pointer;">
+              <input type="checkbox" id="ferpaCheck2" style="margin-top:3px;">
+              <span>I understand my responsibilities under FERPA</span>
+            </label>
+          </div>
+
+          <div style="display:flex;gap:12px;justify-content:flex-end;">
+            <button onclick="closeFERPAModal()" style="background:var(--border);color:var(--text);border:none;padding:10px 20px;border-radius:6px;cursor:pointer;font-size:0.9rem;">Cancel</button>
+            <button onclick="confirmFERPAAndDownload()" class="primary-btn">Download Report</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+
+  document.body.insertAdjacentHTML('beforeend', modalHtml);
+}
+
+function closeFERPAModal(event) {
+  if (event && event.target.id !== 'ferpaModal') return;
+  const modal = document.getElementById('ferpaModal');
+  if (modal) modal.remove();
+}
+
+function confirmFERPAAndDownload() {
+  const check1 = document.getElementById('ferpaCheck1').checked;
+  const check2 = document.getElementById('ferpaCheck2').checked;
+
+  if (!check1 || !check2) {
+    alert('Please confirm both checkboxes to proceed.');
+    return;
+  }
+
+  closeFERPAModal();
+  generateNSCExcelReport();
+}
+
+async function generateNSCExcelReport() {
+  if (!parsedData || !parsedData.students) return;
+
+  const { students, items, totalScores, classStats, meta } = parsedData;
+  const selectedStudents = Object.keys(nscData).filter(sid => nscData[sid].selected);
+
+  if (selectedStudents.length === 0) return;
+
+  const wb = new ExcelJS.Workbook();
+  wb.creator = 'NIARA · GrangeRN';
+  wb.created = new Date();
+
+  const C = {
+    nav:     'FF1e3a6e', navDark: 'FF152d57', steel:  'FF4a7ab5',
+    teal:    'FF1a5276', offwhite:'FFF4F7FB', white:  'FFFFFFFF',
+    green:   'FF1b7a3e', red:     'FF7b1a2a',
+    lgGreen: 'FFe8f5e9', lgBlue:  'FFdce8f8', lgRed:  'FFfce4ec',
+    yellow:  'FFFFF8E1', powder:  'FFadc8e8'
+  };
+  function wf(hex) { return { type:'pattern', pattern:'solid', fgColor:{ argb:hex } }; }
+
+  // ════════════════════════════════════════════════════════════════════════════
+  // SHEET 1: COHORT OVERVIEW
+  // ════════════════════════════════════════════════════════════════════════════
+
+  const ws1 = wb.addWorksheet('Cohort Overview');
+  ws1.views = [{ showGridLines: false }];
+  ws1.columns = [{ width:35 }, { width:18 }, { width:22 }];
+
+  let R = 1;
+  function merge(r, sheet = ws1) { sheet.mergeCells(`A${r}:C${r}`); }
+
+  // Title
+  merge(R);
+  ws1.getCell(`A${R}`).value = 'NURSING SUCCESS CENTER REPORT — COHORT OVERVIEW';
+  ws1.getCell(`A${R}`).style = { font:{ bold:true, color:{ argb:C.white }, size:14 }, fill:wf(C.nav), alignment:{ horizontal:'left', vertical:'middle', indent:1 } };
+  ws1.getRow(R).height = 32; R++;
+
+  merge(R);
+  ws1.getCell(`A${R}`).value = 'Generated by NIARA · Nursing Item Analysis & Reporting Assistant';
+  ws1.getCell(`A${R}`).style = { font:{ italic:true, color:{ argb:C.powder }, size:7.5 }, fill:wf(C.navDark), alignment:{ horizontal:'left', vertical:'middle', indent:1 } };
+  ws1.getRow(R).height = 14; R++;
+
+  ws1.getRow(R).height = 8; R++;
+
+  // Exam metadata
+  [
+    ['Course', meta.courseLabel],
+    ['Exam', meta.examName],
+    ['Semester / Year', meta.semester + ' ' + meta.year],
+    ['Total Students in Cohort', Object.keys(students).length],
+    ['Students Flagged for Support', selectedStudents.length]
+  ].forEach(([lbl, val]) => {
+    ws1.getCell(R,1).value = lbl;
+    ws1.getCell(R,1).style = { font:{ bold:true, size:9, color:{ argb:C.steel } }, fill:wf(C.offwhite), alignment:{ vertical:'middle', indent:1 } };
+    ws1.mergeCells(R,2,R,3);
+    ws1.getCell(R,2).value = val;
+    ws1.getCell(R,2).style = { font:{ size:9 }, fill:wf(C.offwhite), alignment:{ vertical:'middle', indent:1 } };
+    ws1.getRow(R).height = 18; R++;
+  });
+
+  ws1.getRow(R).height = 12; R++;
+
+  // Cohort statistics
+  const totalPossible = classStats.totalPossible || 1;
+  const scores = Object.values(totalScores);
+  const mean = scores.length > 0 ? scores.reduce((a,b)=>a+b,0)/scores.length : 0;
+  const sortedScores = [...scores].sort((a,b)=>a-b);
+  const median = sortedScores.length > 0 ? sortedScores[Math.floor(sortedScores.length/2)] : 0;
+  const min = sortedScores.length > 0 ? sortedScores[0] : 0;
+  const max = sortedScores.length > 0 ? sortedScores[sortedScores.length-1] : 0;
+
+  merge(R);
+  ws1.getCell(`A${R}`).value = 'COHORT EXAM STATISTICS';
+  ws1.getCell(`A${R}`).style = { font:{ bold:true, color:{ argb:C.white }, size:9.5 }, fill:wf(C.nav), alignment:{ horizontal:'left', vertical:'middle', indent:1 } };
+  ws1.getRow(R).height = 20; R++;
+
+  [
+    ['Mean Score', pct(mean/totalPossible)],
+    ['Median Score', pct(median/totalPossible)],
+    ['Score Range', `${pct(min/totalPossible)} - ${pct(max/totalPossible)}`]
+  ].forEach(([lbl, val]) => {
+    ws1.getCell(R,1).value = lbl;
+    ws1.getCell(R,1).style = { font:{ bold:true, size:9 }, fill:wf(C.offwhite), alignment:{ vertical:'middle', indent:1 } };
+    ws1.mergeCells(R,2,R,3);
+    ws1.getCell(R,2).value = val;
+    ws1.getCell(R,2).style = { font:{ size:9 }, fill:wf(C.offwhite), alignment:{ vertical:'middle', indent:1 } };
+    ws1.getRow(R).height = 18; R++;
+  });
+
+  ws1.getRow(R).height = 12; R++;
+
+  // Add cohort performance tables (Module, Bloom's, NGEN) - simplified for success coach
+
+  // Module performance
+  const bySection = {};
+  Object.values(items).forEach(i => {
+    if (i.isBonus) return;
+    if (!bySection[i.section]) bySection[i.section] = { items: [] };
+    bySection[i.section].items.push(i);
+  });
+
+  merge(R);
+  ws1.getCell(`A${R}`).value = 'MODULE/CHAPTER PERFORMANCE';
+  ws1.getCell(`A${R}`).style = { font:{ bold:true, color:{ argb:C.white }, size:9.5 }, fill:wf(C.nav), alignment:{ horizontal:'left', vertical:'middle', indent:1 } };
+  ws1.getRow(R).height = 20; R++;
+
+  ['Content Area','% Correct','Performance'].forEach((h,i) => {
+    ws1.getCell(R,i+1).value = h;
+    ws1.getCell(R,i+1).style = { font:{ bold:true, color:{ argb:C.white }, size:8.5 }, fill:wf(C.steel), alignment:{ horizontal:i===0?'left':'center', vertical:'middle', indent:i===0?1:0 } };
+  });
+  ws1.getRow(R).height = 18; R++;
+
+  for (const [sec, data] of Object.entries(bySection).sort((a,b) => a[0].localeCompare(b[0]))) {
+    const avgDiff = data.items.reduce((sum,i) => sum + (i.difficulty||0), 0) / data.items.length;
+    const perfLbl = avgDiff > 0.90 ? 'Strong' : avgDiff >= 0.80 ? 'Acceptable' : 'Needs Improvement';
+    const perfColor = avgDiff > 0.90 ? { bg:C.lgGreen, tx:C.green } : avgDiff >= 0.80 ? { bg:C.lgBlue, tx:C.teal } : { bg:C.lgRed, tx:C.red };
+
+    ws1.getCell(R,1).value = sec || 'Uncategorized';
+    ws1.getCell(R,1).style = { font:{ size:9 }, fill:wf(perfColor.bg), alignment:{ vertical:'middle', indent:1 } };
+    ws1.getCell(R,2).value = pct(avgDiff);
+    ws1.getCell(R,2).style = { font:{ bold:true, size:9, color:{ argb:perfColor.tx } }, fill:wf(perfColor.bg), alignment:{ horizontal:'center', vertical:'middle' } };
+    ws1.getCell(R,3).value = perfLbl;
+    ws1.getCell(R,3).style = { font:{ bold:avgDiff<0.80, size:9, color:{ argb:perfColor.tx } }, fill:wf(perfColor.bg), alignment:{ horizontal:'center', vertical:'middle' } };
+    ws1.getRow(R).height = 18; R++;
+  }
+
+  ws1.getRow(R).height = 12; R++;
+
+  // Bloom's Taxonomy Performance
+  const bloomsItems = Object.values(items).filter(i => !i.isBonus && i.bloomsLevel !== null);
+  if (bloomsItems.length > 0) {
+    const bloomsByLevel = {};
+    bloomsItems.forEach(i => {
+      const level = i.bloomsLevel;
+      if (!bloomsByLevel[level]) bloomsByLevel[level] = { correct: 0, total: 0 };
+      const d = i.difficulty ?? 0;
+      bloomsByLevel[level].correct += d * (i.n || 0);
+      bloomsByLevel[level].total += i.n || 0;
+    });
+
+    merge(R);
+    ws1.getCell(`A${R}`).value = 'BLOOM\'S TAXONOMY PERFORMANCE';
+    ws1.getCell(`A${R}`).style = { font:{ bold:true, color:{ argb:C.white }, size:9.5 }, fill:wf(C.nav), alignment:{ horizontal:'left', vertical:'middle', indent:1 } };
+    ws1.getRow(R).height = 20; R++;
+
+    ['Cognitive Level','% Correct','Performance'].forEach((h,i) => {
+      ws1.getCell(R,i+1).value = h;
+      ws1.getCell(R,i+1).style = { font:{ bold:true, color:{ argb:C.white }, size:8.5 }, fill:wf(C.steel), alignment:{ horizontal:i===0?'left':'center', vertical:'middle', indent:i===0?1:0 } };
+    });
+    ws1.getRow(R).height = 18; R++;
+
+    const bloomsLabels = { 1: 'Remember', 2: 'Understand', 3: 'Apply', 4: 'Analyze', 5: 'Evaluate/Create' };
+    for (let level = 5; level >= 1; level--) {
+      if (!bloomsByLevel[level]) continue;
+      const d = bloomsByLevel[level];
+      const p = d.total > 0 ? d.correct / d.total : 0;
+      const perfLbl = p > 0.90 ? 'Strong' : p >= 0.80 ? 'Acceptable' : 'Needs Improvement';
+      const perfColor = p > 0.90 ? { bg:C.lgGreen, tx:C.green } : p >= 0.80 ? { bg:C.lgBlue, tx:C.teal } : { bg:C.lgRed, tx:C.red };
+
+      ws1.getCell(R,1).value = level + ' - ' + bloomsLabels[level];
+      ws1.getCell(R,1).style = { font:{ bold:true, size:9 }, fill:wf(perfColor.bg), alignment:{ vertical:'middle', indent:1 } };
+      ws1.getCell(R,2).value = pct(p);
+      ws1.getCell(R,2).style = { font:{ bold:true, size:9, color:{ argb:perfColor.tx } }, fill:wf(perfColor.bg), alignment:{ horizontal:'center', vertical:'middle' } };
+      ws1.getCell(R,3).value = perfLbl;
+      ws1.getCell(R,3).style = { font:{ bold:p<0.80, size:9, color:{ argb:perfColor.tx } }, fill:wf(perfColor.bg), alignment:{ horizontal:'center', vertical:'middle' } };
+      ws1.getRow(R).height = 18; R++;
+    }
+
+    ws1.getRow(R).height = 12; R++;
+  }
+
+  // NGEN Performance
+  const ngenItems = Object.values(items).filter(i => !i.isBonus && i.qtype !== 'MC');
+  if (ngenItems.length > 0) {
+    const qtypeNames = { 'M-S':'Multi-Select (SATA)', 'MAT':'Matching', 'FIB':'Fill in the Blank', 'ORD':'Ordering' };
+    const qtypeStats = {};
+    ngenItems.forEach(i => {
+      if (!qtypeStats[i.qtype]) qtypeStats[i.qtype] = { correct: 0, total: 0 };
+      const d = i.difficulty ?? 0;
+      qtypeStats[i.qtype].correct += d * (i.n || 0);
+      qtypeStats[i.qtype].total += i.n || 0;
+    });
+
+    merge(R);
+    ws1.getCell(`A${R}`).value = 'NGEN QUESTION PERFORMANCE';
+    ws1.getCell(`A${R}`).style = { font:{ bold:true, color:{ argb:C.white }, size:9.5 }, fill:wf(C.nav), alignment:{ horizontal:'left', vertical:'middle', indent:1 } };
+    ws1.getRow(R).height = 20; R++;
+
+    ['Question Type','% Correct','Performance'].forEach((h,i) => {
+      ws1.getCell(R,i+1).value = h;
+      ws1.getCell(R,i+1).style = { font:{ bold:true, color:{ argb:C.white }, size:8.5 }, fill:wf(C.steel), alignment:{ horizontal:i===0?'left':'center', vertical:'middle', indent:i===0?1:0 } };
+    });
+    ws1.getRow(R).height = 18; R++;
+
+    for (const [qt, v] of Object.entries(qtypeStats)) {
+      const p = v.total > 0 ? v.correct / v.total : 0;
+      const perfLbl = p > 0.90 ? 'Strong' : p >= 0.80 ? 'Acceptable' : 'Needs Improvement';
+      const perfColor = p > 0.90 ? { bg:C.lgGreen, tx:C.green } : p >= 0.80 ? { bg:C.lgBlue, tx:C.teal } : { bg:C.lgRed, tx:C.red };
+
+      ws1.getCell(R,1).value = qtypeNames[qt] || qt;
+      ws1.getCell(R,1).style = { font:{ size:9 }, fill:wf(perfColor.bg), alignment:{ vertical:'middle', indent:1 } };
+      ws1.getCell(R,2).value = pct(p);
+      ws1.getCell(R,2).style = { font:{ bold:true, size:9, color:{ argb:perfColor.tx } }, fill:wf(perfColor.bg), alignment:{ horizontal:'center', vertical:'middle' } };
+      ws1.getCell(R,3).value = perfLbl;
+      ws1.getCell(R,3).style = { font:{ bold:p<0.80, size:9, color:{ argb:perfColor.tx } }, fill:wf(perfColor.bg), alignment:{ horizontal:'center', vertical:'middle' } };
+      ws1.getRow(R).height = 18; R++;
+    }
+  }
+
+  // ════════════════════════════════════════════════════════════════════════════
+  // SHEET 2: FLAGGED STUDENTS SUMMARY
+  // ════════════════════════════════════════════════════════════════════════════
+
+  const ws2 = wb.addWorksheet('Flagged Students Summary');
+  ws2.views = [{ showGridLines: false }];
+  ws2.columns = [{ width:25 }, { width:12 }, { width:40 }, { width:35 }];
+
+  R = 1;
+
+  // Title
+  ws2.mergeCells(`A${R}:D${R}`);
+  ws2.getCell(`A${R}`).value = 'FLAGGED STUDENTS SUMMARY';
+  ws2.getCell(`A${R}`).style = { font:{ bold:true, color:{ argb:C.white }, size:14 }, fill:wf(C.nav), alignment:{ horizontal:'left', vertical:'middle', indent:1 } };
+  ws2.getRow(R).height = 32; R++;
+
+  ws2.mergeCells(`A${R}:D${R}`);
+  ws2.getCell(`A${R}`).value = 'Students identified for Nursing Success Center support';
+  ws2.getCell(`A${R}`).style = { font:{ italic:true, color:{ argb:C.powder }, size:7.5 }, fill:wf(C.navDark), alignment:{ horizontal:'left', vertical:'middle', indent:1 } };
+  ws2.getRow(R).height = 14; R++;
+
+  ws2.getRow(R).height = 8; R++;
+
+  // Table headers
+  ['Student Name','Grade','Intervention Areas','Faculty Comments'].forEach((h,i) => {
+    ws2.getCell(R,i+1).value = h;
+    ws2.getCell(R,i+1).style = { font:{ bold:true, color:{ argb:C.white }, size:9 }, fill:wf(C.steel), alignment:{ horizontal:'left', vertical:'middle', indent:1 } };
+  });
+  ws2.getRow(R).height = 20; R++;
+
+  // Student rows
+  const selectedStudentData = selectedStudents.map(sid => ({
+    sid,
+    student: students[sid],
+    data: nscData[sid]
+  })).sort((a,b) => a.data.pctScore - b.data.pctScore); // Sort by grade low to high
+
+  selectedStudentData.forEach(({ student, data }) => {
+    const interventionLabels = {
+      study: 'Study Skills',
+      timemgmt: 'Time Management',
+      testtaking: 'Test-Taking Strategies',
+      calculations: 'Calculations',
+      criticalthinking: 'Critical Thinking',
+      testanxiety: 'Test Anxiety',
+      other: 'Other/Referral'
+    };
+
+    const selectedInterventions = Object.keys(data.interventions)
+      .filter(key => data.interventions[key])
+      .map(key => interventionLabels[key])
+      .join(', ');
+
+    const perfColor = data.pctScore < 75 ? { bg:C.lgRed, tx:C.red } : data.pctScore < 80 ? { bg:C.yellow, tx:'FFe65100' } : { bg:C.lgGreen, tx:C.green };
+
+    ws2.getCell(R,1).value = student.lname + ', ' + student.fname;
+    ws2.getCell(R,1).style = { font:{ size:9 }, fill:wf(C.offwhite), alignment:{ vertical:'middle', indent:1 } };
+
+    ws2.getCell(R,2).value = data.pctScore.toFixed(0) + '%';
+    ws2.getCell(R,2).style = { font:{ bold:true, size:9, color:{ argb:perfColor.tx } }, fill:wf(perfColor.bg), alignment:{ horizontal:'center', vertical:'middle' } };
+
+    ws2.getCell(R,3).value = selectedInterventions || '(None selected)';
+    ws2.getCell(R,3).style = { font:{ size:8.5 }, fill:wf(C.offwhite), alignment:{ vertical:'middle', wrapText:true, indent:1 } };
+
+    ws2.getCell(R,4).value = data.comment || '';
+    ws2.getCell(R,4).style = { font:{ size:8.5 }, fill:wf(C.offwhite), alignment:{ vertical:'middle', wrapText:true, indent:1 } };
+
+    ws2.getRow(R).height = Math.max(24, Math.ceil(data.comment.length / 40) * 14);
+    R++;
+  });
+
+  // ════════════════════════════════════════════════════════════════════════════
+  // SHEETS 3+: INDIVIDUAL STUDENT TABS
+  // ════════════════════════════════════════════════════════════════════════════
+
+  for (const { sid, student, data } of selectedStudentData) {
+    const ws = wb.addWorksheet(`${student.lname}_${student.fname}`.substring(0, 31));
+    ws.views = [{ showGridLines: false }];
+    ws.columns = [{ width:35 }, { width:16 }, { width:22 }];
+
+    R = 1;
+
+    // Title
+    ws.mergeCells(`A${R}:C${R}`);
+    ws.getCell(`A${R}`).value = `STUDENT PERFORMANCE SUMMARY — ${student.lname}, ${student.fname}`;
+    ws.getCell(`A${R}`).style = { font:{ bold:true, color:{ argb:C.white }, size:12 }, fill:wf(C.nav), alignment:{ horizontal:'left', vertical:'middle', indent:1 } };
+    ws.getRow(R).height = 28; R++;
+
+    ws.mergeCells(`A${R}:C${R}`);
+    ws.getCell(`A${R}`).value = 'For Nursing Success Center Use Only';
+    ws.getCell(`A${R}`).style = { font:{ italic:true, color:{ argb:C.powder }, size:7.5 }, fill:wf(C.navDark), alignment:{ horizontal:'left', vertical:'middle', indent:1 } };
+    ws.getRow(R).height = 14; R++;
+
+    ws.getRow(R).height = 8; R++;
+
+    // Grade disclaimer
+    ws.mergeCells(`A${R}:C${R}`);
+    ws.getCell(`A${R}`).value = '⚠ NOTE: This grade reflects data downloaded on ' + new Date().toLocaleDateString() + '. After partial credit adjustments, the final Brightspace grade may differ. Focus on areas for improvement rather than the specific percentage.';
+    ws.getCell(`A${R}`).style = { font:{ italic:true, size:8, color:{ argb:C.steel } }, fill:wf(C.yellow), alignment:{ horizontal:'left', vertical:'middle', wrapText:true, indent:1 } };
+    ws.getRow(R).height = 40; R++;
+
+    ws.getRow(R).height = 8; R++;
+
+    // Student info
+    [
+      ['Student Name', student.lname + ', ' + student.fname],
+      ['Exam Grade', data.pctScore.toFixed(0) + '%']
+    ].forEach(([lbl, val]) => {
+      ws.getCell(R,1).value = lbl;
+      ws.getCell(R,1).style = { font:{ bold:true, size:9, color:{ argb:C.steel } }, fill:wf(C.offwhite), alignment:{ vertical:'middle', indent:1 } };
+      ws.mergeCells(R,2,R,3);
+      ws.getCell(R,2).value = val;
+      ws.getCell(R,2).style = { font:{ size:9 }, fill:wf(C.offwhite), alignment:{ vertical:'middle', indent:1 } };
+      ws.getRow(R).height = 18; R++;
+    });
+
+    ws.getRow(R).height = 12; R++;
+
+    // Module/Chapter performance for this student
+    const studentItems = Object.values(students[sid].items).filter(i => !i.isBonus);
+    const studentBySection = {};
+    studentItems.forEach(si => {
+      if (!studentBySection[si.section]) studentBySection[si.section] = [];
+      studentBySection[si.section].push(si);
+    });
+
+    ws.mergeCells(`A${R}:C${R}`);
+    ws.getCell(`A${R}`).value = 'MODULE/CHAPTER PERFORMANCE';
+    ws.getCell(`A${R}`).style = { font:{ bold:true, color:{ argb:C.white }, size:9.5 }, fill:wf(C.nav), alignment:{ horizontal:'left', vertical:'middle', indent:1 } };
+    ws.getRow(R).height = 20; R++;
+
+    ['Content Area','% Correct','Performance'].forEach((h,i) => {
+      ws.getCell(R,i+1).value = h;
+      ws.getCell(R,i+1).style = { font:{ bold:true, color:{ argb:C.white }, size:8.5 }, fill:wf(C.steel), alignment:{ horizontal:i===0?'left':'center', vertical:'middle', indent:i===0?1:0 } };
+    });
+    ws.getRow(R).height = 18; R++;
+
+    for (const [sec, sitems] of Object.entries(studentBySection).sort((a,b) => a[0].localeCompare(b[0]))) {
+      const got = sitems.reduce((s,i) => s+i.score, 0);
+      const pos = sitems.reduce((s,i) => s+i.outOf, 0);
+      const p = pos > 0 ? got/pos : 0;
+      const perfLbl = p > 0.90 ? 'Strong' : p >= 0.80 ? 'Acceptable' : 'Needs Improvement';
+      const perfColor = p > 0.90 ? { bg:C.lgGreen, tx:C.green } : p >= 0.80 ? { bg:C.lgBlue, tx:C.teal } : { bg:C.lgRed, tx:C.red };
+
+      ws.getCell(R,1).value = sec || 'Uncategorized';
+      ws.getCell(R,1).style = { font:{ size:9 }, fill:wf(perfColor.bg), alignment:{ vertical:'middle', indent:1 } };
+      ws.getCell(R,2).value = pct(p);
+      ws.getCell(R,2).style = { font:{ bold:true, size:9, color:{ argb:perfColor.tx } }, fill:wf(perfColor.bg), alignment:{ horizontal:'center', vertical:'middle' } };
+      ws.getCell(R,3).value = perfLbl;
+      ws.getCell(R,3).style = { font:{ bold:p<0.80, size:9, color:{ argb:perfColor.tx } }, fill:wf(perfColor.bg), alignment:{ horizontal:'center', vertical:'middle' } };
+      ws.getRow(R).height = 18; R++;
+    }
+
+    ws.getRow(R).height = 12; R++;
+
+    // Bloom's performance for this student
+    const bloomsStats = {};
+    studentItems.forEach(si => {
+      if (!si.bloomsLevel) return;
+      const level = si.bloomsLevel;
+      if (!bloomsStats[level]) bloomsStats[level] = { total: 0, correct: 0 };
+      bloomsStats[level].total++;
+      if (si.outOf > 0 && (si.score / si.outOf) >= 0.99) bloomsStats[level].correct++;
+    });
+
+    if (Object.keys(bloomsStats).length > 0) {
+      ws.mergeCells(`A${R}:C${R}`);
+      ws.getCell(`A${R}`).value = 'BLOOM\'S TAXONOMY PERFORMANCE';
+      ws.getCell(`A${R}`).style = { font:{ bold:true, color:{ argb:C.white }, size:9.5 }, fill:wf(C.nav), alignment:{ horizontal:'left', vertical:'middle', indent:1 } };
+      ws.getRow(R).height = 20; R++;
+
+      ['Cognitive Level','% Correct','Performance'].forEach((h,i) => {
+        ws.getCell(R,i+1).value = h;
+        ws.getCell(R,i+1).style = { font:{ bold:true, color:{ argb:C.white }, size:8.5 }, fill:wf(C.steel), alignment:{ horizontal:i===0?'left':'center', vertical:'middle', indent:i===0?1:0 } };
+      });
+      ws.getRow(R).height = 18; R++;
+
+      const bloomsLabels = { 1: 'Remember', 2: 'Understand', 3: 'Apply', 4: 'Analyze', 5: 'Evaluate/Create' };
+      for (let level = 5; level >= 1; level--) {
+        if (!bloomsStats[level]) continue;
+        const v = bloomsStats[level];
+        const p = v.total > 0 ? v.correct / v.total : 0;
+        const perfLbl = p > 0.90 ? 'Strong' : p >= 0.80 ? 'Acceptable' : 'Needs Improvement';
+        const perfColor = p > 0.90 ? { bg:C.lgGreen, tx:C.green } : p >= 0.80 ? { bg:C.lgBlue, tx:C.teal } : { bg:C.lgRed, tx:C.red };
+
+        ws.getCell(R,1).value = level + ' - ' + bloomsLabels[level];
+        ws.getCell(R,1).style = { font:{ bold:true, size:9 }, fill:wf(perfColor.bg), alignment:{ vertical:'middle', indent:1 } };
+        ws.getCell(R,2).value = pct(p);
+        ws.getCell(R,2).style = { font:{ bold:true, size:9, color:{ argb:perfColor.tx } }, fill:wf(perfColor.bg), alignment:{ horizontal:'center', vertical:'middle' } };
+        ws.getCell(R,3).value = perfLbl;
+        ws.getCell(R,3).style = { font:{ bold:p<0.80, size:9, color:{ argb:perfColor.tx } }, fill:wf(perfColor.bg), alignment:{ horizontal:'center', vertical:'middle' } };
+        ws.getRow(R).height = 18; R++;
+      }
+
+      ws.getRow(R).height = 12; R++;
+    }
+
+    // NGEN performance for this student
+    const qtypeStats = {};
+    studentItems.forEach(si => {
+      if (si.qtype === 'MC') return;
+      if (!qtypeStats[si.qtype]) qtypeStats[si.qtype] = { total: 0, correct: 0 };
+      qtypeStats[si.qtype].total++;
+      if (si.outOf > 0 && (si.score / si.outOf) >= 0.99) qtypeStats[si.qtype].correct++;
+    });
+
+    if (Object.keys(qtypeStats).length > 0) {
+      ws.mergeCells(`A${R}:C${R}`);
+      ws.getCell(`A${R}`).value = 'NGEN QUESTION PERFORMANCE';
+      ws.getCell(`A${R}`).style = { font:{ bold:true, color:{ argb:C.white }, size:9.5 }, fill:wf(C.nav), alignment:{ horizontal:'left', vertical:'middle', indent:1 } };
+      ws.getRow(R).height = 20; R++;
+
+      ['Question Type','% Correct','Performance'].forEach((h,i) => {
+        ws.getCell(R,i+1).value = h;
+        ws.getCell(R,i+1).style = { font:{ bold:true, color:{ argb:C.white }, size:8.5 }, fill:wf(C.steel), alignment:{ horizontal:i===0?'left':'center', vertical:'middle', indent:i===0?1:0 } };
+      });
+      ws.getRow(R).height = 18; R++;
+
+      const qtypeNames = { 'M-S':'Multi-Select (SATA)', 'MAT':'Matching', 'FIB':'Fill in the Blank', 'ORD':'Ordering' };
+      for (const [qt, v] of Object.entries(qtypeStats)) {
+        const p = v.total > 0 ? v.correct / v.total : 0;
+        const perfLbl = p > 0.90 ? 'Strong' : p >= 0.80 ? 'Acceptable' : 'Needs Improvement';
+        const perfColor = p > 0.90 ? { bg:C.lgGreen, tx:C.green } : p >= 0.80 ? { bg:C.lgBlue, tx:C.teal } : { bg:C.lgRed, tx:C.red };
+
+        ws.getCell(R,1).value = qtypeNames[qt] || qt;
+        ws.getCell(R,1).style = { font:{ size:9 }, fill:wf(perfColor.bg), alignment:{ vertical:'middle', indent:1 } };
+        ws.getCell(R,2).value = pct(p);
+        ws.getCell(R,2).style = { font:{ bold:true, size:9, color:{ argb:perfColor.tx } }, fill:wf(perfColor.bg), alignment:{ horizontal:'center', vertical:'middle' } };
+        ws.getCell(R,3).value = perfLbl;
+        ws.getCell(R,3).style = { font:{ bold:p<0.80, size:9, color:{ argb:perfColor.tx } }, fill:wf(perfColor.bg), alignment:{ horizontal:'center', vertical:'middle' } };
+        ws.getRow(R).height = 18; R++;
+      }
+    }
+  }
+
+  // Finalize workbook
+  const fileName = `${meta.courseLabel}_${meta.examName}_NIARA Nursing Success Coach Report_${meta.semester}_${meta.year}.xlsx`;
+  const buffer = await wb.xlsx.writeBuffer();
+  const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = fileName;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
 </script>
 </body>
 </html>
