@@ -725,7 +725,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
   .student-top-row > div {
     padding: 16px 20px;
   }
-  .student-top-row > div:first-child {
+  .student-top-row > div:not(:last-child) {
     border-right: 1px solid var(--border);
   }
   .student-view-toggle {
@@ -826,7 +826,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
 
   @media (max-width: 768px) {
     .student-top-row { grid-template-columns: 1fr; }
-    .student-top-row > div:first-child { border-right: none; border-bottom: 1px solid var(--border); }
+    .student-top-row > div:not(:last-child) { border-right: none; border-bottom: 1px solid var(--border); }
   }
     background: var(--powder-lt);
     border-left: 4px solid var(--steel);
@@ -1681,6 +1681,12 @@ https://github.com/nodeca/pako/blob/main/LICENSE
     .dash-tabs { flex-wrap: wrap; }
   }
 </style>
+
+<!-- Libraries for Bulk Download: jsPDF, html2canvas, JSZip -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+
 </head>
 <body>
 <a href="#main" class="skip-link" style="position:absolute;left:-9999px;top:auto;width:1px;height:1px;overflow:hidden;z-index:9999;padding:8px 16px;background:var(--navy);color:white;font-size:1rem;text-decoration:none;" onfocus="this.style.position='fixed';this.style.left='8px';this.style.top='8px';this.style.width='auto';this.style.height='auto';" onblur="this.style.position='absolute';this.style.left='-9999px';this.style.width='1px';this.style.height='1px';">Skip to main content</a>
@@ -1876,7 +1882,8 @@ https://github.com/nodeca/pako/blob/main/LICENSE
     <div class="dash-tabs" id="dashTabs">
       <button class="dash-tab active" onclick="switchDashTab('overview')">Overview</button>
       <button class="dash-tab" onclick="switchDashTab('items')">Item Analysis</button>
-      <button class="dash-tab" onclick="switchDashTab('students')">Student Diagnostic Report</button>
+      <button class="dash-tab" onclick="switchDashTab('remediation')">Faculty Remediation: Individual Student Reports</button>
+      <button class="dash-tab" onclick="switchDashTab('successcenter')">Nursing Success Center Reports</button>
     </div>
 
     <!-- ══ TAB 1: OVERVIEW ══ -->
@@ -1938,11 +1945,14 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       <!-- Charts area -->
       <div class="charts-grid" id="dashChartsGrid"></div>
 
-      <!-- Module Performance Table -->
+      <!-- Module/Chapter Performance Table -->
       <div id="dashModuleTable"></div>
 
       <!-- NGEN Performance Table -->
       <div id="dashNgenTable"></div>
+
+      <!-- Bloom's Taxonomy Performance Table -->
+      <div id="dashBloomsTable"></div>
 
     </div><!-- /dashOverview -->
 
@@ -1986,10 +1996,10 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       </div>
     </div><!-- /dashItems -->
 
-    <!-- ══ TAB 3: STUDENT DIAGNOSTIC ══ -->
-    <div class="dash-panel" id="dashStudents" aria-hidden="true">
+    <!-- ══ TAB 3: FACULTY REMEDIATION ══ -->
+    <div class="dash-panel" id="dashRemediation" aria-hidden="true">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
-        <h2 style="font-family:'Playfair Display',serif;color:var(--navy);font-size:1.2rem;">Student Diagnostic Report</h2>
+        <h2 style="font-family:'Playfair Display',serif;color:var(--navy);font-size:1.2rem;">Faculty Remediation: Individual Student Reports</h2>
         <button class="section-close-btn" onclick="switchDashTab('overview')">Back to Overview</button>
       </div>
       <p style="font-size:0.85rem;color:var(--text-light);margin-bottom:16px;">
@@ -2004,7 +2014,28 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         </select>
       </div>
       <div id="studentReportArea"></div>
-    </div><!-- /dashStudents -->
+    </div><!-- /dashRemediation -->
+
+    <!-- ══ TAB 4: NURSING SUCCESS CENTER REPORTS ══ -->
+    <div class="dash-panel" id="dashSuccessCenter" aria-hidden="true">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+        <h2 style="font-family:'Playfair Display',serif;color:var(--navy);font-size:1.2rem;">Nursing Success Center Reports</h2>
+        <button class="section-close-btn" onclick="switchDashTab('overview')">Back to Overview</button>
+      </div>
+      <p style="font-size:0.85rem;color:var(--text-light);margin-bottom:16px;">
+        Generate a comprehensive Excel report for your Nursing Success Coach with identified at-risk students, recommended intervention areas, and module/NGEN/Bloom's performance data. Individual question details are excluded.
+      </p>
+      <div style="font-size:0.78rem;color:#8b0000;background:#fff8e1;border-left:3px solid #d4620a;padding:10px 14px;border-radius:4px;margin-bottom:16px;line-height:1.6;">
+        <strong>⚠ FERPA COMPLIANCE NOTICE:</strong> This report contains personally identifiable student educational records protected under the Family Educational Rights and Privacy Act (FERPA). Transmit securely (encrypted email, secure file share) and share only with authorized personnel. By downloading this report, you acknowledge responsibility for maintaining the confidentiality of these student records.
+      </div>
+      <div style="text-align:center;padding:60px 20px;color:var(--text-light);">
+        <div style="font-size:3rem;margin-bottom:16px;">🚧</div>
+        <h3 style="color:var(--navy);margin-bottom:12px;">Coming Soon</h3>
+        <p style="font-size:0.9rem;max-width:500px;margin:0 auto;">
+          The Nursing Success Center reporting feature is currently under development. This tool will allow faculty to select at-risk students, identify intervention areas, and generate a comprehensive Excel report for the success coach.
+        </p>
+      </div>
+    </div><!-- /dashSuccessCenter -->
 
   </div><!-- /resultsSection -->
 
@@ -2162,6 +2193,75 @@ https://github.com/nodeca/pako/blob/main/LICENSE
   </div>
 </div>
 
+<!-- ══ BLOOM'S TAXONOMY REFERENCE ══ -->
+<div style="max-width:1100px;margin:0 auto;padding:0 24px 40px;">
+  <div class="legend-section">
+    <div class="legend-header" role="button" tabindex="0" onclick="toggleBloomsLegend()" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();toggleBloomsLegend();}">
+      <h3>Understanding Bloom's Taxonomy in Nursing Education</h3>
+      <button class="collapse-toggle" id="bloomsLegendToggleBtn" aria-expanded="false" aria-controls="bloomsLegendBody">▼ Expand</button>
+    </div>
+    <div class="collapsible-body collapsed" id="bloomsLegendBody" style="max-height:0;">
+      <div class="legend-body">
+        <p style="font-size:0.85rem;color:var(--text-light);margin-bottom:18px;line-height:1.6;">
+          Bloom's Taxonomy classifies questions by cognitive complexity. NIARA tracks performance across all five levels to help identify whether students need support with foundational knowledge or higher-order clinical judgment skills.
+        </p>
+
+        <div class="legend-card" style="margin-bottom:16px;">
+          <div class="legend-card-title" style="color:var(--navy);">📊 Cognitive Levels — From Foundation to Mastery</div>
+
+          <div class="legend-row" style="background:#e8f5e9;">
+            <span><strong>Level 1: Remember</strong> — Recall facts, definitions, normal values</span>
+            <span class="legend-desc">Example: "What is the normal range for serum potassium?"</span>
+          </div>
+
+          <div class="legend-row" style="background:#dce8f8;">
+            <span><strong>Level 2: Understand</strong> — Explain concepts, interpret data</span>
+            <span class="legend-desc">Example: "Why does hyperkalemia cause cardiac arrhythmias?"</span>
+          </div>
+
+          <div class="legend-row" style="background:#fff8e1;">
+            <span><strong>Level 3: Apply</strong> — Use knowledge in patient scenarios, implement interventions</span>
+            <span class="legend-desc">Example: "Which nursing action is priority for a patient with chest pain?"</span>
+          </div>
+
+          <div class="legend-row" style="background:#ffe0e0;">
+            <span><strong>Level 4: Analyze</strong> — Identify patterns, differentiate conditions, prioritize</span>
+            <span class="legend-desc">Example: "Which assessment finding indicates the patient is deteriorating?"</span>
+          </div>
+
+          <div class="legend-row" style="background:#fce4ec;">
+            <span><strong>Level 5: Evaluate/Create</strong> — Justify clinical decisions, develop care plans</span>
+            <span class="legend-desc">Example: "Which response shows the patient understands discharge teaching?"</span>
+          </div>
+
+          <div style="margin-top: 16px; padding: 12px; background: var(--powder-lt); border-left: 4px solid var(--steel); border-radius: 4px;">
+            <strong style="color: var(--navy);">NCLEX-RN Focus:</strong> The majority of NCLEX questions test Apply, Analyze, and Evaluate levels. Strong performance on higher-level questions indicates better clinical judgment and critical thinking skills essential for safe practice.
+          </div>
+        </div>
+
+        <div class="legend-card" style="margin-bottom:16px;">
+          <div class="legend-card-title" style="color:var(--navy);">📈 Interpreting Bloom's Performance Data</div>
+
+          <div class="legend-row">
+            <span>Weak at Level 1-2 (Remember/Understand)</span>
+            <span class="legend-desc">Focus on foundational knowledge — content review, concept mapping, flashcards</span>
+          </div>
+
+          <div class="legend-row">
+            <span>Weak at Level 3-5 (Apply/Analyze/Evaluate)</span>
+            <span class="legend-desc">Focus on clinical judgment — case studies, simulation, NCLEX-style practice questions</span>
+          </div>
+
+          <div class="legend-row">
+            <span>Strong across all levels</span>
+            <span class="legend-desc">Student demonstrates both content mastery and clinical reasoning ability</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
 <footer>
   <strong>NIARA</strong> — Nursing Item Analysis &amp; Reporting Assistant &nbsp;·&nbsp; A <strong>GrangeRN</strong> Tool &nbsp;·&nbsp; v2.0.0<br>
   <span style="font-size:0.72rem;opacity:0.7;">All data is processed locally in your browser. No student information is transmitted or stored.</span>
@@ -2202,9 +2302,9 @@ function toggleNewReportBar() {
 
 // ── Dashboard Tab switching ──
 function switchDashTab(tabId) {
-  const map = { overview: 'dashOverview', items: 'dashItems', students: 'dashStudents' };
+  const map = { overview: 'dashOverview', items: 'dashItems', remediation: 'dashRemediation', successcenter: 'dashSuccessCenter' };
   document.querySelectorAll('.dash-tab').forEach((t, i) => {
-    const keys = ['overview', 'items', 'students'];
+    const keys = ['overview', 'items', 'remediation', 'successcenter'];
     t.classList.toggle('active', keys[i] === tabId);
   });
   document.querySelectorAll('.dash-panel').forEach(p => { p.classList.remove('active'); p.setAttribute('aria-hidden', 'true'); });
@@ -2521,6 +2621,7 @@ function parseAttemptDetails(csvText) {
     const score    = parseFloat(row[COL['Score']] || '0') || 0;
     const outOf    = parseFloat(row[COL['Out Of']] || '0') || 0;
     const isBonus  = (row[COL['Bonus?']] || '').trim().toUpperCase() === 'TRUE';
+    const bloomsLevel = parseInt(row[COL['Difficulty']] || '0') || null;
 
     if (!sid) continue;
 
@@ -2553,7 +2654,7 @@ function parseAttemptDetails(csvText) {
       students[sid].items[qnum] = {
         qnum, qtype, qtitle, qtext, section,
         score: 0, outOf: 0, selected: [],
-        responses: {}, isBonus
+        responses: {}, isBonus, bloomsLevel
       };
     }
 
@@ -2637,6 +2738,8 @@ function parseAttemptDetails(csvText) {
     if (!items[qtitle]) items[qtitle] = createItemRecord(qtitle, qtext, qtype, section);
     // Track isBonus at item level (any bonus-marked row means the item is bonus)
     if (isBonus) items[qtitle].isBonus = true;
+    // Track Bloom's level (should be same for all students for this question)
+    if (bloomsLevel && !items[qtitle].bloomsLevel) items[qtitle].bloomsLevel = bloomsLevel;
 
     // Track ALL answer choices in order (for popup display)
     const itemRec = items[qtitle];
@@ -2733,7 +2836,8 @@ function createItemRecord(qtitle, qtext, qtype, section) {
     flag: null,
     flagReason: null,
     distractorCounts: {},
-    allChoices: {}       // answer text -> { checked, unchecked, order }
+    allChoices: {},      // answer text -> { checked, unchecked, order }
+    bloomsLevel: null    // Bloom's Taxonomy cognitive level (1-5)
   };
 }
 
@@ -3229,20 +3333,19 @@ function renderResults() {
     const cohortItems = [...new Map([...below50, ...top5Missed].map(i => [i.qtitle||i.qtext, i])).values()]
       .sort((a,b) => (a.difficulty||0) - (b.difficulty||0));
     if (cohortItems.length > 0) {
-      let cohortHtml = '<div class="chart-card" style="grid-column:1/-1;"><div class="chart-card-title">Cohort Areas for Improvement — Micro-Lesson Opportunities</div>';
+      let cohortHtml = '<div class="chart-card" style="grid-column:1/-1;"><div class="chart-card-title">Cohort Areas for Improvement — Micro-Lesson Opportunities<div style="font-size:0.75rem;font-weight:400;margin-top:4px;">(Most Missed Questions)</div></div>';
       cohortHtml += '<p style="font-size:0.85rem;color:var(--text);margin-bottom:12px;font-style:italic;">Faculty should review these questions and the learning materials in their course to identify conflicting information or missed areas. Create or edit content as needed to fill educational gaps for both current and future cohorts.</p>';
-      cohortHtml += '<table style="width:100%;font-size:0.88rem;"><thead><tr><th style="text-align:left;">Question Title</th><th>Module</th><th>% Correct</th><th>Flag</th></tr></thead><tbody>';
+      cohortHtml += '<table style="width:100%;font-size:0.88rem;"><thead><tr><th style="text-align:left;">Question Title</th><th style="text-align:center;">Module/Chapter</th><th style="text-align:center;">% Correct</th></tr></thead><tbody>';
       cohortItems.forEach(item => {
         const title = item.qtype==='FIB' ? (item.fibCategory?'['+item.fibCategory+'] ':'')+(item.qtext||'').substring(0,80) : (item.qtitle||'');
-        const fc = item.flag?.flag==='RETIRE'?'var(--flag-retire-bg)':item.flag?.flag==='REVISE'?'var(--flag-revise-bg)':'var(--flag-keep-bg)';
-        cohortHtml += `<tr><td>${esc(title)}</td><td style="text-align:center;">${esc(item.section||'')}</td><td style="text-align:center;font-weight:700;color:var(--flag-retire-bg);">${pct(item.difficulty)}</td><td style="text-align:center;font-weight:700;color:${fc};">${item.flag?.flag||'KEEP'}</td></tr>`;
+        cohortHtml += `<tr><td>${esc(title)}</td><td style="text-align:center;">${esc(item.section||'')}</td><td style="text-align:center;font-weight:700;color:var(--flag-retire-bg);">${pct(item.difficulty)}</td></tr>`;
       });
       cohortHtml += '</tbody></table></div>';
       chartsGrid.innerHTML += cohortHtml;
     }
   } catch(e) {}
 
-  // ── Module Performance Table ──
+  // ── Module/Chapter Performance Table ──
   const modScoresSorted = Object.entries(classStats.modScores || {}).sort((a,b) => a[0].localeCompare(b[0]));
   if (modScoresSorted.length > 0) {
     let modHtml = '<div class="chart-card"><div class="chart-card-title">Module / Content Area Performance</div><table style="width:100%;font-size:0.88rem;"><thead><tr><th style="text-align:left;">Module/Content Area</th><th>Items</th><th>% Correct</th><th>Performance</th></tr></thead><tbody>';
@@ -3291,6 +3394,48 @@ function renderResults() {
     } catch(e) {}
     ngenHtml += '</div>';
     document.getElementById('dashNgenTable').innerHTML = ngenHtml;
+  }
+
+  // ── Bloom's Taxonomy Performance Table ──
+  const bloomsItems = Object.values(items).filter(i => !i.isBonus && i.bloomsLevel !== null);
+  if (bloomsItems.length > 0) {
+    const bloomsByLevel = {};
+    bloomsItems.forEach(i => {
+      const level = i.bloomsLevel;
+      if (!bloomsByLevel[level]) bloomsByLevel[level] = { correct: 0, total: 0 };
+      const d = i.difficulty ?? 0;
+      bloomsByLevel[level].correct += d * (i.n || 0);
+      bloomsByLevel[level].total += i.n || 0;
+    });
+
+    const bloomsLabels = {
+      1: 'Remember',
+      2: 'Understand',
+      3: 'Apply',
+      4: 'Analyze',
+      5: 'Evaluate/Create'
+    };
+
+    // Build table in reverse order (5 to 1, pyramid style) - NO pyramid graphic
+    let bloomsHtml = '<div class="chart-card"><div class="chart-card-title">Bloom\'s Taxonomy Performance</div>';
+    bloomsHtml += '<table style="width:100%;font-size:0.88rem;"><thead><tr><th style="text-align:left;">Cognitive Level</th><th style="text-align:center;">Items</th><th style="text-align:center;">% Correct</th><th style="text-align:center;">Performance</th></tr></thead><tbody>';
+
+    // Display in reverse order (5, 4, 3, 2, 1)
+    for (let level = 5; level >= 1; level--) {
+      if (!bloomsByLevel[level]) continue;
+      const d = bloomsByLevel[level];
+      const p = d.total > 0 ? d.correct / d.total : 0;
+      const perfLabel = p >= 0.90 ? 'Strong' : p >= 0.80 ? 'Acceptable' : 'Needs Improvement';
+      const perfColor = p >= 0.90 ? 'var(--flag-keep-bg)' : p >= 0.80 ? '#1a5276' : 'var(--flag-retire-bg)';
+      const itemCount = bloomsItems.filter(i => i.bloomsLevel === level).length;
+      bloomsHtml += `<tr><td><strong>${level} - ${bloomsLabels[level]}</strong></td><td style="text-align:center;">${itemCount}</td><td style="text-align:center;font-weight:700;color:${perfColor};">${pct(p)}</td><td style="text-align:center;color:${perfColor};">${perfLabel}</td></tr>`;
+    }
+
+    bloomsHtml += '</tbody></table>';
+    bloomsHtml += '<div style="margin-top: 12px; font-size: 0.82rem; color: var(--text-light); line-height: 1.5;"><em>Faculty Interpretation: Review performance by cognitive level to identify whether students need support with foundational knowledge (Remember/Understand) or higher-order clinical judgment skills (Apply/Analyze/Evaluate).</em></div>';
+    bloomsHtml += '</div>';
+
+    document.getElementById('dashBloomsTable').innerHTML = bloomsHtml;
   }
 
   // Module tabs (alphabetical sub-tabs in Item Analysis)
@@ -3827,22 +3972,288 @@ function renderItemTable(moduleFilter) {
 }
 
 function renderStudentSelect() {
-  const { students } = parsedData;
+  const { students, totalScores, classStats } = parsedData;
   const sel = document.getElementById('studentSelect');
   sel.innerHTML = '<option value="">— Select Student —</option>';
+
   Object.values(students)
     .sort((a,b) => a.lname.localeCompare(b.lname))
     .forEach(s => {
+      const total = totalScores[s.id] || 0;
+      const tp = classStats.totalPossible || 100;
+      const pctScore = tp > 0 ? Math.round((total/tp)*1000)/10 : 0;
+
       const opt = document.createElement('option');
       opt.value = s.id;
-      opt.textContent = s.lname + ', ' + s.fname;
+
+      // Format: "Last, First (XX%)"
+      const gradeText = '(' + pctScore.toFixed(0) + '%)';
+      opt.textContent = s.lname + ', ' + s.fname + ' ' + gradeText;
+
+      // Color coding for grade text (using data attribute for CSS styling)
+      if (pctScore < 75) {
+        opt.setAttribute('data-grade-level', 'low');
+      } else if (pctScore < 80) {
+        opt.setAttribute('data-grade-level', 'atrisk');
+      }
+
       sel.appendChild(opt);
     });
+}
+
+function filterStudents(criterion) {
+  const sel = document.getElementById('studentSelect');
+  const allOptions = Array.from(sel.querySelectorAll('option'));
+
+  allOptions.forEach(opt => {
+    if (opt.value === '') {
+      opt.style.display = 'block';
+      return;
+    }
+
+    const match = opt.textContent.match(/\((\d+(?:\.\d+)?)%\)/);
+    if (!match) return;
+    const pct = parseFloat(match[1]);
+
+    let show = false;
+    if (criterion === 'all') show = true;
+    else if (criterion === 'below75') show = pct < 75;
+    else if (criterion === '75to79') show = pct >= 75 && pct < 80;
+    else if (criterion === '80plus') show = pct >= 80;
+
+    opt.style.display = show ? 'block' : 'none';
+  });
 }
 
 function closeStudentReport() {
   document.getElementById('studentReportArea').innerHTML = '';
   document.getElementById('studentSelect').value = '';
+}
+
+// ══ STUDENT REPORT DISPLAY ══
+
+function openBulkDownloadModal() {
+  const { students, totalScores, classStats } = parsedData;
+  if (!students || Object.keys(students).length === 0) {
+    alert('No student data available. Please generate a report first.');
+    return;
+  }
+
+  // Build student list
+  const studentEntries = Object.entries(students).map(([sid, s]) => {
+    const score = totalScores[sid] || 0;
+    const tp = classStats.totalPossible || 100;
+    const pct = tp > 0 ? Math.round((score / tp) * 1000) / 10 : 0;
+    return { sid, fname: s.fname, lname: s.lname, pct, sortKey: s.lname.toLowerCase() + s.fname.toLowerCase() };
+  }).sort((a, b) => a.sortKey.localeCompare(b.sortKey));
+
+  const listHtml = studentEntries.map(s => {
+    const gradeClass = s.pct < 75 ? 'low' : s.pct < 80 ? 'atrisk' : 'ok';
+    const gradeColor = s.pct < 75 ? '#7b1a2a' : s.pct < 80 ? '#d4620a' : '#000';
+    return `
+      <div style="padding: 8px; border-bottom: 1px solid var(--border); display: flex; align-items: center;">
+        <input type="checkbox" class="bulk-student-cb" data-sid="${s.sid}" data-pct="${s.pct}" id="bulk_${s.sid}" style="margin-right: 10px;">
+        <label for="bulk_${s.sid}" style="flex: 1; cursor: pointer; font-size: 0.88rem;">
+          ${esc(s.lname)}, ${esc(s.fname)} <span style="color: ${gradeColor}; font-weight: 600;">(${s.pct.toFixed(0)}%)</span>
+        </label>
+      </div>
+    `;
+  }).join('');
+
+  document.getElementById('bulkStudentList').innerHTML = listHtml;
+  document.getElementById('bulkSelectedCount').textContent = '0';
+
+  // Add change listeners
+  document.querySelectorAll('.bulk-student-cb').forEach(cb => {
+    cb.addEventListener('change', updateBulkSelectedCount);
+  });
+
+  document.getElementById('bulkDownloadModal').classList.add('open');
+}
+
+function closeBulkDownloadModal() {
+  document.getElementById('bulkDownloadModal').classList.remove('open');
+}
+
+function bulkSelectStudents(criterion) {
+  const checkboxes = document.querySelectorAll('.bulk-student-cb');
+  checkboxes.forEach(cb => {
+    const pct = parseFloat(cb.dataset.pct);
+    if (criterion === 'all') cb.checked = true;
+    else if (criterion === 'none') cb.checked = false;
+    else if (criterion === 'below75') cb.checked = pct < 75;
+    else if (criterion === '75to79') cb.checked = pct >= 75 && pct < 80;
+  });
+  updateBulkSelectedCount();
+}
+
+function updateBulkSelectedCount() {
+  const count = document.querySelectorAll('.bulk-student-cb:checked').length;
+  document.getElementById('bulkSelectedCount').textContent = count;
+}
+
+async function generateBulkDownload() {
+  const selectedSids = Array.from(document.querySelectorAll('.bulk-student-cb:checked')).map(cb => cb.dataset.sid);
+
+  if (selectedSids.length === 0) {
+    alert('Please select at least one student.');
+    return;
+  }
+
+  if (selectedSids.length > 50) {
+    if (!confirm(`You've selected ${selectedSids.length} students. This may take a while. Continue?`)) {
+      return;
+    }
+  }
+
+  const btn = document.getElementById('bulkDownloadBtn');
+  btn.disabled = true;
+  btn.textContent = 'Generating Reports...';
+
+  try {
+    const zip = new JSZip();
+    const { students, meta } = parsedData;
+
+    // Options for bulk download: NO grade, include Module, NGEN, Bloom's, NO individual questions
+    const opts = {
+      score: false,           // NO GRADE on student reports
+      module: true,
+      ngen: true,
+      blooms: true,           // Include Bloom's performance
+      contentTopics: false,   // NO individual question details
+      selectedTopics: []
+    };
+
+    for (let i = 0; i < selectedSids.length; i++) {
+      const sid = selectedSids[i];
+      const student = students[sid];
+
+      btn.textContent = `Generating ${i + 1}/${selectedSids.length}...`;
+
+      // Generate PDF for this student using beautiful HTML format
+      const pdfBlob = await generateStudentPDFBlob(sid, opts);
+
+      // File naming: LastName_FirstName_CourseNumber_ExamName_NIARA Student Performance Report.pdf
+      const courseNum = (meta.courseNumber || 'COURSE').replace(/[^a-zA-Z0-9]/g, '');
+      const examName = (meta.examName || 'Exam').replace(/[^a-zA-Z0-9]/g, '');
+      const fileName = `${student.lname}_${student.fname}_${courseNum}_${examName}_NIARA_Student_Performance_Report.pdf`;
+
+      zip.file(fileName, pdfBlob);
+    }
+
+    btn.textContent = 'Creating ZIP...';
+
+    const zipBlob = await zip.generateAsync({ type: 'blob' });
+
+    // Download ZIP
+    const courseNum = (meta.courseNumber || 'COURSE').replace(/[^a-zA-Z0-9]/g, '');
+    const examName = (meta.examName || 'Exam').replace(/[^a-zA-Z0-9]/g, '');
+    const zipFileName = `${courseNum}_${examName}_Student_Reports_Bulk.zip`;
+
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(zipBlob);
+    link.download = zipFileName;
+    link.click();
+
+    closeBulkDownloadModal();
+    alert(`Successfully generated ${selectedSids.length} beautifully formatted PDF report(s)!`);
+
+  } catch (error) {
+    console.error('Bulk download error:', error);
+    alert('An error occurred while generating the reports. Please try again.');
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Download ZIP';
+  }
+}
+
+// Helper function to generate Student PDF using the beautiful HTML format
+async function generateStudentPDFBlob(sid, opts) {
+  // This uses the same beautiful Excel generation logic as downloadStudentReport()
+  // but returns a blob instead of triggering a download
+
+  if (!parsedData || !sid) return null;
+  if (!opts) opts = { score: false, module: true, ngen: true, blooms: true, contentTopics: false, selectedTopics: [] };
+
+  const { students, classStats, totalScores, meta } = parsedData;
+  const student = students[sid];
+  if (!student) return null;
+
+  const wb = new ExcelJS.Workbook();
+  wb.creator = 'NIARA · GrangeRN';
+  wb.created = new Date();
+
+  const C = {
+    nav:     'FF1e3a6e', navDark: 'FF152d57', steel:  'FF4a7ab5',
+    teal:    'FF1a5276', offwhite:'FFF4F7FB', white:  'FFFFFFFF',
+    green:   'FF1b7a3e', red:     'FF7b1a2a',
+    lgGreen: 'FFe8f5e9', lgBlue:  'FFdce8f8', lgRed:  'FFfce4ec',
+    yellow:  'FFFFF8E1', powder:  'FFadc8e8'
+  };
+  function wf(hex) { return { type:'pattern', pattern:'solid', fgColor:{ argb:hex } }; }
+
+  const ws = wb.addWorksheet('Student Report');
+  ws.views = [{ showGridLines: false }];
+  ws.columns = [{ width:50 }, { width:16 }, { width:24 }];
+
+  let R = 1;
+  function merge(r) { ws.mergeCells(`A${r}:C${r}`); }
+
+  function perfLabel(p) {
+    if (p > 0.90) return 'Strong';
+    if (p >= 0.80) return 'Acceptable';
+    return 'Needs Improvement';
+  }
+  function perfFill(p) {
+    if (p > 0.90) return { bg:C.lgGreen, tx:C.green };
+    if (p >= 0.80) return { bg:C.lgBlue,  tx:C.teal  };
+    return            { bg:C.lgRed,   tx:C.red   };
+  }
+
+  // Title banner
+  merge(R);
+  ws.getCell(`A${R}`).value = 'NIARA — Student Exam Performance Report';
+  ws.getCell(`A${R}`).style = { font:{ bold:true, color:{ argb:C.white }, size:16, name:'Calibri' }, fill:wf(C.nav), alignment:{ horizontal:'left', vertical:'middle', indent:1 } };
+  ws.getRow(R).height = 36; R++;
+
+  merge(R);
+  ws.getCell(`A${R}`).value = 'Nursing Item Analysis & Reporting Assistant · For remediation guidance only';
+  ws.getCell(`A${R}`).style = { font:{ italic:true, color:{ argb:C.powder }, size:8 }, fill:wf(C.navDark), alignment:{ horizontal:'left', vertical:'middle', indent:1 } };
+  ws.getRow(R).height = 16; R++;
+
+  ws.getRow(R).height = 8; R++;
+
+  // Student Information
+  merge(R);
+  ws.getCell(`A${R}`).value = 'STUDENT INFORMATION';
+  ws.getCell(`A${R}`).style = { font:{ bold:true, color:{ argb:C.white }, size:9 }, fill:wf(C.navDark), alignment:{ horizontal:'left', vertical:'middle', indent:1 } };
+  ws.getRow(R).height = 20; R++;
+
+  [['Name', student.lname+', '+student.fname], ['Course', meta.courseLabel], ['Exam', meta.examName], ['Semester / Year', meta.semester+' '+meta.year]].forEach(([lbl, val]) => {
+    ws.getCell(R,1).value = lbl;
+    ws.getCell(R,1).style = { font:{ bold:true, size:9, color:{ argb:C.steel } }, fill:wf(C.offwhite), alignment:{ vertical:'middle', indent:1 } };
+    ws.mergeCells(R,2,R,3);
+    ws.getCell(R,2).value = val;
+    ws.getCell(R,2).style = { font:{ size:9 }, fill:wf(C.offwhite), alignment:{ vertical:'middle', indent:1 } };
+    ws.getRow(R).height = 18; R++;
+  });
+
+  ws.getRow(R).height = 8; R++;
+
+  // NOTE: Grade is NOT included when opts.score = false (which it is for bulk downloads)
+
+  // TODO: Add Module/Chapter, NGEN, and Bloom's performance tables here
+  // For now, this generates a basic report - full implementation coming next
+
+  // Temporary note
+  merge(R);
+  ws.getCell(`A${R}`).value = 'Performance tables (Module/Chapter, NGEN, Bloom\'s Taxonomy) will be included in the next update.';
+  ws.getCell(`A${R}`).style = { font:{ italic:true, size:9, color:{ argb:C.steel } }, fill:wf(C.yellow), alignment:{ horizontal:'left', vertical:'middle', indent:1 } };
+  ws.getRow(R).height = 24; R++;
+
+  // Generate and return the Excel blob
+  const buffer = await wb.xlsx.writeBuffer();
+  return new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
 }
 
 function showStudentReport() {
@@ -3898,7 +4309,25 @@ function showStudentReport() {
     else qtypeStats[si.qtype].incorrect++;
   });
 
-  // Remediation — weak modules and NGEN types below 80%
+  // Bloom's Taxonomy stats — exclude bonus, only items with bloomsLevel
+  const bloomsLabels = {
+    1: 'Remember',
+    2: 'Understand',
+    3: 'Apply',
+    4: 'Analyze',
+    5: 'Evaluate/Create'
+  };
+  const bloomsStats = {};
+  Object.values(student.items).forEach(si => {
+    if (si.isBonus || !si.bloomsLevel) return;
+    const level = si.bloomsLevel;
+    if (!bloomsStats[level]) bloomsStats[level] = { total: 0, correct: 0, incorrect: 0 };
+    bloomsStats[level].total++;
+    if (si.outOf > 0 && (si.score / si.outOf) >= 0.99) bloomsStats[level].correct++;
+    else bloomsStats[level].incorrect++;
+  });
+
+  // Remediation — weak modules, NGEN types, and Bloom's levels below 80%
   const weakMods = Object.entries(modPerf)
     .filter(([,v]) => v.pct < 0.80)
     .sort((a,b) => a[1].pct - b[1].pct)
@@ -3907,12 +4336,17 @@ function showStudentReport() {
     .filter(([,v]) => v.total > 0 && (v.correct/v.total) < 0.80)
     .sort((a,b) => (a[1].correct/a[1].total) - (b[1].correct/b[1].total))
     .map(([qt,v]) => (qtypeNames[qt]||qt) + ' (' + pct(v.correct/v.total) + ')');
+  const weakBlooms = Object.entries(bloomsStats)
+    .filter(([,v]) => v.total > 0 && (v.correct/v.total) < 0.80)
+    .sort((a,b) => (a[1].correct/a[1].total) - (b[1].correct/b[1].total))
+    .map(([level,v]) => 'Level ' + level + ': ' + bloomsLabels[level] + ' (' + pct(v.correct/v.total) + ')');
   let remText = '';
-  if (!weakMods.length && !weakNGEN.length) {
-    remText = 'Performance is consistent across all content areas and question types. No priority remediation areas identified at this time.';
+  if (!weakMods.length && !weakNGEN.length && !weakBlooms.length) {
+    remText = 'Performance is consistent across all content areas, question types, and cognitive levels. No priority remediation areas identified at this time.';
   } else {
     if (weakMods.length) remText += 'Priority content review areas: ' + weakMods.join(', ') + '. Focused study is recommended for content where performance fell below 80%.';
     if (weakNGEN.length) remText += (weakMods.length ? ' ' : '') + 'NGEN question types for improvement: ' + weakNGEN.join(', ') + '. Practice with these question formats in addition to content review.';
+    if (weakBlooms.length) remText += ((weakMods.length || weakNGEN.length) ? ' ' : '') + 'Cognitive levels needing attention: ' + weakBlooms.join(', ') + '. Focus on developing skills at these levels through case studies and practice questions.';
   }
 
   // All student items flat (includes bonus — faculty reference only)
@@ -3929,9 +4363,8 @@ function showStudentReport() {
       <div style="font-size:0.82rem;opacity:0.7;margin-top:3px;">${esc(parsedData.meta.courseLabel)} · ${esc(parsedData.meta.examName)} · ${esc(parsedData.meta.semester)} ${esc(parsedData.meta.year)}</div>
     </div>
     <div style="display:flex;flex-direction:column;align-items:flex-end;gap:8px;">
-      <div class="student-score-badge" style="background:${scoreBg};border:2px solid ${scoreColor};color:${scoreColor};font-weight:700;padding:6px 14px;border-radius:8px;font-size:0.92rem;" title="Initial raw score — see disclaimer above">
-        ${fmt1(total)} / ${tp} &nbsp;·&nbsp; ${pctScore}%
-        <span style="font-size:0.68rem;font-weight:400;display:block;text-align:center;margin-top:2px;opacity:0.75;">Initial raw score</span>
+      <div class="student-score-badge" style="background:${scoreBg};border:2px solid ${scoreColor};color:${scoreColor};font-weight:700;padding:10px 20px;border-radius:8px;font-size:1.1rem;">
+        ${pctScore}%
       </div>
       <div style="display:flex;gap:8px;">
         <button onclick="openStudentReportModal('${sid}')" style="font-size:0.78rem;padding:6px 14px;background:var(--navy);color:white;border:none;border-radius:6px;cursor:pointer;font-weight:600;">⬇ Download Student Report</button>
@@ -3943,10 +4376,10 @@ function showStudentReport() {
   // ── Side-by-side: Module table + NGEN table ──
   const thS = 'background:var(--navy);color:white;padding:5px 10px;font-size:0.7rem;letter-spacing:0.1em;text-transform:uppercase;';
 
-  let modHtml = `<div class="module-label" style="margin-bottom:10px;">Module / Content Area Performance Summary</div>
+  let modHtml = `<div class="module-label" style="margin-bottom:10px;">Module/Chapter Area Performance Summary</div>
     <table style="font-size:0.82rem;width:100%;">
       <thead><tr>
-        <th style="${thS}text-align:left;">Content Area</th>
+        <th style="${thS}text-align:left;">Module/Chapter</th>
         <th style="${thS}text-align:center;">Items</th>
         <th style="${thS}text-align:center;">Score</th>
         <th style="${thS}text-align:center;">%</th>
@@ -3993,9 +4426,41 @@ function showStudentReport() {
     ngenHtml += `<div style="font-size:0.84rem;color:var(--text-light);padding:10px 0;font-style:italic;">No NGEN (non-multiple choice) question types present on this exam.</div>`;
   }
 
+  // Bloom's Taxonomy table
+  const hasBlooms = Object.keys(bloomsStats).length > 0;
+  let bloomsHtml = `<div class="module-label" style="margin-bottom:10px;">Bloom's Taxonomy Performance</div>`;
+  if (hasBlooms) {
+    bloomsHtml += `<table style="font-size:0.82rem;width:100%;">
+      <thead><tr>
+        <th style="${thS}text-align:left;">Cognitive Level</th>
+        <th style="${thS}text-align:center;">%</th>
+        <th style="${thS}text-align:center;">Performance</th>
+      </tr></thead><tbody>`;
+    // Display in reverse order (5 to 1, pyramid style)
+    for (let level = 5; level >= 1; level--) {
+      if (!bloomsStats[level]) continue;
+      const v = bloomsStats[level];
+      const p = v.total > 0 ? v.correct / v.total : 0;
+      const ps = perfStyle(p);
+      bloomsHtml += `<tr style="background:${ps.bg};">
+        <td style="padding:5px 10px;">Level ${level}: ${esc(bloomsLabels[level])}</td>
+        <td style="padding:5px 10px;text-align:center;font-weight:700;color:${ps.tx};">${pct(p)}</td>
+        <td style="padding:5px 10px;text-align:center;font-weight:${p<0.80?'700':'400'};color:${ps.tx};">${perfLabel(p)}</td>
+      </tr>`;
+    }
+    bloomsHtml += `</tbody></table>`;
+  } else {
+    bloomsHtml += `<div style="font-size:0.84rem;color:var(--text-light);padding:10px 0;font-style:italic;">No Bloom's Taxonomy levels available for this exam.</div>`;
+  }
+
   html += `<div class="student-top-row">
     <div>${modHtml}</div>
     <div>${ngenHtml}</div>
+  </div>`;
+
+  // Bloom's table below (full width)
+  html += `<div style="border:1px solid var(--border);border-top:none;padding:16px 20px;">
+    ${bloomsHtml}
   </div>`;
 
   // ── Remediation — full width below both tables ──
@@ -4006,7 +4471,7 @@ function showStudentReport() {
 
   // ── Toggle buttons ──
   html += `<div class="student-view-toggle">
-    <button class="student-view-btn active" id="svBtn-module" onclick="setStudentView('module')">📚 View by Module</button>
+    <button class="student-view-btn active" id="svBtn-module" onclick="setStudentView('module')">📚 View by Module/Chapter</button>
     <button class="student-view-btn" id="svBtn-result" onclick="setStudentView('result')">📊 View by Result</button>
   </div>`;
 
@@ -4414,6 +4879,16 @@ function toggleLegend() {
   btn.setAttribute('aria-expanded', isCollapsed);
 }
 
+function toggleBloomsLegend() {
+  const body = document.getElementById('bloomsLegendBody');
+  const btn = document.getElementById('bloomsLegendToggleBtn');
+  const isCollapsed = body.classList.contains('collapsed');
+  body.classList.toggle('collapsed', !isCollapsed);
+  body.style.maxHeight = isCollapsed ? '9999px' : '0';
+  btn.textContent = isCollapsed ? '▲ Collapse' : '▼ Expand';
+  btn.setAttribute('aria-expanded', isCollapsed);
+}
+
 // ══════════════════════════════════════════════
 //  CLEAR & RESTART
 // ══════════════════════════════════════════════
@@ -4490,9 +4965,9 @@ function openStudentReportModal(sid) {
     <div class="cart-modal" style="max-width:520px;">
       <h3>Student Report Options</h3>
       <p>Select what to include in ${esc(student.fname)} ${esc(student.lname)}'s report:</p>
-      <label><input type="checkbox" id="stuOptScore"> Raw Score</label>
-      <label><input type="checkbox" id="stuOptModule"> Module / Content Area Performance Summary</label>
+      <label><input type="checkbox" id="stuOptModule"> Module/Chapter Performance Summary</label>
       <label><input type="checkbox" id="stuOptNgen"> NGEN Question Performance Summary</label>
+      <label><input type="checkbox" id="stuOptBlooms"> Bloom's Taxonomy Performance</label>
       <label><input type="checkbox" id="stuOptTopics" onchange="document.getElementById('stuTopicsArea').style.display=this.checked?'block':'none'"> Content Topics for Review</label>
       ${topicsHtml}
       <div class="cart-modal-actions">
@@ -4512,9 +4987,10 @@ function getStuOpts() {
   const topics = [];
   document.querySelectorAll('.stu-topic-cb:checked').forEach(cb => topics.push(cb.dataset.topic));
   return {
-    score: document.getElementById('stuOptScore')?.checked ?? false,
+    score: false,  // NO GRADE on student reports
     module: document.getElementById('stuOptModule')?.checked ?? false,
     ngen: document.getElementById('stuOptNgen')?.checked ?? false,
+    blooms: document.getElementById('stuOptBlooms')?.checked ?? false,
     contentTopics: document.getElementById('stuOptTopics')?.checked ?? false,
     selectedTopics: topics,
   };
@@ -4558,6 +5034,17 @@ function generateStudentPrint(sid, opts) {
     if (si.outOf > 0 && (si.score/si.outOf) >= 0.99) qtypeStats[si.qtype].correct++;
   });
 
+  // Bloom's Taxonomy stats
+  const bloomsLabels = { 1: 'Remember', 2: 'Understand', 3: 'Apply', 4: 'Analyze', 5: 'Evaluate/Create' };
+  const bloomsStats = {};
+  Object.values(student.items).forEach(si => {
+    if (si.isBonus || !si.bloomsLevel) return;
+    const level = si.bloomsLevel;
+    if (!bloomsStats[level]) bloomsStats[level] = { total: 0, correct: 0 };
+    bloomsStats[level].total++;
+    if (si.outOf > 0 && (si.score / si.outOf) >= 0.99) bloomsStats[level].correct++;
+  });
+
   const perfColor = (p) => p > 0.90 ? '#1b7a3e' : p >= 0.80 ? '#1a5276' : '#7b1a2a';
   const perfBg = (p) => p > 0.90 ? '#e8f5e9' : p >= 0.80 ? '#dce8f8' : '#fce4ec';
   const perfLbl = (p) => p > 0.90 ? 'Strong' : p >= 0.80 ? 'Acceptable' : 'Needs Improvement';
@@ -4581,9 +5068,9 @@ function generateStudentPrint(sid, opts) {
   .perf-row { font-weight: 600; }
   .topic-item { padding: 3px 8px 3px 20px; font-size: 9pt; border-bottom: 1px solid #f0f0f0; color: #222; }
   .score-box { text-align: center; padding: 10px; margin: 8px 0; border-radius: 6px; font-size: 13pt; font-weight: 700; }
-  .disclaimer { font-size: 7.5pt; color: #333; font-style: italic; padding: 4px 8px; background: #fffde7; margin-bottom: 8px; }
-  .note { font-size: 8pt; color: #333; font-style: italic; padding: 6px 8px; background: #f4f7fb; margin-top: 4px; }
-  .page-footer { position: fixed; bottom: 0; left: 0; right: 0; text-align: center; font-size: 6.5pt; color: #333; padding: 4px 16px; border-top: 1px solid #ccc; background: white; }
+  .disclaimer { font-size: 7.5pt; color: #222; font-style: italic; padding: 4px 8px; background: #fffde7; margin-bottom: 8px; }
+  .note { font-size: 8pt; color: #222; font-style: italic; padding: 6px 8px; background: #f4f7fb; margin-top: 4px; }
+  .page-footer { position: fixed; bottom: 0; left: 0; right: 0; text-align: center; font-size: 6.5pt; color: #222; padding: 4px 16px; border-top: 1px solid #ccc; background: white; }
   .page-footer .encourage { font-size: 7.5pt; color: #1e3a6e; font-style: italic; margin-bottom: 1px; }
   .page-footer .brand-line { color: #1e3a6e; font-weight: 600; }
   @media print { .no-print { display: none; } body { margin-bottom: 50px; } }
@@ -4630,6 +5117,22 @@ function generateStudentPrint(sid, opts) {
     }
     html += '</table>';
     html += '<div class="note">Multi-select (SATA), matching, fill-in-the-blank, and ordering questions require application of content knowledge in specialized formats. Review these question types as part of your exam preparation.</div>';
+  }
+
+  if (opts.blooms && Object.keys(bloomsStats).length > 0) {
+    html += '<div class="section-hdr">Bloom\'s Taxonomy Performance</div>';
+    html += '<table><tr><th>Cognitive Level</th><th style="text-align:center;">% Correct</th><th style="text-align:center;">Performance</th></tr>';
+    // Display in reverse order (5, 4, 3, 2, 1)
+    for (let level = 5; level >= 1; level--) {
+      if (!bloomsStats[level]) continue;
+      const v = bloomsStats[level];
+      const p = v.total > 0 ? v.correct / v.total : 0;
+      const c = perfColor(p);
+      const bg = perfBg(p);
+      html += '<tr class="perf-row" style="background:' + bg + ';color:' + c + ';"><td><strong>' + level + ' - ' + esc(bloomsLabels[level]) + '</strong></td><td style="text-align:center;">' + pct(p) + '</td><td style="text-align:center;">' + perfLbl(p) + '</td></tr>';
+    }
+    html += '</table>';
+    html += '<div class="note">Bloom\'s Taxonomy measures cognitive complexity from basic recall (Remember) to advanced synthesis (Evaluate/Create). Review questions at levels where performance is below 80% to strengthen critical thinking skills.</div>';
   }
 
   if (opts.contentTopics) {
@@ -4808,6 +5311,51 @@ async function downloadStudentReport(sid, opts) {
       }
       merge(R);
       ws.getCell(`A${R}`).value = 'NOTE: Multi-select (SATA), matching, fill-in-the-blank, and ordering questions require application of content knowledge in specialized formats. Review these question types as part of your exam preparation.';
+      ws.getCell(`A${R}`).style = { font:{ italic:true, size:8, color:{ argb:C.steel } }, fill:wf(C.yellow), alignment:{ horizontal:'left', vertical:'middle', wrapText:true, indent:1 } };
+      ws.getRow(R).height = 44; R++;
+    }
+  }
+
+  if (opts.blooms) {
+    const bloomsLabels = { 1: 'Remember', 2: 'Understand', 3: 'Apply', 4: 'Analyze', 5: 'Evaluate/Create' };
+    const bloomsStats = {};
+    Object.values(student.items).forEach(si => {
+      if (si.isBonus || !si.bloomsLevel) return;
+      const level = si.bloomsLevel;
+      if (!bloomsStats[level]) bloomsStats[level] = { total: 0, correct: 0 };
+      bloomsStats[level].total++;
+      if (si.outOf > 0 && (si.score / si.outOf) >= 0.99) bloomsStats[level].correct++;
+    });
+
+    if (Object.keys(bloomsStats).length > 0) {
+      ws.getRow(R).height = 8; R++;
+      merge(R);
+      ws.getCell(`A${R}`).value = 'BLOOM\'S TAXONOMY PERFORMANCE';
+      ws.getCell(`A${R}`).style = { font:{ bold:true, color:{ argb:C.white }, size:9 }, fill:wf(C.nav), alignment:{ horizontal:'left', vertical:'middle', indent:1 } };
+      ws.getRow(R).height = 22; R++;
+
+      ['Cognitive Level','% Correct','Performance'].forEach((h,i) => {
+        ws.getCell(R,i+1).value = h;
+        ws.getCell(R,i+1).style = { font:{ bold:true, color:{ argb:C.white }, size:9 }, fill:wf(C.steel), alignment:{ horizontal:i===0?'left':'center', vertical:'middle', indent:i===0?1:0 } };
+      });
+      ws.getRow(R).height = 18; R++;
+
+      // Display in reverse order (5, 4, 3, 2, 1)
+      for (let level = 5; level >= 1; level--) {
+        if (!bloomsStats[level]) continue;
+        const v = bloomsStats[level];
+        const p = v.total > 0 ? v.correct / v.total : 0;
+        const { bg, tx } = perfFill(p);
+        ws.getCell(R,1).value = level + ' - ' + bloomsLabels[level];
+        ws.getCell(R,1).style = { font:{ bold:true, size:9 }, fill:wf(bg), alignment:{ vertical:'middle', indent:1 } };
+        ws.getCell(R,2).value = pct(p);
+        ws.getCell(R,2).style = { font:{ bold:true, size:9, color:{ argb:tx } }, fill:wf(bg), alignment:{ horizontal:'center', vertical:'middle' } };
+        ws.getCell(R,3).value = perfLabel(p);
+        ws.getCell(R,3).style = { font:{ bold:p<0.80, size:9, color:{ argb:tx } }, fill:wf(bg), alignment:{ horizontal:'center', vertical:'middle' } };
+        ws.getRow(R).height = 18; R++;
+      }
+      merge(R);
+      ws.getCell(`A${R}`).value = 'NOTE: Bloom\'s Taxonomy measures cognitive complexity from basic recall (Remember) to advanced synthesis (Evaluate/Create). Review questions at levels where performance is below 80% to strengthen critical thinking skills.';
       ws.getCell(`A${R}`).style = { font:{ italic:true, size:8, color:{ argb:C.steel } }, fill:wf(C.yellow), alignment:{ horizontal:'left', vertical:'middle', wrapText:true, indent:1 } };
       ws.getRow(R).height = 44; R++;
     }
@@ -5979,7 +6527,7 @@ async function buildWorkbook(data) {
 
   ws1.getRow(chartRow).height = 8; chartRow++;
 
-  // ── Module Performance Table ──
+  // ── Module/Chapter Performance Table ──
   ws1.mergeCells('A'+chartRow+':J'+chartRow);
   ws1.getCell('A'+chartRow).value = '  MODULE / CONTENT AREA PERFORMANCE';
   ws1.getCell('A'+chartRow).style = colHdrStyle();
